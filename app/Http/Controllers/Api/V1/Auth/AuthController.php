@@ -65,7 +65,7 @@ class AuthController extends Controller
     {
         try {
 
-            // check if the email verifited 
+            // check if the email verifited
             if (!($this->authService->checkIfEmailVerifited($request->email))) {
                 return $this->errorResponse(
                     __('auth.email_not_verified'),
@@ -153,6 +153,7 @@ class AuthController extends Controller
                     $user->save();
                 }
             );
+            // return $this->successResponse($status . "   " . Password::PASSWORD_RESET, "mess" . $status === Password::PASSWORD_RESET);
 
             return $status === Password::PASSWORD_RESET
                 ? $this->successResponse(null, __('auth.password_reset_success'))
@@ -173,7 +174,7 @@ class AuthController extends Controller
     public function forgetPassword(ForgetPasswordRequest $request)
     {
         try {
-            // create and store the otp code 
+            // create and store the otp code
             $otp = $this->authService->createOtp('password_otps', $request->email);
 
             // get the email and send the otp code by email
@@ -209,14 +210,14 @@ class AuthController extends Controller
         $user->password = Hash::make($request->new_password);
         $user->save();
 
-        // update the otp sateus to used 
+        // update the otp sateus to used
         DB::table('password_otps')->where('id', $otp->id)->update(['used' => true]);
 
         return $this->successResponse(null, __('auth.password_reset_success'));
     }
 
 
-    //accept email, password and sent the otp_code to the email 
+    //accept email, password and sent the otp_code to the email
     public function verifyEmailCode(VerifyEmailCodeRequest $request)
     {
 
@@ -233,10 +234,10 @@ class AuthController extends Controller
         }
 
         // table('email_verifications')
-        //create otp and store it in db 
+        //create otp and store it in db
         $otp = $this->authService->createOtp('email_otps', $request->email);
 
-        //send the otp_code to the email 
+        //send the otp_code to the email
         $user->notify(new SendEmailVerificationOtpNotification($otp));
 
         return $this->successResponse(null, __('auth.otp_sent_to_email'));

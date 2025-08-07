@@ -22,7 +22,8 @@ class CountryResource extends Resource
 {
     protected static ?string $model = Country::class;
     protected static ?string $navigationIcon = 'heroicon-o-globe-americas';
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationGroup = 'Geographical Data';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -108,5 +109,9 @@ class CountryResource extends Resource
             'create' => Pages\CreateCountry::route('/create'),
             'edit' => Pages\EditCountry::route('/{record}/edit'),
         ];
+    }
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 }

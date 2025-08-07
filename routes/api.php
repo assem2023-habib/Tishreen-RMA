@@ -31,4 +31,4 @@ Route::prefix('v1')->group(function () {
         Route::get('me', [AuthController::class, 'me']);
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
     });
-});
+})->middleware('throttle:6');

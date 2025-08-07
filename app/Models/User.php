@@ -3,17 +3,20 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Parcel;
+use App\Trait\BlamableTrait;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Trait\BlamableTrait;
-use Filament\Models\Contracts\HasName;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-class User extends Authenticatable implements HasName, OAuthenticatable, MustVerifyEmail
+class User extends Authenticatable implements HasName, OAuthenticatable, MustVerifyEmail, FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
@@ -34,9 +37,7 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
         'phone',
         'national_number',
         'birthday',
-
-        // 'created_by',
-        // 'updated_by',
+        'email_verified_at',
     ];
 
     /**
@@ -76,5 +77,30 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new \App\Notifications\ApiResetPasswordNotification($token));
+    }
+    public function parcels()
+    {
+        return $this->morphMany(Parcel::class, 'sender');
+    }
+    public function parcelsAuthorizations()
+    {
+        return $this->morphMany(ParcelAuthorization::class, 'authorizedUser');
+    }
+    public function parcelAuthorization()
+    {
+        return $this->hasMany(ParcelAuthorization::class);
+    }
+    public function restrictionType()
+    {
+        return $this->hasMany(UserRestriction::class);
+    }
+    public function employee()
+    {
+        return $this->hasOne(Employee::class);
+    }
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // return str_ends_with($this->email, '@yourdomain.com') && $this->hasVerifiedEmail()
+        return true;
     }
 }

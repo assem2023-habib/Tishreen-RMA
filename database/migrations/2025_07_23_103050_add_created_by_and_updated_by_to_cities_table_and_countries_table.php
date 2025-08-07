@@ -13,15 +13,15 @@ return new class extends Migration
     {
         // add columns after adding tables to avoid the cicly bug
 
-        // Schema::table('countries', function (Blueprint $table) {
-        //     $table->foreignId('created_by')->constrained('users');
-        //     $table->foreignId('updated_by')->constrained('users');
-        // });
+        Schema::table('countries', function (Blueprint $table) {
+            $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->foreignId('updated_by')->nullable()->constrained('users');
+        });
 
-        // Schema::table('cities', function (Blueprint $table) {
-        //     $table->foreignId('created_by')->constrained('users');
-        //     $table->foreignId('updated_by')->constrained('users');
-        // });
+        Schema::table('cities', function (Blueprint $table) {
+            $table->foreignId('created_by')->nullable()->constrained('users');
+            $table->foreignId('updated_by')->nullable()->constrained('users');
+        });
     }
 
     /**

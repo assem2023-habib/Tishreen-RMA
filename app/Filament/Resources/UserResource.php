@@ -2,40 +2,31 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\UserAccountStatus;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\Country;
 use App\Models\User;
+use App\Models\UserRestriction;
+use Filament\Forms\Components\{TextInput, Grid, Select, DatePicker, Toggle};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
-use Filament\Forms\Components\{TextInput, Grid, Select, DatePicker};
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationGroup = 'Users';
+
     protected static ?int $navigationSort = 1;
 
 
-    //     'first_name',
-    //     'last_name',
-    //     'email',
-    //     'user_name',
-    //     'password',
-    //     'confi_pass',
-
-    //     'country'
-    //     'city',
-    //     'address',
-    //     'phone',
-    //     'national_number',
-    //     'birthday',
     public static function form(Form $form): Form
     {
         return $form
@@ -44,26 +35,26 @@ class UserResource extends Resource
                     ->schema([
                         TextInput::make('first_name')
                             ->label('First Name')
-                            ->helperText('Arabic letters only')
+                            // ->helperText('Arabic letters only')
                             ->rules([
                                 'required',
-                                'regex:/^[A-Za-z\s]+$/',
+                                // 'regex:/^[A-Za-z\s]+$/',
                                 'min:2',
                                 'max:50',
                             ])
                             ->validationMessages([
                                 'required' => 'Last name is required',
-                                'regex' => 'Only English letters are allowed',
+                                // 'regex' => 'Only English letters are allowed',
                                 'min' => 'At least 2 characters required',
                                 'max' => 'Maximum 50 characters allowed',
                             ]),
 
                         TextInput::make('last_name')
                             ->label('Last Name')
-                            ->helperText('English letters only')
+                            // ->helperText('English letters only')
                             ->rules([
                                 'required',
-                                'regex:/^[A-Za-z\s]+$/',
+                                // 'regex:/^[A-Za-z\s]+$/',
                                 'min:2',
                                 'max:50',
                             ])
@@ -81,13 +72,19 @@ class UserResource extends Resource
                         TextInput::make('email')
                             ->label('Email')
                             ->email()
-                            ->rules(['required', 'email', 'unique:users,email'])
+                            ->unique(ignoreRecord: true)
                             ->helperText('Valid email address required')
                             ->validationMessages([
                                 'required' => 'Email is required',
                                 'email' => 'Please enter a valid email',
                                 'unique' => 'This email is already registered',
                             ]),
+                        Select::make('account_status')
+                            ->label('Account Status')
+                            ->options(UserAccountStatus::class)
+                            ->enum(UserAccountStatus::class)
+                            ->default(null)
+                            ->required(),
                     ]),
 
                 Grid::make(2)
@@ -98,24 +95,25 @@ class UserResource extends Resource
                             ->revealable()
                             ->helperText('At least 8 characters, English letters and symbols allowed')
                             ->rules([
-                                'required',
                                 'regex:/^[A-Za-z0-9@#$%^&*!]+$/',
                                 'min:8',
                             ])
+                            ->required(fn($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord)
                             ->validationMessages([
                                 'required' => 'Password is required',
                                 'regex' => 'Only English letters, numbers, and symbols are allowed',
                                 'min' => 'Password must be at least 8 characters',
-                            ]),
+                            ])
+                            ->dehydrated(fn($state) => filled($state)),
 
                         TextInput::make('national_number')
                             ->label('National Number')
                             ->helperText('Exactly 11 digits')
+                            ->unique(ignoreRecord: true)
                             ->rules([
                                 'required',
                                 'digits:11',
                                 'regex:/^[0-9]+$/',
-                                'unique:users,national_number',
                             ])
                             ->validationMessages([
                                 'required' => 'National number is required',
@@ -178,6 +176,8 @@ class UserResource extends Resource
                     ->validationMessages([
                         'required' => 'Date of birth is required',
                     ]),
+                Toggle::make('is_verified')
+                    ->label('email Verified ? '),
             ]);
     }
 
@@ -186,14 +186,10 @@ class UserResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('first_name')
-                    ->label('First Name')
-                    ->searchable()
-                    ->sortable(),
-
-                TextColumn::make('last_name')
-                    ->label('Last Name')
-                    ->searchable()
-                    ->sortable(),
+                    ->label('Name')
+                    ->formatStateUsing(function (User $record) {
+                        return $record->first_name . ' ' . $record->last_name;
+                    }),
 
                 TextColumn::make('user_name')
                     ->label('Username')
@@ -223,10 +219,6 @@ class UserResource extends Resource
 
                 TextColumn::make('phone')
                     ->label('Phone'),
-
-                TextColumn::make('birthday')
-                    ->label('Birth Date')
-                    ->date('Y-m-d'),
             ])
             ->filters([
                 //
@@ -255,5 +247,9 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 }
