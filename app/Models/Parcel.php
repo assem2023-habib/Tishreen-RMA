@@ -41,4 +41,8 @@ class Parcel extends Model
     {
         return $this->belongsTo(PricingPoliciy::class);
     }
+    public function rates()
+    {
+        return $this->morphMany(Rate::class, 'rateable');
+    }
 }

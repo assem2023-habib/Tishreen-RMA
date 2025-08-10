@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Parcel;
+use App\Models\Branch;
+use App\Models\Employee;
 use App\Trait\BlamableTrait;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
@@ -102,5 +104,9 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
     {
         // return str_ends_with($this->email, '@yourdomain.com') && $this->hasVerifiedEmail()
         return true;
+    }
+    public function rates()
+    {
+        return $this->hasMany(Rate::class);
     }
 }

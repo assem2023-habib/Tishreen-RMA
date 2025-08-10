@@ -8,10 +8,17 @@ class Rate extends Model
 {
     protected $fillable = [
         'user_id',
-        'rating_for',
+        'rateable_id',
         'rating',
         'comment',
-        'rating_for_type',
+        'rateable_type',
     ];
-    public function 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function rateable()
+    {
+        return $this->morphTo();
+    }
 }

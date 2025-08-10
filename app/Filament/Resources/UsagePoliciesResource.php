@@ -6,9 +6,11 @@ use App\Filament\Resources\UsagePoliciesResource\Pages;
 use App\Filament\Resources\UsagePoliciesResource\RelationManagers;
 use App\Models\UsagePolicies;
 use Filament\Forms;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -43,8 +45,11 @@ class UsagePoliciesResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('policy_type')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('policy_name')
+                    ->badge()
+                    ->color('primary')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -59,7 +64,14 @@ class UsagePoliciesResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                        ->label('edite policy'),
+                    Tables\Actions\ViewAction::make()
+                        ->label('view ploicy'),
+                    Tables\Actions\DeleteAction::make()
+                    ->label('delete policy'),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

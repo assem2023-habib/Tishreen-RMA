@@ -3,15 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\FrequentlyAskedQuestionsResource\Pages;
-use App\Filament\Resources\FrequentlyAskedQuestionsResource\RelationManagers;
 use App\Models\FrequentlyAskedQuestions;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class FrequentlyAskedQuestionsResource extends Resource
 {
@@ -50,9 +49,11 @@ class FrequentlyAskedQuestionsResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('category_type')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('is_show')
-                    ->numeric()
-                    ->sortable(),
+                ToggleColumn::make('is_show')
+                    ->onIcon('heroicon-o-check-circle')
+                    ->offIcon('heroicon-o-no-symbol')
+                    ->onColor('success')
+                    ->offColor('danger'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -66,7 +67,14 @@ class FrequentlyAskedQuestionsResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                        ->label('edite FAQ'),
+                    Tables\Actions\ViewAction::make()
+                        ->label('Show FAQ'),
+                    Tables\Actions\DeleteAction::make()
+                        ->label('Delete FAQ'),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

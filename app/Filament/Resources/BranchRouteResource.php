@@ -9,9 +9,7 @@ use App\Models\Branch;
 use App\Models\BranchRoute;
 use Dotswan\MapPicker\Fields\Map;
 use Filament\Forms;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\View;
-use Filament\Forms\Components\{Select, TextInput, TimePicker, Toggle};
+use Filament\Forms\Components\{Select, TextInput, TimePicker, Toggle, Grid, Hidden, View};
 use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
@@ -58,7 +56,17 @@ class BranchRouteResource extends Resource
                         ->label('اختر فرع الوصول من الخريطة')
                         ->extraAttributes(['data-branch-select' => 'to_branch_id'])
                         ->viewData([
-                            'branchesForMap' => Branch::select('id', 'branch_name', 'latitude', 'longitude')->get(),
+                            'branchesForMap' => Branch::select('id', 'branch_name', 'latitude', 'longitude', 'email')
+                                ->get()
+                                ->map(function ($branch) {
+                                    return [
+                                        'id' => $branch->id,
+                                        'lat' => $branch->latitude,
+                                        'lng' => $branch->longitude,
+                                        'name' => $branch->branch_name,
+                                        'email' => $branch->email,
+                                    ];
+                                })->toArray(),
                             'centerLatitude' => 33.5138,
                             'centerLongitude' => 36.2765,
                             'zoomLevel' => 6,
@@ -97,7 +105,10 @@ class BranchRouteResource extends Resource
                         TextInput::make('distance_per_kilo')
                             ->numeric()
                             ->suffix('KM')
-                            ->default(null),
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                // هذا الجزء يكون في PHP إذا عندك lat/lng جاهزة
+                            }),
                     ]
                 ),
                 Grid::make(2)->schema(

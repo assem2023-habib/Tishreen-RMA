@@ -34,4 +34,8 @@ class Employee extends Model
     {
         return $this->hasMany(ParcelShipmentLogs::class, 'delivery_confirmed_by_emp_id');
     }
+    public function rates()
+    {
+        return $this->morphMany(Rate::class, 'rateable');
+    }
 }

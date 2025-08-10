@@ -15,10 +15,10 @@ return new class extends Migration
         Schema::create('rates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('rating_for')->nullable(); // معرف الكائن الذي تم
+            $table->foreignId('rateable_id')->nullable(); // معرف الكائن الذي تم
             $table->tinyInteger('rating');
             $table->text('comment')->nullable();
-            $table->enum('rating_for_type', RatingForType::values());
+            $table->enum('rateable_type', RatingForType::values());
             $table->timestamps();
         });
     }

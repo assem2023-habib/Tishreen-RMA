@@ -33,5 +33,8 @@ class Branch extends Model
     {
         return $this->hasMany(Employee::class);
     }
-
+    public function rates()
+    {
+        return  $this->morphMany(Rate::class, 'rateable');
+    }
 }
