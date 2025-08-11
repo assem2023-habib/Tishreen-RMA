@@ -39,7 +39,7 @@ class BranchRouteDaysResource extends Resource
                         return BranchRoute::select('id', 'from_branch_id', 'to_branch_id')
                             ->get()
                             ->mapWithKeys(function ($branchRoute) {
-                                return [$branchRoute->id => $branchRoute->from_branch_id . ', ' . $branchRoute->to_branch_id];
+                                return [$branchRoute->id => $branchRoute->fromBranch->branch_name . ', ' . $branchRoute->toBranch->branch_name];
                             });
                     })
                     ->searchable()

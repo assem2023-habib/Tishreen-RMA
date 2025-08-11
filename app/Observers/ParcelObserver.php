@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Enums\OperationTypes;
 use App\Models\{Parcel, ParcelHistory};
+use Illuminate\Support\Str;
 
 class ParcelObserver
 {
@@ -18,6 +19,13 @@ class ParcelObserver
             'changes' => $changes,
             'user_id' => auth()->id(),
         ]);
+    }
+    public function creating(Parcel $parcel)
+    {
+        do {
+            $tracking_number = 'p' . strtoupper(Str::random(8));
+        } while (Parcel::where('tracking_number', $tracking_number)->exists());
+        $parcel->tracking_number = $tracking_number;
     }
     public function create(Parcel $parcel)
     {

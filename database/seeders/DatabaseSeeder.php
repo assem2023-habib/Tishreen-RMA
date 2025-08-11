@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
                 RateSeeder::class,
                 UsagePoliciesSeeder::class,
                 FrequentlyAskedQuestionsSeeder::class,
+                PricingPoliciySeeder::class,
             ]
         );
     }

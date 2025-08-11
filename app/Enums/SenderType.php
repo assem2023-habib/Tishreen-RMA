@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum SenderType: string
 {
-    case AUTHENTICATED_USER = 'Authenticated_user';
-    case GUEST_USER = 'Guest_User';
+    case AUTHENTICATED_USER = 'User';
+    case GUEST_USER = 'GuestUser';
 
     public static function values()
     {

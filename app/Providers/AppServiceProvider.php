@@ -31,9 +31,9 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserObserve::class);
         ParcelHistory::observe(ParcelObserver::class);
 
-        // Relation::morphMap([
-        //     'user' => User::class,
-        //     'guest_user' => GuestUser::class
-        // ]);
+        Relation::morphMap([
+            'User' => User::class,
+            'GuestUser' => GuestUser::class,
+        ]);
     }
 }

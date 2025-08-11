@@ -16,8 +16,6 @@ return new class extends Migration
     {
         Schema::create('parcels', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('source_branch_id')->constrained('branches')->cascadeOnDelete();
-            // $table->foreignId('target_branch_id')->constrained('branches')->cascadeOnDelete();
             $table->foreignId('sender_id');
             $table->enum('sender_type', SenderType::values())->default(SenderType::GUEST_USER->value);
             $table->foreignId('route_id')->constrained('branch_routes')->cascadeOnDelete();
