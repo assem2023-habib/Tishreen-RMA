@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Branche\BranchController;
+use App\Http\Controllers\Api\V1\CountryAndCity\CountryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\V1\Auth\AuthController;
-use App\Http\Controllers\Api\V1\CountryAndCity\CountryController;
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -23,6 +25,10 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/countries', [CountryController::class, 'getCountries']);
     Route::get('/countries/{country_id}/cities', [CountryController::class, 'getCitiesByCountry']);
+
+    //----------------------------------Branches-------------------------------------
+
+    Route::get('/branches', BranchController::class)->name('branches.index');
 
 
 

@@ -105,13 +105,13 @@ class RateResource extends Resource
                 TextColumn::make('rateable_type')
                     ->label('Rateable Type')
                     ->badge()
-                    ->color(function (string $state) {
-                        match ($state) {
-                            RatingForType::APPLICATION => 'success',
-                            RatingForType::SERVICE => 'gray',
-                            RatingForType::BRANCH => 'danger',
-                            default => 'secondary',
-                        };
+                    ->color(fn(string $state) =>
+                    match ($state) {
+
+                        RatingForType::APPLICATION->value => 'success',
+                        RatingForType::SERVICE->value => 'gray',
+                        RatingForType::BRANCH->value => 'danger',
+                        default => 'secondary',
                     })
                     ->formatStateUsing(fn(string $state) => __($state)),
                 TextColumn::make('created_at')

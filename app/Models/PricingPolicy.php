@@ -4,15 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PricingPoliciy extends Model
+class PricingPolicy extends Model
 {
 
     protected $fillable = [
+        'policy_type',
         'price',
         'price_unit',
-        'weight_limit_min',
-        'weight_limit_max',
+        'limit_min',
+        'limit_max',
         'currency',
+        'is_active',
     ];
     public function parcels()
     {

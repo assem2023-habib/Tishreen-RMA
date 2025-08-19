@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -47,20 +48,30 @@ class ParcelHistoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('parcel_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('changes')
+                // Tables\Columns\TextColumn::make('parcel_id')
+                //     ->numeric()
+                //     ->sortable(),
+                TextColumn::make('parcel')
+                    ->label('Sender')
+                    ->getStateUsing(function ($record) {
+                        return $record->parcel->reciver_name;
+                    }),
+                TextColumn::make('user')
+                    ->label('User')
+                    ->getStateUsing(function ($record) {
+                        return $record->user->user_name;
+                    }),
+                // TextColumn::make('user_id')
+                //     ->numeric()
+                //     ->sortable(),
+                TextColumn::make('changes')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('operation_type'),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('operation_type'),
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

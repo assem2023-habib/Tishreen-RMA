@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\SenderType;
+use App\Models\BranchRoute;
 use Illuminate\Database\Eloquent\Model;
 
 class Parcel extends Model
@@ -16,18 +18,31 @@ class Parcel extends Model
         'reciver_phone',
         'weight',
         'cost',
-        'price_policy',
         'is_paid',
         'parcel_status',
         'tracking_number',
+        'price_policy_id',
     ];
-    public function targetBranch()
+    protected $casts = [
+        'sender_type' => SenderType::class,
+    ];
+    // public function targetBranch()
+    // {
+    //     return $this->belongsTo(BranchRoute::class, 'from_branch_id');
+    // }
+    // public function sourceBranch()
+    // {
+    //     return $this->belongsTo(BranchRoute::class, 'to_branch_id');
+    // }
+    public function route()
     {
-        return $this->belongsTo(BranchRoute::class, 'from_branch_id');
+        return $this->belongsTo(BranchRoute::class);
     }
-    public function sourceBranch()
+    public function routeLabel()
     {
-        return $this->belongsTo(BranchRoute::class, 'to_branch_id');
+        if ($this->route && $this->route->fromBranch && $this->route->toBranch)
+            return $this->route->fromBranch->branch_name . '-->' . $this->route->toBranch->branch_name;
+        return '-';
     }
     public function sender()
     {
@@ -39,7 +54,7 @@ class Parcel extends Model
     }
     public function pricePolicy()
     {
-        return $this->belongsTo(PricingPoliciy::class);
+        return $this->belongsTo(PricingPolicy::class);
     }
     public function rates()
     {

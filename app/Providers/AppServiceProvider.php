@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\{GuestUser, User, ParcelHistory};
-use App\Observers\{ParcelObserver, UserObserve};
+use App\Models\{GuestUser, Parcel, User, ParcelHistory};
+use App\Observers\{ParcelObserver, ParcelObserverHistory, UserObserve};
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
@@ -29,11 +29,6 @@ class AppServiceProvider extends ServiceProvider
         Passport::enablePasswordGrant();
 
         User::observe(UserObserve::class);
-        ParcelHistory::observe(ParcelObserver::class);
-
-        Relation::morphMap([
-            'User' => User::class,
-            'GuestUser' => GuestUser::class,
-        ]);
+        Parcel::observe(ParcelObserverHistory::class);
     }
 }

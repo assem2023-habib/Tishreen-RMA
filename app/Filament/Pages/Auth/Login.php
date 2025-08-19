@@ -15,6 +15,7 @@ class Login extends BaseLogin
                 $this->getEmailFormComponent()->label('Email Or UserName'),
                 $this->getPasswordFormComponent(),
                 $this->getRememberFormComponent(),
+                
 
             ]);
     }

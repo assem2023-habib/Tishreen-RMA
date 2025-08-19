@@ -103,12 +103,6 @@ class EmployeeResource extends Resource
                 TextColumn::make('end_date')
                     ->sortable()
                     ->formatStateUsing(
-                        // callback: function (?string $state) {
-                        //     return !empty($state)?
-                        //
-                        // Carbon::parse($state)->translatedFormat('Y-m-d')
-                        //         : 'not Selected';
-                        // }
                         callback: function (?string $state) {
                             if (empty($state) || $state === '0000-00-00' || $state === 'NULL') {
                                 return 'not Selected';

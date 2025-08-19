@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('parcels', function (Blueprint $table) {
-            $table->foreignId('price_policy')->nullable()->constrained('pricing_policiys');
+            $table->foreignId('price_policy_id')->nullable()->constrained('pricing_policies');
         });
     }
 

@@ -25,4 +25,8 @@ class GuestUser extends Model
     {
         return $this->morphMany(ParcelAuthorization::class, 'authorizedUser');
     }
+    public function sender()
+    {
+        return  $this->morphMany(Parcel::class, 'sender');
+    }
 }

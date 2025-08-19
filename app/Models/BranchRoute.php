@@ -31,4 +31,8 @@ class BranchRoute extends Model
     {
         return $this->hasMany(BranchRouteDays::class);
     }
+    public function parcels()
+    {
+        return  $this->hasMany(Parcel::class);
+    }
 }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->json('old_data')->nullable();
             $table->json('new_data')->nullable();
-            $table->string('changes')->nullable();
+            $table->json('changes')->nullable();
             $table->enum('operation_type', OperationTypes::values())->default(OperationTypes::INSERTED);
             $table->timestamps();
         });

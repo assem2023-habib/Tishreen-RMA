@@ -32,28 +32,6 @@ class CreateUser extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // $base = Str::before($data['email'], '@');
-        // $username = $base;
-        // $count = 1;
-
-        // while (User::where('user_name', $username)->exists()) {
-        //     $username = $base . $count++;
-        // }
-
-        // $data['user_name'] = $username;
-
-        // return $data;
-        // if ($data['account_status'] !== UserAccountStatus::BANED->value || $data['account_status'] !== UserAccountStatus::FROZEN->value) {
-        //     UserRestriction::create([
-        //         'user_id' => $data['id'],
-        //         'type' => $data['account_status'],
-        //         'reason' => '',
-        //         'starts_at' => now(),
-        //         'ends_at' => '',
-        //         'is_active' => 1,
-
-        //     ]);
-        // }
         if (!isEmpty($data['is_verified'])) {
             $data['email_verified_at'] = Carbon::now();
         } else {

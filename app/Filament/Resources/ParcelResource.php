@@ -2,31 +2,30 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\CurrencyType;
 use App\Enums\ParcelStatus;
 use App\Enums\SenderType;
 use App\Filament\Resources\ParcelResource\Pages;
 use App\Filament\Resources\ParcelResource\RelationManagers;
-use App\Models\BranchRoute;
-use App\Models\City;
-use App\Models\GuestUser;
-use App\Models\Parcel;
-use App\Models\PricingPoliciy;
-use App\Models\User;
+use App\Models\{User, PricingPolicy, Parcel, GuestUser, City, BranchRoute};
 use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\MorphToSelect;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Wizard;
+
 use Filament\Forms\Components\Wizard\Step;
+
+use Filament\Forms\Components\{
+    DatePicker,
+    Grid,
+    Select,
+    TextInput,
+    Toggle,
+    Wizard
+};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ParcelResource extends Resource
 {
@@ -40,23 +39,6 @@ class ParcelResource extends Resource
     {
         return $form
             ->schema([
-                // Grid::make(2)->schema([
-                // MorphToSelect::make('sender')
-                //     ->types([
-                //         MorphToSelect\Type::make(User::class)
-                //             ->titleAttribute('first_name'),
-                //         MorphToSelect\Type::make(GuestUser::class)
-                //             ->titleAttribute('first_name'),
-                //     ])
-                //     ->columnSpanFull()
-                //     ->required(),
-
-                // ]),
-                // TextInput::make('sender_type')
-                //     ->required(),
-                // Forms\Components\TextInput::make('route_id')
-                //     ->required()
-                //     ->numeric(),
                 Wizard::make([
                     Step::make('Choose Sender Type')
                         ->schema(
@@ -68,10 +50,8 @@ class ParcelResource extends Resource
                                             User::class => SenderType::AUTHENTICATED_USER->value,
                                             GuestUser::class => SenderType::GUEST_USER->value,
                                         ],
-                                        // SenderType::class
                                     )
                                     ->reactive()
-                                    ->default(SenderType::AUTHENTICATED_USER->value)
                                     ->required(),
                             ],
                         ),
@@ -100,7 +80,6 @@ class ParcelResource extends Resource
                                 TextInput::make('guest_first_name')
                                     ->label('First Name')
                                     ->required()
-                                    // ->visible(fn(callable $get) => $get('sender_type') === GuestUser::class)
                                     ->visible(self::getVisible()),
                                 TextInput::make('guest_last_name')
                                     ->label('Last Name')
@@ -129,7 +108,6 @@ class ParcelResource extends Resource
                                     ->required()
                                     ->maxLength(11)
                                     ->minLength(11)
-                                    // ->digits(11)
                                     ->ValidationMessages(
                                         [
                                             'required' => 'this filed was required',
@@ -168,30 +146,22 @@ class ParcelResource extends Resource
                                 ->required()
                                 ->numeric(),
                             Forms\Components\TextInput::make('cost')
-                                ->required()
+                                ->disabled()
                                 ->numeric()
                                 ->prefix('$'),
-                            // Forms\Components\TextInput::make('is_paid')
-                            //     ->required()
-                            //     ->numeric()
-                            //     ->default(0),
-
-                            // Forms\Components\TextInput::make('parcel_status')
-                            //     ->required(),
                             Select::make('parcel_status')
                                 ->label('Parcel Status')
                                 ->options(ParcelStatus::class)
                                 ->enum(ParcelStatus::class)
-                                ->default(ParcelStatus::PENDING),
-                            // Forms\Components\TextInput::make('tracking_number')
-                            //     ->required()
-                            //     ->maxLength(255),
+                                ->default(ParcelStatus::PENDING->value),
                             TextInput::make('tracking_number')
+                                ->label('Tracking Number : ')
+                                ->dehydrated(false)
                                 ->disabled(),
-                            Select::make('price_policy')
+                            Select::make('price_policy_id')
                                 ->label('Price Policy')
                                 ->options(function () {
-                                    return PricingPoliciy::select('id', 'price', 'price_unit', 'currency')
+                                    return PricingPolicy::select('id', 'price', 'price_unit', 'currency')
                                         ->get()
                                         ->mapWithKeys(function ($pricingPolicy) {
                                             return [$pricingPolicy->id => 'price : ' . $pricingPolicy->price . ', price unit : ' . $pricingPolicy->price_unit];
@@ -204,7 +174,6 @@ class ParcelResource extends Resource
                                     ->offIcon('heroicon-o-no-symbol')
                                     ->onColor('success')
                                     ->offColor('danger'),
-                                // ->tooltip('if you want to pay the parcel cost activate this toggle button!....'),
                             ]),
                         ]),
                 ])
@@ -216,42 +185,88 @@ class ParcelResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('sender_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('sender_type'),
-                Tables\Columns\TextColumn::make('route_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('reciver_name')
+                TextColumn::make('sender_name')
+                    ->label('Sender')
+                    ->getStateUsing(function ($record) {
+                        if ($record->sender_type === SenderType::AUTHENTICATED_USER) {
+
+                            $user = User::findOrFail($record->sender_id);
+                            return $user->user_name;
+                        } else if ($record->sender_type === SenderType::GUEST_USER) {
+                            $guestUser = GuestUser::findOrFail($record->sender_id);
+
+                            return $guestUser->first_name . $guestUser->last_name;
+                        }
+                        return '-';
+                    }),
+                TextColumn::make('sender_type')
+                    ->label('Sender Type')
+                    ->badge()
+                    ->color(
+                        fn($state) =>
+                        $state === SenderType::GUEST_USER ? 'success' : 'danger'
+                    ),
+                TextColumn::make('routeLabel')
+                    ->label('Route')
+                    ->getStateUsing(fn($record) => $record->routeLabel()),
+                TextColumn::make('reciver_name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('reciver_address')
+                TextColumn::make('reciver_address')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('reciver_phone')
+                TextColumn::make('reciver_phone')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('weight')
+                TextColumn::make('weight')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cost')
                     ->money()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('is_paid')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('parcel_status'),
-                Tables\Columns\TextColumn::make('tracking_number')
+                ToggleColumn::make('is_paid')
+                    ->onIcon('')
+                    ->offIcon('')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->disabled(),
+                TextColumn::make('parcel_status')
+                    ->label('Parcel Status')
+                    ->badge()
+                    ->color(fn(string $state) =>
+                    match ($state) {
+                        ParcelStatus::PENDING->value => 'danger',
+                        ParcelStatus::CONFIRMED->value => 'success',
+                        ParcelStatus::IN_TRANSIT->value => 'danger',
+                        ParcelStatus::READY_FOR_PICKUP->value => 'success',
+                        ParcelStatus::DELIVERED->value => 'secondary',
+                        ParcelStatus::CANCELED->value => 'primary',
+                        ParcelStatus::FAILED->value => 'secondary',
+                        ParcelStatus::RETURNED->value => 'danger',
+                        default => 'gray',
+                    }),
+                TextColumn::make('tracking_number')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('price_policy')
+                TextColumn::make('pricePolicy.policy_type')
+                    ->label('Policy Type')
+                    ->sortable(),
+                TextColumn::make('pricePolicy.price')
+                    ->label('Policy Price')
+                    ->getStateUsing(function ($record) {
+                        if ($record->pricePolicy) {
+                            $icon = CurrencyType::from($record->pricePolicy->currency)->currencyIcon();
+                            return $icon . ' ' . number_format($record->pricePolicy->price, 2);
+                        }
+                        return '-';
+                    })
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
             ])
             ->filters([
                 //
