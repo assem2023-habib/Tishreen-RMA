@@ -3,21 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TruckResource\Pages;
-use App\Filament\Resources\TruckResource\RelationManagers;
 use App\Models\Employee;
 use App\Models\Truck;
 use Filament\Forms;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\{Grid, Select, TextInput, Toggle};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Columns\{TextColumn, ToggleColumn};
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TruckResource extends Resource
 {
@@ -41,7 +35,7 @@ class TruckResource extends Resource
                         ->searchable()
                         ->preload()
                         ->nullable(),
-                    Forms\Components\TextInput::make('truck_number')
+                    TextInput::make('truck_number')
                         ->label('Truck National Number')
                         ->placeholder('please insert the truck identifier')
                         ->maxLength(9)

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('parcels', function (Blueprint $table) {
-            $table->foreignId('price_policy_id')->nullable()->constrained('pricing_policies');
+        Schema::table('parcel_shipment_logs', function (Blueprint $table) {
+            $table->foreignId('route_id')->constrained('parcel_shipment_logs')->cascadeOnDelete();
         });
     }
 
@@ -21,9 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('parcels', function (Blueprint $table) {
-            $table->dropForeign(['price_policy_id']);
-            $table->dropColumn(['price_policy_id']);
+        Schema::table('parcel_shipment_logs', function (Blueprint $table) {
+            $table->dropForeign(['route_id']);
+            $table->dropColumn(['route_id']);
         });
     }
 };

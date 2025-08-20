@@ -8,6 +8,7 @@ class ParcelShipmentLogs extends Model
 {
     protected $fillable = [
         'parcel_id',
+        'route_id',
         'pick_up_confirmed_by_emp_id',
         'delivery_confirmed_by_emp_id',
         'truck_id',
@@ -30,5 +31,9 @@ class ParcelShipmentLogs extends Model
     public function truck()
     {
         return $this->belongsTo(Truck::class);
+    }
+    public function route()
+    {
+        return $this->belongsTo(BranchRoute::class);
     }
 }

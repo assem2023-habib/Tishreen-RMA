@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Auth\TelegramOtpController;
 use App\Http\Controllers\Api\V1\Branche\BranchController;
 use App\Http\Controllers\Api\V1\CountryAndCity\CountryController;
 use Illuminate\Http\Request;
@@ -20,6 +21,11 @@ Route::prefix('v1')->group(function () {
     Route::post('new-password', [AuthController::class, 'verifyOtpAndResetPassword']); //accept the new password
     Route::post('verify-email', [AuthController::class, 'verifyEmailCode']);
     Route::post('confirm-email-otp', [AuthController::class, 'confirmEmailOtpAndVerifyEmail']);
+
+    //-----------------------------------OTP TELEGRAM----------------------------------
+
+    Route::post('/otp/send', [TelegramOtpController::class, 'send']);
+    Route::post('otp/verify', [TelegramOtpController::class, 'verify']);
 
     //-----------------------------------Country And City-------------------------------
 

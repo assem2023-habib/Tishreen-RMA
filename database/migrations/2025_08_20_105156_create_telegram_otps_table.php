@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('countries', function (Blueprint $table) {
+        Schema::create('telegram_otps', function (Blueprint $table) {
             $table->id();
-            $table->string('en_name');
-            $table->string('ar_name');
-            $table->string('code'); // SY
-            $table->string('domain_code'); //  +963
-            $table->string('image')->nullable();
+            $table->bigInteger('chat_id');
+            $table->string('otp');
+            $table->timestamp('expires_at');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('countries');
+        Schema::dropIfExists('telegram_otps');
     }
 };
