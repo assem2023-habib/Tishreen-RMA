@@ -42,4 +42,13 @@ return [ // Parcel messages
     'price_policy_id_required' => 'Price policy id is required.',
     'price_policy_id_numeric' => 'Price policy id must be numeric.',
     'price_policy_id_exists' => 'The selected price policy does not exist.',
+
+    'no_parcels_found' => 'no parcels found.',
+    'no_parcel_found' => 'no parcel found.',
+
+    'parcel_found' => 'parcel found.',
+    'parcels_found' => 'parcels found.',
+
+    'parcel_delete_successfuly' => 'parcel deleted successfuly',
+
 ];

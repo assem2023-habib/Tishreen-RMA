@@ -26,18 +26,6 @@ class StoreParcelRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
 
-    //      sender_id
-    // sender_type
-    // route_id
-    // reciver_name
-    // reciver_address
-    // reciver_phone
-    // weight
-    // cost
-    // is_paid
-    // parcel_status
-    // tracking_number
-    // price_policy_id
     public function rules(): array
     {
         return [
@@ -54,7 +42,6 @@ class StoreParcelRequest extends FormRequest
     public function messages()
     {
         return [
-            'sender_f' =>__('parcel.cost_min'),
             'sender_id.required' => __('parcel.sender_id_required'),
             'sender_id.numeric' => __('parcel.sender_id_numeric'),
             'sender_id.exists' => __('parcel.sender_id_exists'),

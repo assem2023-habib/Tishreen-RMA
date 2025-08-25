@@ -42,4 +42,12 @@ return [ // Parcel messages
     'price_policy_id_required' => 'معرف سياسة التسعير مطلوب.',
     'price_policy_id_numeric' => 'معرف سياسة التسعير يجب أن يكون رقمًا.',
     'price_policy_id_exists' => 'سياسة التسعير المحددة غير موجودة.',
+
+    'no_parcels_found' => 'لا يوجد طرود لعرضها.',
+    'no_parcel_found' => 'لا يوجد طرد للعرض.',
+
+    'parcel_found' => 'تم ايجاد الطرد.',
+    'parcels_found' => 'تم ايجاد الطرود',
+
+    'parcel_delete_successfuly' => 'تم حذف العنصر بنجاح',
 ];

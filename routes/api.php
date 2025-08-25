@@ -27,8 +27,11 @@ Route::prefix('v1')->group(function () {
 
     //-----------------------------------OTP TELEGRAM----------------------------------
 
-    Route::post('/otp/send', [TelegramOtpController::class, 'send']);
-    Route::post('otp/verify', [TelegramOtpController::class, 'verify']);
+    Route::prefix('telegram')->group(function () {
+        Route::post('otp/send', [TelegramOtpController::class, 'send']);
+        Route::post('otp/verify', [TelegramOtpController::class, 'verify']);
+        Route::post('webhook', [TelegramOtpController::class, ' handle']); // من اجل اعطاء معرف المحادثة ضمن بوت التلغرام
+    });
 
     //-----------------------------------Country And City-------------------------------
 

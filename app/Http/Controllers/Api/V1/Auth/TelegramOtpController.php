@@ -10,6 +10,7 @@ use App\Models\TelegramOtp;
 use App\Services\TelegramOtpService;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class TelegramOtpController extends Controller
 {
@@ -52,5 +53,35 @@ class TelegramOtpController extends Controller
             "Otp verfied!.",
 
         );
+    }
+    public function handle(Request $request)
+    {
+        $update = $request->all();
+        if (!isset($update['message'])) {
+            return $this->errorResponse(
+                'no content',
+                HttpStatus::NOT_CONTENT->value,
+            );
+        }
+        $chatId = $update['message']['chat']['id'];
+        $text = $update['message']['text'] ?? '';
+        if ($text === '/chatid') {
+            $this->sendMessage($chatId, "Your Chat ID is : " . $chatId);
+        } elseif ($text === '/start') {
+            $this->sendMessage($chatId, 'Welcom! Use /chatid to get your Chat ID.');
+        }
+
+        return $this->errorResponse(
+            'no content',
+            HttpStatus::NOT_CONTENT->value,
+        );
+    }
+    private function sendMessage($chatId, $text)
+    {
+        $token = config('services.telegram.botToken');
+        Http::get("https://api.telegram.org/bot{$token}/sendMessage", [
+            'chat_id' => $chatId,
+            'text' => $text,
+        ]);
     }
 }
