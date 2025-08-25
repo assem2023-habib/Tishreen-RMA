@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('parcel_authorizations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('parcels');
+            $table->foreignId('parcel_id')->constrained('parcels')->cascadeOnDelete();
             $table->foreignId('authorized_user_id');
             $table->enum('authorized_user_type', ['Authorized', 'Guest']);
             $table->string('authorized_code')->unique();

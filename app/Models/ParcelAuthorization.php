@@ -8,7 +8,7 @@ class ParcelAuthorization extends Model
 {
     protected $fillable = [
         'user_id',
-        'parcels',
+        'parcel_id',
         'authorized_user_id',
         'authorized_user_type',
         'authorized_code',

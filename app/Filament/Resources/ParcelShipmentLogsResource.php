@@ -31,9 +31,9 @@ class ParcelShipmentLogsResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'Parcels';
     protected static ?int $navigationSort = 3;
-    protected static ?int $fromBranch = null;
-    protected static ?int $toBranch = null;
-    protected static ?int $routeId = null;
+    // protected static ?int $fromBranch = null;
+    // protected static ?int $toBranch = null;
+    // protected static ?int $routeId = null;
     public static function form(Form $form): Form
     {
         return $form
@@ -42,21 +42,21 @@ class ParcelShipmentLogsResource extends Resource
                     ->label('Routes')
                     ->options(self::getBranchRoutes())
                     ->reactive()
-                    ->afterStateUpdated(function ($state) {
-                        if (!$state) {
-                            self::$fromBranch = null;
-                            self::$toBranch = null;
-                            self::$routeId = null;
-                        } else {
-                            $route = BranchRoute::find($state);
-                            if ($route) {
-                                self::$fromBranch = $route->from_branch_id;
-                                self::$toBranch = $route->to_branch_id;
-                                self::$routeId = $route->id;
-                                dump(self::$routeId);
-                            }
-                        }
-                    })
+                    // ->afterStateUpdated(function ($state) {
+                    //     if (!$state) {
+                    //         self::$fromBranch = null;
+                    //         self::$toBranch = null;
+                    //         self::$routeId = null;
+                    //     } else {
+                    //         $route = BranchRoute::find($state);
+                    //         if ($route) {
+                    //             self::$fromBranch = $route->from_branch_id;
+                    //             self::$toBranch = $route->to_branch_id;
+                    //             self::$routeId = $route->id;
+                    //             dump(self::$routeId);
+                    //         }
+                    //     }
+                    // })
                     ->live()
                     ->reactive(),
                 Select::make('parcel_id')

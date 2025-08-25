@@ -68,11 +68,14 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Users'),
                 NavigationGroup::make()
                     ->label('Employees'),
-
+                NavigationGroup::make()
+                    ->label('Parcels'),
                 NavigationGroup::make()
                     ->label('Geographical Data'),
                 NavigationGroup::make()
                     ->label('Transport'),
+                NavigationGroup::make()
+                    ->label('Rates and comments'),
                 NavigationGroup::make()
                     ->label('Support & Information')
             ]);

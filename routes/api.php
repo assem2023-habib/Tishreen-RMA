@@ -2,15 +2,18 @@
 
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\TelegramOtpController;
+use App\Http\Controllers\Api\V1\Branche\BranchByCityController;
 use App\Http\Controllers\Api\V1\Branche\BranchController;
 use App\Http\Controllers\Api\V1\CountryAndCity\CountryController;
+use App\Http\Controllers\Api\V1\PricingPolicy\PricingPolicyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api');
+
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:api');
 
 Route::prefix('v1')->group(function () {
 
@@ -35,8 +38,13 @@ Route::prefix('v1')->group(function () {
     //----------------------------------Branches-------------------------------------
 
     Route::get('/branches', BranchController::class)->name('branches.index');
+    Route::get('branches/{cityId}', BranchByCityController::class)->name('branches.show');
 
+    //----------------------------------PricingPolicy---------------------------------
 
+    Route::get('/pricing-policy', [PricingPolicyController::class])->name('pricingPolicy.index');
+
+    //----------------------------------------------------------------------------------------------------------------------------
 
     Route::middleware('auth:api')->group(function () {
         Route::get('logout', [AuthController::class, 'logout']);

@@ -22,6 +22,8 @@ class RateResource extends Resource
     protected static ?string $model = Rate::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-hand-thumb-up';
+    protected static ?string $navigationGroup = 'Rates and comments';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

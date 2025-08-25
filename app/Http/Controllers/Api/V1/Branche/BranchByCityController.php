@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Branche;
 
+use App\Enums\HttpStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Trait\ApiResponse;
@@ -18,6 +19,10 @@ class BranchByCityController extends Controller
         if (!$branches->isEmpty())
             return $this->successResponse(
                 ['branches' => $branches],
+                message: "Get all branches by city $cityId",
             );
+        return $this->errorResponse(
+            'error',
+        );
     }
 }

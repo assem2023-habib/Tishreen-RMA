@@ -27,6 +27,8 @@ class ParcelAuthorizationResource extends Resource
     protected static ?string $model = ParcelAuthorization::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Parcels';
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {
@@ -59,19 +61,22 @@ class ParcelAuthorizationResource extends Resource
                                             GuestUser::class => SenderType::GUEST_USER->value,
                                         ],
                                     )
+                                    ->default(User::class)
                                     ->reactive()
                                     ->required(),
                             ],
                         ),
-                    Step::make('Sender Authenticated Details')
-                        ->label('Sender Details')
+                    Step::make('Reciver Authenticated Details')
+                        ->label('Reciver Details')
                         ->columns(1)
                         ->schema(
                             [
                                 Select::make('authorized_user_id')
                                     ->label("Reciver")
-                                    ->options(function () {
+                                    ->options(function (callable $get) {
+                                        $senderId = $get('user_id');
                                         return User::select('id', 'user_name', 'email')
+                                            ->whereNot('id', $senderId)
                                             ->get()
                                             ->mapWithKeys(function ($user) {
                                                 return [$user->id => $user->user_name];
@@ -79,7 +84,7 @@ class ParcelAuthorizationResource extends Resource
                                     })
                             ],
                         )
-                        ->visible(fn(callable $get) => $get('sender_type') === User::class),
+                        ->visible(self::getVisibleForUser()),
                     Step::make('Sender Guest Details')
                         ->label('Sender Details')
                         ->columns(2)
@@ -128,7 +133,7 @@ class ParcelAuthorizationResource extends Resource
                             ],
                         )
                         ->visible(self::getVisible()),
-                    Step::make('')
+                    Step::make('Delegation Data')
                         ->schema([
                             TextInput::make('parcels')
                                 ->required()
@@ -216,6 +221,10 @@ class ParcelAuthorizationResource extends Resource
     }
     private static function getVisible()
     {
-        return fn(callable $get) => $get('sender_type') === GuestUser::class;
+        return fn(callable $get) => $get('authorized_user_type') === GuestUser::class;
+    }
+    private static function getVisibleForUser()
+    {
+        return fn(callable $get) => $get('authorized_user_type') === User::class;
     }
 }
