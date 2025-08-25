@@ -34,7 +34,7 @@ class ParcelResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-cube';
     protected static ?string $navigationGroup = 'Parcels';
     protected static ?int $navigationSort = 1;
-
+    protected static bool $shouldRegisterNavigation = true;
     public static function form(Form $form): Form
     {
         return $form
@@ -208,7 +208,7 @@ class ParcelResource extends Resource
                     ),
                 TextColumn::make('routeLabel')
                     ->label('Route')
-                    ->getStateUsing(fn($record) => $record->routeLabel()),
+                    ->getStateUsing(fn($record) => $record->routeLabel),
                 TextColumn::make('reciver_name')
                     ->searchable(),
                 TextColumn::make('reciver_address')

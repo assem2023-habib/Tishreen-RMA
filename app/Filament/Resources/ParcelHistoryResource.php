@@ -21,7 +21,7 @@ class ParcelHistoryResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Parcels';
     protected static ?int $navigationSort = 2;
-
+    protected static bool $shouldRegisterNavigation = true;
     public static function form(Form $form): Form
     {
         return $form

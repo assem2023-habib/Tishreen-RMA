@@ -27,7 +27,7 @@ class BranchRouteResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
     protected static ?string $navigationGroup = "Transport";
     protected static ?int $navigationSort = 2;
-
+    protected static bool $shouldRegisterNavigation = true;
     public static function form(Form $form): Form
     {
         return $form

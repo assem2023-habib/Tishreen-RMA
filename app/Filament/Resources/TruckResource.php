@@ -20,7 +20,7 @@ class TruckResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-truck';
     protected static ?string $navigationGroup = 'Transport';
     protected static ?int $navigationSort = 1;
-
+    protected static bool $shouldRegisterNavigation = true;
     public static function form(Form $form): Form
     {
         return $form

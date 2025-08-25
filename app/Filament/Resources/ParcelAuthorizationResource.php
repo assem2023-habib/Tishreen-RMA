@@ -2,16 +2,20 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\AuthorizationStatus;
 use App\Enums\SenderType;
 use App\Filament\Resources\ParcelAuthorizationResource\Pages;
 use App\Filament\Resources\ParcelAuthorizationResource\RelationManagers;
 use App\Models\City;
 use App\Models\GuestUser;
+use App\Models\Parcel;
 use App\Models\ParcelAuthorization;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Components\{Wizard, Select, TextInput};
 use Filament\Forms\Form;
@@ -29,7 +33,7 @@ class ParcelAuthorizationResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Parcels';
     protected static ?int $navigationSort = 4;
-
+    protected static bool $shouldRegisterNavigation = true;
     public static function form(Form $form): Form
     {
         return $form
@@ -135,23 +139,42 @@ class ParcelAuthorizationResource extends Resource
                         ->visible(self::getVisible()),
                     Step::make('Delegation Data')
                         ->schema([
-                            TextInput::make('parcels')
-                                ->required()
-                                ->numeric(),
-                            // TextInput::make('authorized_user_id')
-                            //     ->required()
-                            //     ->numeric(),
-                            // TextInput::make('authorized_user_type')
-                            //     ->required(),
-                            TextInput::make('authorized_code')
-                                ->required()
-                                ->maxLength(255),
-                            TextInput::make('authorized_status')
-                                ->required(),
-                            DateTimePicker::make('generated_at')
-                                ->required(),
-                            DateTimePicker::make('expired_at'),
-                            DateTimePicker::make('used_at'),
+                            Grid::make()
+                                ->schema([
+                                    Select::make('parcel_id')
+                                        ->required()
+                                        ->options(function (callable $get) {
+                                            $sender_id = $get('user_id');
+                                            return Parcel::select('id', 'sender_id', 'sender_type', 'route_id', 'reciver_name')
+                                                ->where('sender_id', $sender_id)
+                                                // ->with('route.fromBranch', 'route.toBranch')
+                                                ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
+                                                ->get()
+                                                ->mapWithKeys(
+                                                    function ($parcel) {
+                                                        return [$parcel->id => 'reciver name: ' . $parcel->reciver_name . ' , route : ' . $parcel->routeLabel];
+                                                    }
+                                                );
+                                        }),
+                                ]),
+                            Grid::make(2)
+                                ->schema([
+                                    TextInput::make('authorized_code')
+                                        ->disabled(),
+                                    Select::make('authorized_status')
+                                        ->label('Authorized Status')
+                                        ->options(AuthorizationStatus::values())
+                                        ->default(AuthorizationStatus::PENDING)
+                                        ->required(),
+                                ]),
+                            Grid::make(3)->schema([
+                                DateTimePicker::make('generated_at')
+                                    ->default(now())
+                                    ->required(),
+                                DateTimePicker::make('expired_at')
+                                    ->default(state: fn() => Carbon::now()->addDays(7)),
+                                DateTimePicker::make('used_at'),
+                            ]),
                             TextInput::make('cancellation_reason')
                                 ->maxLength(255)
                                 ->default(null),
@@ -166,30 +189,40 @@ class ParcelAuthorizationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
+                TextColumn::make('user.user_name')
+                    ->sortable(),
+                TextColumn::make('parcel.reciver_name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('parcels')
+                TextColumn::make('authorizedUser.first_name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('authorized_user_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('authorized_user_type'),
-                Tables\Columns\TextColumn::make('authorized_code')
+                TextColumn::make('authorized_user_type'),
+                TextColumn::make('authorized_code')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('authorized_status'),
-                Tables\Columns\TextColumn::make('generated_at')
+                TextColumn::make('authorized_status')
+                    ->sortable()
+                    ->badge()
+                    ->color(
+                        fn($state) =>
+                        match ($state) {
+                            AuthorizationStatus::PENDING->value => 'danger',
+                            AuthorizationStatus::ACTIVE->value => 'success',
+                            AuthorizationStatus::EXPIRED->value => 'danger',
+                            AuthorizationStatus::USED->value => 'danger',
+                            AuthorizationStatus::CANCELLED->value => 'success',
+                            default => 'gray',
+                        }
+                    ),
+                TextColumn::make('generated_at')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('expired_at')
+                TextColumn::make('expired_at')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('used_at')
+                TextColumn::make('used_at')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('cancellation_reason')
-                    ->searchable(),
             ])
             ->filters([
                 //

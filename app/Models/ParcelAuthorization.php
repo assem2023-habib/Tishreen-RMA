@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\GuestUser;
+use App\Models\User;
 
 class ParcelAuthorization extends Model
 {
@@ -18,6 +20,7 @@ class ParcelAuthorization extends Model
         'used_at',
         'cancellation_reason',
     ];
+    public $timestamps = false;
     public function sender()
     {
         return $this->morphTo();
@@ -28,6 +31,10 @@ class ParcelAuthorization extends Model
     }
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    public function parcel()
+    {
+        return $this->belongsTo(Parcel::class);
     }
 }

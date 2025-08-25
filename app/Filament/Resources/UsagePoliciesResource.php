@@ -23,7 +23,7 @@ class UsagePoliciesResource extends Resource
     protected static ?string $navigationGroup = "Support & Information";
 
     protected static ?int $navigationSort = 1;
-
+    protected static bool $shouldRegisterNavigation = true;
     public static function form(Form $form): Form
     {
         return $form
@@ -70,7 +70,7 @@ class UsagePoliciesResource extends Resource
                     Tables\Actions\ViewAction::make()
                         ->label('view ploicy'),
                     Tables\Actions\DeleteAction::make()
-                    ->label('delete policy'),
+                        ->label('delete policy'),
                 ]),
             ])
             ->bulkActions([

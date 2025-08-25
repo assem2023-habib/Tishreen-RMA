@@ -38,7 +38,7 @@ class Parcel extends Model
     {
         return $this->belongsTo(BranchRoute::class);
     }
-    public function routeLabel()
+    public function getRouteLabelAttribute()
     {
         if ($this->route && $this->route->fromBranch && $this->route->toBranch)
             return $this->route->fromBranch->branch_name . '-->' . $this->route->toBranch->branch_name;
@@ -55,6 +55,10 @@ class Parcel extends Model
     public function pricePolicy()
     {
         return $this->belongsTo(PricingPolicy::class);
+    }
+    public function parcelAuthorization()
+    {
+        return $this->hasMany(ParcelAuthorization::class);
     }
     public function rates()
     {

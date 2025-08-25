@@ -25,7 +25,7 @@ class BranchRouteDaysResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
     protected static ?string $navigationGroup = "Transport";
     protected static ?int $navigationSort = 3;
-
+    protected static bool $shouldRegisterNavigation = true;
 
     public static function form(Form $form): Form
     {

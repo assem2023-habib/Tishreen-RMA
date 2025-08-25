@@ -34,6 +34,7 @@ class ParcelShipmentLogsResource extends Resource
     // protected static ?int $fromBranch = null;
     // protected static ?int $toBranch = null;
     // protected static ?int $routeId = null;
+    protected static bool $shouldRegisterNavigation = true;
     public static function form(Form $form): Form
     {
         return $form

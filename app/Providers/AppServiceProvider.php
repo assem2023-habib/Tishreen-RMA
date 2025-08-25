@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\SenderType;
 use App\Models\{GuestUser, Parcel, User, ParcelHistory};
 use App\Observers\{ParcelObserver, ParcelObserverHistory, UserObserve};
 use Carbon\CarbonInterval;
@@ -21,6 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Relation::morphMap([
+            SenderType::GUEST_USER->value => \App\Models\GuestUser::class,
+            SenderType::AUTHENTICATED_USER->value => \App\Models\User::class,
+        ]);
+
         Passport::loadKeysFrom(base_path('app/secrets/oauth'));
 
         Passport::tokensExpireIn(CarbonInterval::year(1));
