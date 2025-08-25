@@ -9,7 +9,7 @@ trait ApiResponse
     protected function successResponse($data = [], string $message = 'Success', int $code = HttpStatus::OK->value)
     {
         return response()->json([
-            'status'  => 'success',
+            'status'  => true,
             'message' => $message,
             'data'    => $data,
         ], $code);
@@ -18,7 +18,7 @@ trait ApiResponse
     protected function errorResponse(string $message = 'Error', int $code = HttpStatus::INTERNET_SERVER_ERROR->value, $errors = null)
     {
         $response = [
-            'status'  => 'error',
+            'status'  => false,
             'message' => $message,
         ];
 

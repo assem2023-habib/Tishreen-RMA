@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests\Api\V1\Auth;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\HttpStatus;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class RegisterRequest extends FormRequest
@@ -17,24 +18,24 @@ class RegisterRequest extends FormRequest
     {
         throw new HttpResponseException(
             response()->json([
-                'status' => 'error',
+                'status' => false,
                 'message' => __('auth.validation_failed'),
                 'errors' => $validator->errors(),
-            ], 422)
+            ], HttpStatus::UNPROCESSABLE_ENTITY->value,)
         );
     }
     public function rules(): array
     {
         return [
-            'first_name'        => 'required|string|max:255|regex:/^[A-Za-z\s]+$/',
-            'last_name'         => 'required|string|max:255|regex:/^[A-Za-z\s]+$/',
+            'first_name'        => 'required|string|max:255',
+            'last_name'         => 'required|string|max:255',
             'email'             => 'required|email|unique:users,email',
-            'password'          => 'required|string|min:8|confirmed|regex:/^[A-Za-z0-9@#$%^&*!]+$/',
+            'password'          => 'required|string|min:8|confirmed',
             'phone'             => 'required|unique:users',
             'birthday'          => 'required',
             'city_id'           => 'required|exists:cities,id',
-            'national_number'   => 'required|digits:11|regex:/^[0-9]+$/|unique:users,national_number',
-            
+            'national_number'   => 'required|digits:11|unique:users,national_number',
+
 
         ];
     }
@@ -54,7 +55,7 @@ class RegisterRequest extends FormRequest
             'city_id.exists' => __('auth.city_id_exists'),
             'national_number.required' => __('auth.national_number_required'),
             'national_number.unique' => __('auth.national_number_unique'),
-            
+
 
         ];
     }
