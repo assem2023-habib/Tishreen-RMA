@@ -2,12 +2,16 @@
 
 namespace App\Services;
 
+use App\Enums\HttpStatus;
 use App\Enums\SenderType;
 use App\Models\GuestUser;
 use App\Models\ParcelAuthorization;
+use App\Trait\ApiResponse;
+use Illuminate\Support\Facades\Auth;
 
 class AuthorizationService
 {
+    use ApiResponse;
     public function getAllAuthorization($userId)
     {
         $authorizations = ParcelAuthorization::select(
@@ -30,10 +34,32 @@ class AuthorizationService
 
     public function createAuthorization($data)
     {
+        $existsQuery = ParcelAuthorization::where('user_id', Auth::user()->id)
+            ->where('parcel_id', $data['parcel_id']);
+
+        if (!empty($data['authorized_user_id'])) {
+            $existsQuery->where('authorized_user_id', $data['authorized_user_id'])
+                ->where('authorized_user_type', SenderType::AUTHENTICATED_USER->value);
+        } elseif (!empty($data['authorized_guest'])) {
+            // نفترض عنصر واحد في المصفوفة
+            $guestPhone = $data['authorized_guest']['phone'] ?? null;
+            if ($guestPhone) {
+                $guest = GuestUser::where('phone', $guestPhone)->first();
+                if ($guest) {
+                    $existsQuery->where('authorized_user_id', $guest->id)
+                        ->where('authorized_user_type', SenderType::GUEST_USER->value);
+                }
+            }
+        }
+
+        if ($existsQuery->exists()) {
+            return null;
+        }
         if (!empty($data['authorized_user_id']))
             return $this->createAuthorizationForAuthenticatedUser($data);
         elseif (!empty($data['authorized_guest']))
             return $this->createAuthorizationForGuestedUser($data);
+        return null;
     }
     public function showAuthorization(string $id)
     {
@@ -101,7 +127,7 @@ class AuthorizationService
     private function createAuthorizationForAuthenticatedUser($data)
     {
         $authorizationDetails = ParcelAuthorization::create([
-            'user_id' => $data['user_id'],
+            'user_id' => Auth::user()->id,
             'parcel_id' => $data['parcel_id'],
             'authorized_user_id' => $data['authorized_user_id'],
             'authorized_user_type' => SenderType::AUTHENTICATED_USER->value,
@@ -123,7 +149,7 @@ class AuthorizationService
             'birthday' => $guestData['birthday'],
         ])->id;
         $authorization = ParcelAuthorization::create([
-            'user_id' => $data['user_id'],
+            'user_id' => Auth::user()->id,
             'parcel_id' => $data['parcel_id'],
             'authorized_user_id' => $guestId,
             'authorized_user_type' => SenderType::GUEST_USER->value,

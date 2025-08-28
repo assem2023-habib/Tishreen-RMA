@@ -6,7 +6,7 @@ use App\Enums\HttpStatus;
 use App\Trait\ApiResponse;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Client\HttpClientException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreAuthorizationRequest extends FormRequest
 {
@@ -27,7 +27,7 @@ class StoreAuthorizationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|numeric|exists:users,id|different:authorized_user_id',
+            // 'user_id' => 'required|numeric|exists:users,id|different:authorized_user_id',
             'parcel_id' => 'required|numeric|exists:parcels,id',
             'authorized_user_id' => 'sometimes|numeric|exists:users,id|different:user_id',
 
@@ -46,10 +46,10 @@ class StoreAuthorizationRequest extends FormRequest
     public function messages()
     {
         return [
-            'user_id.required' => __('authorization.user_id_required'),
-            'user_id.numeric' => __('authorization.user_id_numeric'),
-            'user_id.exists' => __('authorization.user_id_exists'),
-            'user_id.different' => __('authorization.user_id_different'),
+            // 'user_id.required' => __('authorization.user_id_required'),
+            // 'user_id.numeric' => __('authorization.user_id_numeric'),
+            // 'user_id.exists' => __('authorization.user_id_exists'),
+            // 'user_id.different' => __('authorization.user_id_different'),
 
             'parcel_id.required' => __('authorization.parcel_id_required'),
             'parcel_id.numeric' => __('authorization.parcel_id_numeric'),
@@ -93,7 +93,7 @@ class StoreAuthorizationRequest extends FormRequest
     }
     public function failedValidation(Validator $validator)
     {
-        throw new HttpClientException(
+        throw new HttpResponseException(
             $this->errorResponse(
                 "cannot create Authorization",
                 HttpStatus::BAD_REQUEST->value,

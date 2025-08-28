@@ -3,12 +3,14 @@
 namespace App\Http\Requests\Api\V1\Authorization;
 
 use App\Enums\HttpStatus;
+use App\Trait\ApiResponse;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Client\HttpClientException;
 
 class UpdateAuthorizationRequest extends FormRequest
 {
+    use ApiResponse;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -28,8 +30,8 @@ class UpdateAuthorizationRequest extends FormRequest
             'user_id' => 'sometimes|numeric|exists:users,id|different:authorized_user_id',
             'parcel_id' => 'sometimes|numeric|exists:parcels,id',
 
-            'authorized_user_id' => 'sometimes|numeric|exists:users,id|different:user_id|prohibited_with:authorized_guest',
-            'authorized_guest' => 'sometimes|array|prohibited_with:authorized_user_id',
+            'authorized_user_id' => 'sometimes|numeric|exists:users,id|different:user_id',
+            'authorized_guest' => 'sometimes|array',
 
             'authorized_guest.*.first_name' => 'required_with:authorized_guest|string|max:50',
             'authorized_guest.*.last_name' => 'sometimes|string|max:50',
@@ -56,10 +58,10 @@ class UpdateAuthorizationRequest extends FormRequest
             'authorized_user_id.numeric' => __('authorization.authorized_user_id_numeric'),
             'authorized_user_id.exists' => __('authorization.authorized_user_id_exists'),
             'authorized_user_id.different' => __('authorization.authorized_user_id_different'),
-            'authorized_user_id.prohibited_with' => __('authorization.authorized_user_id_prohibited_with'),
+
 
             'authorized_guest.array' => __('authorization.authorized_guest_array'),
-            'authorized_guest.prohibited_with' => __('authorization.authorized_guest_prohibited_with'),
+
 
             'authorized_guest.*.first_name.required_with' => __('authorization.authorized_guest_first_name_required'),
             'authorized_guest.*.first_name.string' => __('authorization.authorized_guest_first_name_string'),
@@ -95,7 +97,7 @@ class UpdateAuthorizationRequest extends FormRequest
     {
         throw new HttpClientException(
             $this->errorResponse(
-                "cannot update Authorization",
+                __('authorization.cannot_update_authorization'),
                 HttpStatus::BAD_REQUEST->value,
                 $validator->errors()
             )

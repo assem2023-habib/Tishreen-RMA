@@ -16,6 +16,9 @@ return [
     'authorized_user_id_exists' => 'The authorized user does not exist.',
     'authorized_user_id_different' => 'The authorized user must be different from the parcel owner.',
 
+    'authorization_already_exists' => 'Authorization already exists for this parcel and user.',
+    'create_authorization_success' => 'Authorization created successfully',
+
     // Authorized Guest
     'authorized_guest_array' => 'Authorized guest must be an array.',
 
@@ -52,4 +55,41 @@ return [
 
     'guest_birthday_date' => 'Guest birthday must be a valid date.',
     'guest_birthday_before_today' => 'Guest birthday must be a date before today.',
+
+    // Guest user fields
+
+    'authorized_guest_first_name_required' => 'The first name of the guest is required.',
+    'authorized_guest_first_name_string' => 'The first name of the guest must be a string.',
+    'authorized_guest_first_name_max' => 'The first name of the guest may not be greater than 50 characters.',
+
+    'authorized_guest_last_name_string' => 'The last name of the guest must be a string.',
+    'authorized_guest_last_name_max' => 'The last name of the guest may not be greater than 50 characters.',
+
+    'authorized_guest_phone_required' => 'The phone number of the guest is required.',
+    'authorized_guest_phone_string' => 'The phone number of the guest must be a string.',
+    'authorized_guest_phone_min' => 'The phone number of the guest must be at least 6 characters.',
+    'authorized_guest_phone_max' => 'The phone number of the guest may not be greater than 20 characters.',
+    'authorized_guest_phone_regex' => 'The phone number of the guest format is invalid.',
+
+    'authorized_guest_address_string' => 'The address of the guest must be a string.',
+    'authorized_guest_address_max' => 'The address of the guest may not be greater than 255 characters.',
+
+    'authorized_guest_national_number_string' => 'The national number of the guest must be a string.',
+    'authorized_guest_national_number_max' => 'The national number of the guest may not be greater than 20 characters.',
+
+    'authorized_guest_city_id_numeric' => 'The city ID of the guest must be a number.',
+    'authorized_guest_city_id_exists' => 'The selected city does not exist.',
+
+    'authorized_guest_birthday_date' => 'The birthday of the guest must be a valid date.',
+    'authorized_guest_birthday_before' => 'The birthday of the guest must be a date before today.',
+
+    // Other fields
+    'used_at_date' => 'The used date must be a valid date.',
+    'cancellation_reason_string' => 'The cancellation reason must be a string.',
+
+    'cannot_update_authorization' => 'Cannot update the authorization.',
+    'authorization_updated_successfully' => 'Authorization updated successfully.',
+    'cannot_create_authorization' => 'Cannot create the authorization.',
+    'no_authorizations_found' => 'No authorizations were found.',
+    'authorization_deleted_successfully' => 'Authorization deleted successfully.',
 ];

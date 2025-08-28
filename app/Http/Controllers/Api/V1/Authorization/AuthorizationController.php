@@ -41,16 +41,17 @@ class AuthorizationController extends Controller
     {
         $data = $request->validated();
         $authorization = $this->authorizationService->createAuthorization($data);
-        if (empty($authorization))
+        if (!$authorization)
             return $this->errorResponse(
-                'cannot create authorization',
-                HttpStatus::FORBIDDEN->value,
+                __('authorization.authorization_already_exists'),
+                HttpStatus::CONFLICT->value,
             );
         return $this->successResponse(
             [
                 'authorization' => $authorization->fresh()
             ],
-            'create authorization success',
+            __('authorization.create_authorization_success')
+
         );
     }
 
