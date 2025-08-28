@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Enums\SenderType;
-use App\Models\{GuestUser, Parcel, User, ParcelHistory};
-use App\Observers\{ParcelObserver, ParcelObserverHistory, UserObserve};
+use App\Models\{GuestUser, Parcel, ParcelAuthorization, User, ParcelHistory};
+use App\Observers\{ParcelObserver, ParcelObserverHistory, UserObserve, ParcelAuthorizationObserver};
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
@@ -36,5 +36,6 @@ class AppServiceProvider extends ServiceProvider
 
         User::observe(UserObserve::class);
         Parcel::observe(ParcelObserverHistory::class);
+        ParcelAuthorization::observe(ParcelAuthorizationObserver::class);
     }
 }

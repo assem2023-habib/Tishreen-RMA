@@ -14,11 +14,11 @@ class BranchByCityController extends Controller
     public function __invoke($cityId)
     {
         $branches = Branch::select('id', 'address', 'phone', 'email', 'latitude', 'longitude', 'city_id')
-            ->where('id', $cityId)
+            ->where('city_id', $cityId)
             ->get();
         if (!$branches->isEmpty())
             return $this->successResponse(
-                ['branches' => $branches],
+                ['branches' => $branches->fresh()],
                 message: "Get all branches by city $cityId",
             );
         return $this->errorResponse(

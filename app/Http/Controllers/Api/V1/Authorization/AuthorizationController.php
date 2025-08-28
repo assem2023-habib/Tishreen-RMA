@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Authorization;
 use App\Enums\HttpStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Authorization\StoreAuthorizationRequest;
+use App\Http\Requests\Api\V1\Authorization\UpdateAuthorizationRequest;
 use App\Services\AuthorizationService;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
@@ -20,14 +21,16 @@ class AuthorizationController extends Controller
     public function index()
     {
         $authorizations =  $this->authorizationService->getAllAuthorization(Auth::user()->id);
-        if (empty($authorizations))
+        if ($authorizations->isEmpty())
             return $this->errorResponse(
-                'no authorizations found',
+                __('authorization.no_authorizations_granted_by_you'),
                 HttpStatus::FORBIDDEN->value,
             );
         return $this->successResponse(
-            ['authorizations' => $authorizations],
-            'get all authorizations for user',
+            [
+                'authorizations' => $authorizations->load('parcel', 'authorizedUser')
+            ],
+            message: __('authorization.authorizations_retrieved_successfully'),
         );
     }
 
@@ -38,13 +41,15 @@ class AuthorizationController extends Controller
     {
         $data = $request->validated();
         $authorization = $this->authorizationService->createAuthorization($data);
-        if (empty($authorizations))
+        if (empty($authorization))
             return $this->errorResponse(
                 'cannot create authorization',
                 HttpStatus::FORBIDDEN->value,
             );
         return $this->successResponse(
-            ['authorizations' => $authorization],
+            [
+                'authorization' => $authorization->fresh()
+            ],
             'create authorization success',
         );
     }
@@ -54,23 +59,38 @@ class AuthorizationController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
+        $authorization = $this->authorizationService->showAuthorization($id);
+        if (empty($authorization)) {
+            return $this->errorResponse(
+                __('authorization.no_authorization_found'),
+                HttpStatus::NOT_FOUND->value
+            );
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        return $this->successResponse(
+            ['authorization' => $authorization],
+            __('authorization.authorization_retrieved_successfully')
+        );
     }
-
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateAuthorizationRequest $request, string $id)
     {
-        //
+        $data = $request->validated();
+        $authorization = $this->authorizationService->updateAuthorization($id, $data);
+
+        if (!$authorization) {
+            return $this->errorResponse(
+                __('authorization.cannot_update_authorization'),
+                HttpStatus::FORBIDDEN->value
+            );
+        }
+
+        return $this->successResponse(
+            ['authorization' => $authorization],
+            __('authorization.authorization_updated_successfully')
+        );
     }
 
     /**
@@ -78,6 +98,18 @@ class AuthorizationController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $deleted = $this->authorizationService->deleteAuthorization($id);
+
+        if (!$deleted) {
+            return $this->errorResponse(
+                __('authorization.no_authorizations_found'),
+                HttpStatus::NOT_FOUND->value
+            );
+        }
+
+        return $this->successResponse(
+            [],
+            __('authorization.authorization_deleted_successfully')
+        );
     }
 }

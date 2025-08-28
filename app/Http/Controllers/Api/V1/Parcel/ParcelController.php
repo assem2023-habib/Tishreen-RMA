@@ -81,6 +81,7 @@ class ParcelController extends Controller
     public function update(UpdateParcelRequest $request, string $id)
     {
         $data = $request->validated();
+
         $parcel = $this->parcelService->updateParcel($id, $data);
         if (empty($parcel)) {
             return $this->errorResponse(

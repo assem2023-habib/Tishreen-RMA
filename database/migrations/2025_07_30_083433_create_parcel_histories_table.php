@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('parcel_histories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('parcel_id')->constrained('parcels')->cascadeOnDelete();
+            $table->foreignId('parcel_id')->constrained('parcels');
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->json('old_data')->nullable();
             $table->json('new_data')->nullable();

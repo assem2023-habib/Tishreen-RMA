@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\TelegramOtpController;
+use App\Http\Controllers\Api\V1\Authorization\AuthorizationController;
 use App\Http\Controllers\Api\V1\Branche\BranchByCityController;
 use App\Http\Controllers\Api\V1\Branche\BranchController;
 use App\Http\Controllers\Api\V1\CountryAndCity\CountryController;
@@ -46,7 +47,7 @@ Route::prefix('v1')->group(function () {
 
     //----------------------------------PricingPolicy---------------------------------
 
-    Route::get('/pricing-policy', [PricingPolicyController::class])->name('pricingPolicy.index');
+    Route::get('/pricing-policy', PricingPolicyController::class)->name('pricingPolicy.index');
 
 
     //----------------------------------------------------------------------------------------------------------------------------
@@ -62,5 +63,8 @@ Route::prefix('v1')->group(function () {
             ->only(['index', 'show', 'store', 'update', 'destroy']);
 
         //---------------------------------   --------------------------------------------
+
+        Route::resource('/authorization', AuthorizationController::class)
+            ->only(['index', 'show', 'store', 'update', 'destroy']);
     });
 })->middleware('throttle:6');
