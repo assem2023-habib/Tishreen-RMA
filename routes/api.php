@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Auth\TelegramOtpController;
 use App\Http\Controllers\Api\V1\Branche\BranchByCityController;
 use App\Http\Controllers\Api\V1\Branche\BranchController;
 use App\Http\Controllers\Api\V1\CountryAndCity\CountryController;
+use App\Http\Controllers\Api\V1\Parcel\ParcelController;
 use App\Http\Controllers\Api\V1\PricingPolicy\PricingPolicyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,7 +31,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('telegram')->group(function () {
         Route::post('otp/send', [TelegramOtpController::class, 'send']);
         Route::post('otp/verify', [TelegramOtpController::class, 'verify']);
-        Route::post('webhook', [TelegramOtpController::class, ' handle']); // من اجل اعطاء معرف المحادثة ضمن بوت التلغرام
+        Route::post('webhook', [TelegramOtpController::class, 'handle']); // من اجل اعطاء معرف المحادثة ضمن بوت التلغرام
     });
 
     //-----------------------------------Country And City-------------------------------
@@ -47,11 +48,19 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/pricing-policy', [PricingPolicyController::class])->name('pricingPolicy.index');
 
+
     //----------------------------------------------------------------------------------------------------------------------------
 
     Route::middleware('auth:api')->group(function () {
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
+        //----------------------------------Parcel----------------------------------------
+
+        Route::resource('/parcel', ParcelController::class)
+            ->only(['index', 'show', 'store', 'update', 'destroy']);
+
+        //---------------------------------   --------------------------------------------
     });
 })->middleware('throttle:6');

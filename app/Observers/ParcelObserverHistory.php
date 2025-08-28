@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Enums\OperationTypes;
 use App\Models\PricingPolicy;
 use App\Models\{Parcel, ParcelHistory};
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class ParcelObserverHistory
@@ -19,8 +20,19 @@ class ParcelObserverHistory
         $price = PricingPolicy::select('id', 'price')->where('id', $parcel->price_policy_id)->first();
         $parcel->cost = $this->calculateCostByPricePolicy($parcel->weight, $price->price);
     }
-    public function updated(Parcel $parcel)
+    public function updating(Parcel $parcel)
     {
+        if (!isset($parcel->weight)) {
+            return;
+        }
+        $pricePolicyId = $parcel->price_policy_id ?? Parcel::select('id', 'price_policy_id')->find($parcel->id)->price_policy_id;
+        if ($pricePolicyId) {
+            $pricePolicy = PricingPolicy::select('id', 'price')->find($pricePolicyId);
+            if ($pricePolicy) {
+                $parcel->cost = $this->calculateCostByPricePolicy($parcel->weight, $pricePolicy->price);
+                $parcel->saveQuietly();
+            }
+        }
         $changes = $parcel->getChanges();
         ParcelHistory::create([
             'parcel_id' => $parcel->id,
@@ -42,13 +54,15 @@ class ParcelObserverHistory
             ]
         );
     }
-    public function deleted(Parcel $parcel)
+    public function deleting(Parcel $parcel)
     {
         ParcelHistory::create([
             'parcel_id' => $parcel->id,
             'operation_type' => OperationTypes::DELETED,
+            'user_id' => Auth::user()->id,
             'new_data' => null,
             'old_data' => $parcel->toArray(),
+            'changes' => $parcel->getChanges(),
         ]);
     }
     private function generateUniqueTrackingNumber(): string

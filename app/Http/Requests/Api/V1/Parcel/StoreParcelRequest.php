@@ -33,7 +33,7 @@ class StoreParcelRequest extends FormRequest
             'route_id' => 'required|numeric|exists:branch_routes,id',
             'reciver_name' => 'required|string|max:250|min:2',
             'reciver_address' => 'nullable|string',
-            'reciver_phone' => 'required|string|min:6|max:20|regex:/^\+?\d+$',
+            'reciver_phone' => 'required|string|min:6|max:20|regex:/^\+?\d+$/',
             'weight' => 'required|numeric|min:0.1',
             'is_paid' => 'required|boolean',
             'price_policy_id' => 'required|numeric|exists:pricing_policies,id',

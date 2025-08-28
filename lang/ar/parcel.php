@@ -49,5 +49,6 @@ return [ // Parcel messages
     'parcel_found' => 'تم ايجاد الطرد.',
     'parcels_found' => 'تم ايجاد الطرود',
 
-    'parcel_delete_successfuly' => 'تم حذف العنصر بنجاح',
+    'parcel_delete_successfuly' => 'تم حذف الطرد بنجاح',
+    'parcel_updated_successfuly' => 'تم تعديل الطرد بنجاح',
 ];

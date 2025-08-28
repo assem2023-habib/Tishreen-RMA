@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Api\V1\Parcel;
 
 use App\Enums\HttpStatus;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\Parcel\StoreParcelRequest;
-use App\Models\Parcel;
+use App\Http\Requests\Api\V1\Parcel\{DeleteParcelRequest, StoreParcelRequest, UpdateParcelRequest};
 use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use ParcelService;
+use App\Services\ParcelService;
 
 class ParcelController extends Controller
 {
@@ -19,7 +18,7 @@ class ParcelController extends Controller
     public function index()
     {
         $parcels = $this->parcelService->showParcels(Auth::user()->id);
-        if (empty($parcels))
+        if ($parcels->isEmpty())
             return $this->errorResponse(
                 __('parcel.no_parcels_found'),
                 HttpStatus::NOT_FOUND->value,
@@ -77,26 +76,30 @@ class ParcelController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateParcelRequest $request, string $id)
     {
-        //
+        $data = $request->validated();
+        $parcel = $this->parcelService->updateParcel($id, $data);
+        if (empty($parcel)) {
+            return $this->errorResponse(
+                __('parcel.no_parcel_found'),
+                HttpStatus::NOT_FOUND->value,
+            );
+        }
+        return $this->successResponse(
+            ['parcel' => $parcel],
+            __('parcel.parcel_updated_successfuly'),
+        );
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(DeleteParcelRequest $request)
     {
+        $id = $request->validated()['id'];
         $parcel = $this->parcelService->deleteParcel(Auth::user()->id, $id);
         if (empty($parcel))
             return $this->errorResponse(
@@ -104,8 +107,8 @@ class ParcelController extends Controller
                 HttpStatus::NOT_FOUND->value,
             );
         return $this->successResponse(
-            ['parcel' => $parcel],
-            __('parcel_delete_successfuly'),
+            [],
+            __('parcel.parcel_delete_successfuly'),
         );
     }
 }

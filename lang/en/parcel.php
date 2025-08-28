@@ -50,5 +50,6 @@ return [ // Parcel messages
     'parcels_found' => 'parcels found.',
 
     'parcel_delete_successfuly' => 'parcel deleted successfuly',
+    'parcel_updated_successfuly' => 'parcel updated successfuly',
 
 ];

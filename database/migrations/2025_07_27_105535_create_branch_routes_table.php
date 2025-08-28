@@ -22,7 +22,7 @@ return new class extends Migration
             $table->time('estimated_departur_time')->nullable();
             $table->time('estimated_arrival_time')->nullable();
             $table->decimal('distance_per_kilo', 11, 3)->nullable();
-            $table->unique(['from_branch_id', 'to_branch_route']);
+            $table->unique(['from_branch_id', 'to_branch_id']);
             $table->timestamps();
 
             // if (!DB::select("SELECT constraint_name FROM information_schema.table_constraints WHERE table_name = 'parcels' AND constraint_name = 'check_fields_not_equal AND constraint_type = 'CHECK'")) {
