@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Enums\OperationTypes;
+use App\Enums\PolicyTypes;
 use App\Models\PricingPolicy;
 use App\Models\{Parcel, ParcelHistory};
 use Illuminate\Support\Facades\Auth;
@@ -16,8 +17,6 @@ class ParcelObserverHistory
     public function creating(Parcel $parcel)
     {
         $parcel->tracking_number = $this->generateUniqueTrackingNumber();
-
-        // $price = PricingPolicy::select('id', 'price')->where('id', $parcel->price_policy_id)->first();
         $parcel->cost = $this->calculateCostByPricePolicy($parcel->weight, $parcel->price);
     }
     public function updating(Parcel $parcel)
@@ -25,13 +24,14 @@ class ParcelObserverHistory
         if (!isset($parcel->weight)) {
             return;
         }
-        $pricePolicyId = $parcel->price_policy_id ?? Parcel::select('id', 'price_policy_id')->find($parcel->id)->price_policy_id;
-        if ($pricePolicyId) {
-            $pricePolicy = PricingPolicy::select('id', 'price')->find($pricePolicyId);
-            if ($pricePolicy) {
-                $parcel->cost = $this->calculateCostByPricePolicy($parcel->weight, $pricePolicy->price);
-                $parcel->saveQuietly();
-            }
+        $pricePolicy =  PricingPolicy::select('id', 'price')
+            ->where('policy_type', PolicyTypes::WEIGHT->value)
+            ->where('limit_min', '<=', $parcel['weight'])
+            ->where('limit_max', '>=', $parcel['weight'])
+            ->first();
+        if ($pricePolicy) {
+            $parcel->cost = $this->calculateCostByPricePolicy($parcel->weight, $pricePolicy->price);
+            $parcel->saveQuietly();
         }
         $changes = $parcel->getChanges();
         ParcelHistory::create([
@@ -50,7 +50,7 @@ class ParcelObserverHistory
                 'parcel_id' => $parcel->id,
                 'operation_type' => OperationTypes::CREATED->value,
                 'new_data' => $parcel->toArray(),
-                'user_id' => auth()->id(),
+                'user_id' => Auth::user()->id,
             ]
         );
     }

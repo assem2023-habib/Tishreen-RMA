@@ -29,22 +29,17 @@ class StoreParcelRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'sender_id' => 'required|numeric|exists:users,id',
             'route_id' => 'required|numeric|exists:branch_routes,id',
             'reciver_name' => 'required|string|max:250|min:2',
-            'reciver_address' => 'nullable|string',
+            'reciver_address' => 'required|string|max:500',
             'reciver_phone' => 'required|string|min:6|max:20|regex:/^\+?\d+$/',
             'weight' => 'required|numeric|min:0.1',
             'is_paid' => 'required|boolean',
-            // 'price_policy_id' => 'required|numeric|exists:pricing_policies,id',
         ];
     }
     public function messages()
     {
         return [
-            // 'sender_id.required' => __('parcel.sender_id_required'),
-            // 'sender_id.numeric' => __('parcel.sender_id_numeric'),
-            // 'sender_id.exists' => __('parcel.sender_id_exists'),
 
             'sender_type.required' => __('parcel.sender_type_required'),
             'sender_type.in' => __('parcel.sender_type_in'),
@@ -80,10 +75,6 @@ class StoreParcelRequest extends FormRequest
             'parcel_status.in' => __('parcel.parcel_status_in'),
 
             'tracking_number.unique' => __('parcel.tracking_number_unique'),
-
-            // 'price_policy_id.required' => __('parcel.price_policy_id_required'),
-            // 'price_policy_id.numeric' => __('parcel.price_policy_id_numeric'),
-            // 'price_policy_id.exists' => __('parcel.price_policy_id_exists'),
         ];
     }
     public function failedValidation(Validator $validator)
