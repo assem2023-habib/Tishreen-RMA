@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\PricingPolicy;
 
+use App\Enums\CurrencyType;
 use App\Enums\HttpStatus;
 use App\Enums\PolicyTypes;
 use App\Http\Controllers\Controller;
@@ -25,6 +26,7 @@ class PricingPolicyController extends Controller
                 'currency'
             )->where('is_active', 1)
                 ->where('policy_type', PolicyTypes::WEIGHT->value)
+                ->where('currency', CurrencyType::SYRIA->value)
                 ->get();
             if (!$pricingPolicy->isEmpty())
                 return $this->successResponse(

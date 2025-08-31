@@ -40,7 +40,7 @@ class ParcelObserverHistory
             'old_data' =>  $parcel->getOriginal(),
             'new_data' => $parcel->toArray(),
             'changes' => $changes,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::user()->id,
         ]);
     }
     public function created(Parcel $parcel)
