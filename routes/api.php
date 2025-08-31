@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\TelegramOtpController;
 use App\Http\Controllers\Api\V1\Authorization\AuthorizationController;
@@ -16,6 +17,8 @@ use App\Http\Controllers\Api\V1\Users\UsersController;
 use App\Models\BranchRoute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+
 
 
 
@@ -93,5 +96,11 @@ Route::prefix('v1')->group(function () {
         //--------------------------------Users----------------------------------------------------
 
         Route::get('/users', UsersController::class)->name('users');
+
+        //-------------------------------Notification---------------------------------------------
+
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::post('/notifications', [NotificationController::class, 'store']);
+        Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     });
 })->middleware('throttle:6');

@@ -116,4 +116,14 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
     {
         return $this->belongsToMany(Permission::class, 'users_permissions');
     }
+    public function notifications(){
+        return $this->belongsToMany(Notification::class, 'notification_user')
+        ->withPivot(['is_read', 'read_at'])
+        ->withTimestamps();
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
 }
