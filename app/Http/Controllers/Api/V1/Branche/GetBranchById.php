@@ -39,7 +39,7 @@ class GetBranchById extends Controller
             ->where('id', $branch->city_id)
             ->first();
         $branch->city = $city;
-        unset($branch->city_id);
+        // unset($branch->city_id);
         return $this->successResponse(
             ['branch' => $branch],
             'get Branch by id successfuly'

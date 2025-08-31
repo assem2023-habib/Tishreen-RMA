@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
                 FrequentlyAskedQuestionsSeeder::class,
                 PricingPolicySeeder::class,
                 BranchRouteSeeder::class,
+                ParcelSeeder::class
             ]
         );
     }
