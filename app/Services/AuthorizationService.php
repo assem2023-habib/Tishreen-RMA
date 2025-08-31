@@ -7,6 +7,7 @@ use App\Enums\SenderType;
 use App\Models\GuestUser;
 use App\Models\ParcelAuthorization;
 use App\Trait\ApiResponse;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class AuthorizationService
@@ -80,13 +81,40 @@ class AuthorizationService
     public function updateAuthorization($authorizationId, array $data)
     {
         $authorization = ParcelAuthorization::find($authorizationId);
-        if (!$authorization) return null;
 
+        if (!$authorization) {
+            return [
+                'status' => false,
+                'message' => __('authorization.cannot_update_authorization'),
+            ];
+        }
+
+        // إذا تم استخدام التخويل بالفعل
+        if (!is_null($authorization->used_at)) {
+            return [
+                'status' => false,
+                'message' => __('authorization.authorization_already_used'),
+
+            ];
+        }
+
+        // إذا انقضت مدة 7 أيام على إنشاء التخويل
+        $createdAt = Carbon::parse($authorization->generated_at);
+        $now = Carbon::now();
+        if ($createdAt->diffInDays($now) > 7) {
+            return [
+                'status' => false,
+                'message' => __('authorization.authorization_expired'),
+            ];
+        }
+
+        // تحديث المستخدم المفوض إذا كان معرف المستخدم موجود
         if (!empty($data['authorized_user_id'])) {
             $authorization->authorized_user_id = $data['authorized_user_id'];
             $authorization->authorized_user_type = SenderType::AUTHENTICATED_USER->value;
         }
 
+        // تحديث الضيف إذا كان موجود
         if (!empty($data['authorized_guest'])) {
             $guestData = $data['authorized_guest'][0];
             $guest = GuestUser::updateOrCreate(
@@ -105,6 +133,7 @@ class AuthorizationService
             $authorization->authorized_user_type = SenderType::GUEST_USER->value;
         }
 
+        // تحديث الحقول الأخرى
         if (isset($data['used_at'])) {
             $authorization->used_at = $data['used_at'];
         }
@@ -113,7 +142,12 @@ class AuthorizationService
         }
 
         $authorization->save();
-        return $authorization->fresh();
+
+        return [
+            'status' => true,
+            'message' => __('authorization.authorization_updated_successfully'),
+            'authorization' => $authorization->fresh(),
+        ];
     }
     public function deleteAuthorization(string $id)
     {
@@ -122,6 +156,35 @@ class AuthorizationService
 
         $authorization->delete();
         return true;
+    }
+
+    public function useAuthorization(string $authorizationId)
+    {
+        $authorization = ParcelAuthorization::find($authorizationId);
+
+        if (!$authorization) {
+            return [
+                'status' => false,
+                'message' => __('authorization.no_authorization_found'),
+            ];
+        }
+
+        // إذا تم استخدام التخويل مسبقًا
+        if ($authorization->used_at) {
+            return [
+                'status' => false,
+                'message' => __('authorization.authorization_already_used'),
+            ];
+        }
+
+        $authorization->used_at = Carbon::now(); // التاريخ الفعلي
+        $authorization->save();
+
+        return [
+            'status' => true,
+            'message' => __('authorization.authorization_used_successfully'),
+            'authorization' => $authorization,
+        ];
     }
     // إنشاء سجل من اجل مستخدم المسند اليه التخويل الذي نوعه مسجل في التطبيق
     private function createAuthorizationForAuthenticatedUser($data)

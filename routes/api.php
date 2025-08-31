@@ -83,6 +83,9 @@ Route::prefix('v1')->group(function () {
         Route::resource('/authorization', AuthorizationController::class)
             ->only(['index', 'show', 'store', 'update', 'destroy']);
 
+        Route::post('/authorization/use/{id}', [AuthorizationController::class, 'use'])
+            ->name('authorization.use');
+
         //--------------------------------Rates----------------------------------------------------
         Route::resource('/rates', RatesController::class)
             ->only(['index', 'show', 'store', 'update', 'destroy']);

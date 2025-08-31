@@ -92,4 +92,9 @@ return [
     'cannot_create_authorization' => 'Cannot create the authorization.',
     'no_authorizations_found' => 'No authorizations were found.',
     'authorization_deleted_successfully' => 'Authorization deleted successfully.',
+
+    'authorization_expired' => 'Authorization has expired',
+    'authorization_already_used' => 'Authorization already used',
+
+    'authorization_used_successfully' => 'Authorization marked as used successfully.'
 ];

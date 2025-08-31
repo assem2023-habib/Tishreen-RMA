@@ -79,18 +79,20 @@ class AuthorizationController extends Controller
     public function update(UpdateAuthorizationRequest $request, string $id)
     {
         $data = $request->validated();
-        $authorization = $this->authorizationService->updateAuthorization($id, $data);
+        $result = $this->authorizationService->updateAuthorization($id, $data);
 
-        if (!$authorization) {
+        // إذا كانت العملية فشلت
+        if (!$result['status']) {
             return $this->errorResponse(
-                __('authorization.cannot_update_authorization'),
+                $result['message'],
                 HttpStatus::FORBIDDEN->value
             );
         }
 
+        // إذا نجحت العملية
         return $this->successResponse(
-            ['authorization' => $authorization],
-            __('authorization.authorization_updated_successfully')
+            ['authorization' => $result['authorization']],
+            $result['message']
         );
     }
 
@@ -111,6 +113,22 @@ class AuthorizationController extends Controller
         return $this->successResponse(
             [],
             __('authorization.authorization_deleted_successfully')
+        );
+    }
+    public function use(string $id)
+    {
+        $result = $this->authorizationService->useAuthorization($id);
+
+        if (!$result['status']) {
+            return $this->errorResponse(
+                $result['message'],
+                HttpStatus::FORBIDDEN->value
+            );
+        }
+
+        return $this->successResponse(
+            ['authorization' => $result['authorization']],
+            $result['message']
         );
     }
 }

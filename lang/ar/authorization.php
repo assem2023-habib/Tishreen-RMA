@@ -93,4 +93,8 @@ return [
     'no_authorizations_found' => 'لم يتم العثور على أي تخويلات.',
     'authorization_deleted_successfully' => 'تم حذف التخويل بنجاح.',
 
+    'authorization_expired' => 'انتهت صلاحية التخويل',
+    'authorization_already_used' => 'تم استخدام التخويل مسبقًا',
+
+    'authorization_used_successfully' => 'تم تسجيل استخدام التخويل بنجاح.',
 ];
