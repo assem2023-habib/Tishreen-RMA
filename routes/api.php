@@ -5,12 +5,18 @@ use App\Http\Controllers\Api\V1\Auth\TelegramOtpController;
 use App\Http\Controllers\Api\V1\Authorization\AuthorizationController;
 use App\Http\Controllers\Api\V1\Branche\BranchByCityController;
 use App\Http\Controllers\Api\V1\Branche\BranchController;
+use App\Http\Controllers\Api\V1\Branche\GetBranchById;
+use App\Http\Controllers\Api\V1\BranchRoute\BranchRouteController;
 use App\Http\Controllers\Api\V1\CountryAndCity\CountryController;
+use App\Http\Controllers\Api\V1\Day\DaysController;
 use App\Http\Controllers\Api\V1\Parcel\ParcelController;
 use App\Http\Controllers\Api\V1\PricingPolicy\PricingPolicyController;
 use App\Http\Controllers\Api\V1\Rates\RatesController;
+use App\Http\Controllers\Api\V1\Users\UsersController;
+use App\Models\BranchRoute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 
 
@@ -44,12 +50,21 @@ Route::prefix('v1')->group(function () {
     //----------------------------------Branches-------------------------------------
 
     Route::get('/branches', BranchController::class)->name('branches.index');
-    Route::get('branches/{cityId}', BranchByCityController::class)->name('branches.show');
+    Route::get('/branches/{cityId}', BranchByCityController::class)->name('branches.show');
+    Route::get('/branches/{id}/detail', GetBranchById::class);
 
     //----------------------------------PricingPolicy---------------------------------
 
     Route::get('/pricing-policy', PricingPolicyController::class)->name('pricingPolicy.index');
 
+    //-------------------------------BranchRoute-----------------------------------------------
+
+    Route::get('/routes', BranchRouteController::class);
+    Route::get('/routes/{day}', [BranchRouteController::class, 'showRoutesByDay']);
+
+    //------------------------------Day--------------------------------------------------------
+
+    Route::get('/days', DaysController::class);
 
     //----------------------------------------------------------------------------------------------------------------------------
 
@@ -71,5 +86,9 @@ Route::prefix('v1')->group(function () {
         //--------------------------------Rates----------------------------------------------------
         Route::resource('/rates', RatesController::class)
             ->only(['index', 'show', 'store', 'update', 'destroy']);
+
+        //--------------------------------Users----------------------------------------------------
+
+        Route::get('/users', UsersController::class)->name('users');
     });
 })->middleware('throttle:6');

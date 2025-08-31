@@ -52,4 +52,7 @@ return [ // Parcel messages
     'parcel_delete_successfuly' => 'parcel deleted successfuly',
     'parcel_updated_successfuly' => 'parcel updated successfuly',
 
+    'parcel_expired' => 'parcel timed expired',
+    'parcel_not_pending' => 'you cannt update parcel becuse status not pendding',
+
 ];

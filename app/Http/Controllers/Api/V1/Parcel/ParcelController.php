@@ -63,7 +63,7 @@ class ParcelController extends Controller
      */
     public function show(string $id)
     {
-        $parcel = $this->parcelService->showParcel(Auth::user()->id, $id);
+        $parcel = $this->parcelService->showParcel($id);
         if (empty($parcel))
             return $this->errorResponse(
                 __('parcel.no_parcel_found'),
@@ -81,17 +81,18 @@ class ParcelController extends Controller
     public function update(UpdateParcelRequest $request, string $id)
     {
         $data = $request->validated();
+        $result = $this->parcelService->updateParcel($id, $data);
 
-        $parcel = $this->parcelService->updateParcel($id, $data);
-        if (empty($parcel)) {
+        if (!$result['status']) {
             return $this->errorResponse(
-                __('parcel.no_parcel_found'),
-                HttpStatus::NOT_FOUND->value,
+                $result['message'],
+                HttpStatus::UNPROCESSABLE_ENTITY->value
             );
         }
+
         return $this->successResponse(
-            ['parcel' => $parcel],
-            __('parcel.parcel_updated_successfuly'),
+            ['parcel' => $result['parcel']],
+            $result['message']
         );
     }
 

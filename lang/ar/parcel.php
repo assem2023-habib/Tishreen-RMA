@@ -51,4 +51,7 @@ return [ // Parcel messages
 
     'parcel_delete_successfuly' => 'تم حذف الطرد بنجاح',
     'parcel_updated_successfuly' => 'تم تعديل الطرد بنجاح',
+
+    'parcel_expired' => 'انتهت مدة صلاحية الطرد',
+    'parcel_not_pending' => 'لا يمكنك تعديل الطرد لأن حالته ليست معلقة',
 ];

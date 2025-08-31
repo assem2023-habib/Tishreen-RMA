@@ -50,7 +50,7 @@ class ParcelObserverHistory
                 'parcel_id' => $parcel->id,
                 'operation_type' => OperationTypes::CREATED->value,
                 'new_data' => $parcel->toArray(),
-                'user_id' => Auth::user()->id,
+                'user_id' => Auth::user()->id ?? $parcel->sender_id,
             ]
         );
     }

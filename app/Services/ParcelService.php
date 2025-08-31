@@ -7,6 +7,7 @@ use App\Enums\PolicyTypes;
 use App\Enums\SenderType;
 use App\Models\Parcel;
 use App\Models\PricingPolicy;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class ParcelService
@@ -26,7 +27,6 @@ class ParcelService
                 'is_paid',
                 'parcel_status',
                 'tracking_number',
-                'price_policy_id',
             )
             ->where('sender_id', $userId)
             ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
@@ -61,12 +61,39 @@ class ParcelService
             ->where('sender_id', Auth::user()->id)
             ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
             ->first();
-        if (!$parcelModel)
-            return null;
+
+        if (!$parcelModel) {
+            return [
+                'status' => false,
+                'message' => __('parcel.no_parcel_found'),
+            ];
+        }
+
+        if ($parcelModel->parcel_status != ParcelStatus::PENDING->value) {
+            return [
+                'status' => false,
+                'message' => __('parcel.parcel_not_pending'),
+            ];
+        }
+
+        $createdAt = Carbon::parse($parcelModel->created_at);
+        $now = Carbon::now();
+        if ($createdAt->diffInDays($now) > 7) {
+            return [
+                'status' => false,
+                'message' => __('parcel.parcel_expired'),
+            ];
+        }
+
         $parcelModel->update($parcel);
-        return $parcelModel;
+
+        return [
+            'status' => true,
+            'message' => __('parcel.parcel_updated_successfuly'),
+            'parcel' => $parcelModel,
+        ];
     }
-    public function showParcel($userId, $parcelId)
+    public function showParcel($parcelId)
     {
         $parcelData = Parcel::select(
             'id',
@@ -80,11 +107,10 @@ class ParcelService
             'is_paid',
             'parcel_status',
             'tracking_number',
-            'price_policy_id',
         )
             ->where('id', $parcelId,)
-            ->where('sender_id', $userId)
-            // ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
+            ->where('sender_id', Auth::user()->id)
+            ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
             ->first();
         return $parcelData;
     }
