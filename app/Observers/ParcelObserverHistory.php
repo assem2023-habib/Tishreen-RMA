@@ -17,8 +17,8 @@ class ParcelObserverHistory
     {
         $parcel->tracking_number = $this->generateUniqueTrackingNumber();
 
-        $price = PricingPolicy::select('id', 'price')->where('id', $parcel->price_policy_id)->first();
-        $parcel->cost = $this->calculateCostByPricePolicy($parcel->weight, $price->price);
+        // $price = PricingPolicy::select('id', 'price')->where('id', $parcel->price_policy_id)->first();
+        $parcel->cost = $this->calculateCostByPricePolicy($parcel->weight, $parcel->price);
     }
     public function updating(Parcel $parcel)
     {

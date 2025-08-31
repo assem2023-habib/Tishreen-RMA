@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Enums\ParcelStatus;
+use App\Enums\PolicyTypes;
 use App\Enums\SenderType;
 use App\Models\Parcel;
+use App\Models\PricingPolicy;
 use Illuminate\Support\Facades\Auth;
 
 class ParcelService
@@ -33,8 +35,14 @@ class ParcelService
     }
     public function createParcel($data)
     {
+        $policy = PricingPolicy::select('id', 'price')
+            ->where('policy_type', PolicyTypes::WEIGHT->value)
+            ->where('limit_min', '<=', $data['weight'])
+            ->where('limit_max', '>=', $data['weight'])
+            ->first();
+
         $parcel = Parcel::create([
-            'sender_id' => $data['sender_id'],
+            'sender_id' => Auth::user()->id,
             'sender_type' => SenderType::AUTHENTICATED_USER->value,
             'route_id' => $data['route_id'],
             'reciver_name' => $data['reciver_name'],
@@ -43,7 +51,7 @@ class ParcelService
             'weight' => $data['weight'],
             'is_paid' => $data['is_paid'] ? 1 : 0,
             'parcel_status' => ParcelStatus::PENDING->value,
-            'price_policy_id' => $data['price_policy_id'],
+            'price_policy_id' => $policy->price,
         ]);
         return $parcel->fresh();
     }

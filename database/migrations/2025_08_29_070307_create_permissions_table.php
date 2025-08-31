@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('parcels', function (Blueprint $table) {
-            $table->foreignId('price_policy_id')->nullable()->constrained('pricing_policies');
+        Schema::create('permissions', function (Blueprint $table) {
+            $table->id();
+            $table->string('permission_name');
+            $table->text('description')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -21,9 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('parcels', function (Blueprint $table) {
-            $table->dropForeign(['price_policy_id']);
-            $table->dropColumn(['price_policy_id']);
-        });
+        Schema::dropIfExists('permissions');
     }
 };

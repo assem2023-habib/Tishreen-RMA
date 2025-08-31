@@ -102,11 +102,18 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
     }
     public function canAccessPanel(Panel $panel): bool
     {
-        // return str_ends_with($this->email, '@yourdomain.com') && $this->hasVerifiedEmail()
         return true;
     }
     public function rates()
     {
         return $this->hasMany(Rate::class);
+    }
+    public function roles()
+    {
+        return  $this->belongsToMany(Role::class, 'roles_users');
+    }
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'users_permissions');
     }
 }

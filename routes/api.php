@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Branche\BranchController;
 use App\Http\Controllers\Api\V1\CountryAndCity\CountryController;
 use App\Http\Controllers\Api\V1\Parcel\ParcelController;
 use App\Http\Controllers\Api\V1\PricingPolicy\PricingPolicyController;
+use App\Http\Controllers\Api\V1\Rates\RatesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -62,9 +63,13 @@ Route::prefix('v1')->group(function () {
         Route::resource('/parcel', ParcelController::class)
             ->only(['index', 'show', 'store', 'update', 'destroy']);
 
-        //---------------------------------   --------------------------------------------
+        //---------------------------------Authorization--------------------------------------------
 
         Route::resource('/authorization', AuthorizationController::class)
+            ->only(['index', 'show', 'store', 'update', 'destroy']);
+
+        //--------------------------------Rates----------------------------------------------------
+        Route::resource('/rates', RatesController::class)
             ->only(['index', 'show', 'store', 'update', 'destroy']);
     });
 })->middleware('throttle:6');
