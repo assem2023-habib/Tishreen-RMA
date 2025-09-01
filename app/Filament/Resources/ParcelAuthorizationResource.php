@@ -164,7 +164,7 @@ class ParcelAuthorizationResource extends Resource
                                     Select::make('authorized_status')
                                         ->label('Authorized Status')
                                         ->options(AuthorizationStatus::values())
-                                        ->default(AuthorizationStatus::PENDING)
+                                        ->default('Pending')
                                         ->required(),
                                 ]),
                             Grid::make(3)->schema([

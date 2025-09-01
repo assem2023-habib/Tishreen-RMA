@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use \Log;
 use App\Filament\Resources\BranchResource\Pages;
 use App\Models\Branch;
 use App\Models\City;
@@ -13,9 +14,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Http;
 
 use function PHPUnit\Framework\isEmpty;
+use Illuminate\Support\Facades\Http;
 
 class BranchResource extends Resource
 {
@@ -101,7 +102,7 @@ class BranchResource extends Resource
                                     $set('address', $city); // قم بتعيين اسم المدينة لحقل 'city'
                                 } catch (\Exception $e) {
                                     // معالجة الأخطاء
-                                    \Log::error("Failed to reverse geocode: " . $e->getMessage());
+                                    Log::error("Failed to reverse geocode: " . $e->getMessage());
                                     $set('city', 'Error');
                                 }
                             }
