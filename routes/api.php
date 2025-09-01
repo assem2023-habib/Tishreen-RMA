@@ -14,14 +14,10 @@ use App\Http\Controllers\Api\V1\Parcel\ParcelController;
 use App\Http\Controllers\Api\V1\PricingPolicy\PricingPolicyController;
 use App\Http\Controllers\Api\V1\Rates\RatesController;
 use App\Http\Controllers\Api\V1\Users\UsersController;
+use App\Http\Controllers\BroadcastController;
 use App\Models\BranchRoute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-
-
-
-
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -99,8 +95,24 @@ Route::prefix('v1')->group(function () {
 
         //-------------------------------Notification---------------------------------------------
 
-        Route::get('/notifications', [NotificationController::class, 'index']);
-        Route::post('/notifications', [NotificationController::class, 'store']);
-        Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::prefix('notifications')->group(function () {
+            Route::get('/', [NotificationController::class, 'index']);
+            Route::post('/', [NotificationController::class, 'store']);
+            Route::post('/bulk', [NotificationController::class, 'sendBulk']);
+            Route::get('/stats', [NotificationController::class, 'getStats']);
+            Route::get('/unread-count', [NotificationController::class, 'getUnreadCount']);
+            Route::post('/{id}/read', [NotificationController::class, 'markAsRead']);
+            Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+            Route::delete('/{id}', [NotificationController::class, 'delete']);
+            Route::post('/test-broadcast', [NotificationController::class, 'testBroadcast']);
+        });
+
+        //-------------------------------Broadcasting---------------------------------------------
+
+        Route::prefix('broadcasting')->group(function () {
+            Route::post('/auth', [BroadcastController::class, 'authenticate']);
+            Route::get('/channels', [BroadcastController::class, 'channels']);
+            Route::get('/test', [BroadcastController::class, 'test']);
+        });
     });
 })->middleware('throttle:6');
