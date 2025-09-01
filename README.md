@@ -58,8 +58,6 @@ rma-gradioation-project/
 ├── routes/
 │   ├── api.php
 │   └── channels.php
-├── flutter_notification_example.dart
-├── flutter_pubspec.yaml
 ├── NOTIFICATIONS_API.postman_collection.json
 └── NOTIFICATIONS_README.md
 ```
