@@ -52,12 +52,12 @@ class ParcelHistoryResource extends Resource
                 //     ->numeric()
                 //     ->sortable(),
                 TextColumn::make('parcel')
-                    ->label('Sender')
+                    ->label('Reciver')
                     ->getStateUsing(function ($record) {
-                        return $record->parcel->reciver_name;
+                        return $record->parcel->reciver_name ?? 'reciver_name';
                     }),
                 TextColumn::make('user')
-                    ->label('User')
+                    ->label('Sender')
                     ->getStateUsing(function ($record) {
                         return $record->user->user_name;
                     }),
@@ -80,7 +80,7 @@ class ParcelHistoryResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(), // remove the button edit
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
