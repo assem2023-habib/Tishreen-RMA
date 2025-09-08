@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Auth;
 
+use App\Enums\UserAccountStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Auth\ConfirmEmailOtpAndVerifyEmailRequest;
 use App\Http\Requests\Api\V1\Auth\ForgetPasswordRequest;
@@ -89,19 +90,19 @@ class AuthController extends Controller
             $user = $result['user'];
 
             $restriction = UserRestriction::where('user_id', $user->id)
-                ->where('is_active', true)
+                ->where('is_active', 1)
                 ->where(function ($query) {
                     $now = now();
                     $query->where(function ($q) use ($now) {
                         $q->whereNull('ends_at')->orWhere('ends_at', '>', $now);
                     });
                 })
+                ->whereIn('restriction_type', [UserAccountStatus::BANED->value, UserAccountStatus::FROZEN->value])
                 ->latest()
                 ->first();
 
             if ($restriction) {
-                // لو النوع BANED
-                if ($restriction->type === \App\Enums\UserAccountStatus::BANED->value) {
+                if ($restriction->restriction_type === UserAccountStatus::BANED->value) {
                     return $this->errorResponse(
                         __('auth.account_banned'),
                         403,
@@ -109,8 +110,7 @@ class AuthController extends Controller
                     );
                 }
 
-                // لو النوع FROZEN
-                if ($restriction->type === \App\Enums\UserAccountStatus::FROZEN->value) {
+                if ($restriction->restriction_type === UserAccountStatus::FROZEN->value) {
                     return $this->errorResponse(
                         __('auth.account_frozen'),
                         403,
