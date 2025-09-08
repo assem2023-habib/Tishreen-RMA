@@ -58,6 +58,7 @@ class BranchRouteController extends Controller
                 'No routes found for this day',
                 HttpStatus::NOT_FOUND->value,
             );
+        // $routes['from_branch'] = Branch::select('');
         return  $this->successResponse(
             ['routes' => $routes],
             'all routes get successfully for this day'

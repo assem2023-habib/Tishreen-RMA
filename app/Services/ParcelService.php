@@ -104,6 +104,7 @@ class ParcelService
             'reciver_address',
             'reciver_phone',
             'weight',
+            'cost',
             'is_paid',
             'parcel_status',
             'tracking_number',
