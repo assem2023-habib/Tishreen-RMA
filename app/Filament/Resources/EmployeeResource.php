@@ -94,12 +94,15 @@ class EmployeeResource extends Resource
                     ->label('User Name')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('branch.branch_name')
                     ->label("Branch Name")
                     ->sortable(),
+
                 TextColumn::make('beging_date')
                     ->date()
                     ->sortable(),
+
                 TextColumn::make('end_date')
                     ->sortable()
                     ->formatStateUsing(
@@ -110,15 +113,18 @@ class EmployeeResource extends Resource
                             return Carbon::parse($state)->translatedFormat('Y-m-d');
                         }
                     ),
+
                 ToggleColumn::make('is_active')
                     ->onIcon('heroicon-o-check-circle')
                     ->offIcon('heroicon-o-no-symbol')
                     ->onColor('success')
                     ->offColor('danger'),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                    
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

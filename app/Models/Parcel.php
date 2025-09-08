@@ -21,21 +21,23 @@ class Parcel extends Model
         'is_paid',
         'parcel_status',
         'tracking_number',
+        'price_policy_id',
+        'appointment_id',
+
     ];
     protected $casts = [
         'sender_type' => SenderType::class,
+        'weight' => 'float',
+        'cost' => 'float',
     ];
-    // public function targetBranch()
-    // {
-    //     return $this->belongsTo(BranchRoute::class, 'from_branch_id');
-    // }
-    // public function sourceBranch()
-    // {
-    //     return $this->belongsTo(BranchRoute::class, 'to_branch_id');
-    // }
+
     public function route()
     {
-        return $this->belongsTo(BranchRoute::class);
+        return $this->belongsTo(BranchRoute::class, 'route_id');
+    }
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class, 'appointment_id');
     }
     public function getRouteLabelAttribute()
     {
@@ -62,5 +64,27 @@ class Parcel extends Model
     public function rates()
     {
         return $this->morphMany(Rate::class, 'rateable');
+    }
+
+
+    // public function targetBranch()
+    // {
+    //     return $this->belongsTo(BranchRoute::class, 'from_branch_id');
+    // }
+    // public function sourceBranch()
+    // {
+    //     return $this->belongsTo(BranchRoute::class, 'to_branch_id');
+    // }
+
+    protected static function booted()
+    {
+        static::creating(function ($parcel) {
+            if (!empty($parcel->weight) && !empty($parcel->price_policy_id)) {
+                $pricePolicy = PricingPolicy::find($parcel->price_policy_id);
+                $parcel->cost = (float) $parcel->weight * (float) ($pricePolicy->price ?? 0);
+            } else {
+                $parcel->cost = 2;
+            }
+        });
     }
 }

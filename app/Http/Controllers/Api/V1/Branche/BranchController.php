@@ -15,13 +15,17 @@ class BranchController extends Controller
     public function __invoke()
     {
         try {
-            $branches = Branch::select('id', 'address', 'phone', 'email', 'latitude', 'longitude', 'city_id')->get();
+
+            
+            $branches = Branch::all();
+
             if ($branches->isEmpty())
                 return $this->errorResponse(
                     __('location.no.branches.found'),
                     HttpStatus::NOT_FOUND->value,
                     [],
                 );
+
             return $this->successResponse(
                 ['branches' => $branches],
                 'branches get successfully',
@@ -34,5 +38,4 @@ class BranchController extends Controller
             );
         }
     }
-
 }

@@ -38,6 +38,7 @@ class ParcelController extends Controller
         try {
             $data = $request->validated();
             $parcel = $this->parcelService->createParcel($data);
+            
             if (empty($parcel))
                 return $this->errorResponse(
                     'create Parcel field!.',

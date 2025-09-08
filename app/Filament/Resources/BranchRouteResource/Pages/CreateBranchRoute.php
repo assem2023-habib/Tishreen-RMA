@@ -5,6 +5,7 @@ namespace App\Filament\Resources\BranchRouteResource\Pages;
 use App\Filament\Resources\BranchRouteResource;
 use App\Models\Branch;
 use Filament\Actions;
+use App\Services\AppointmentHepler;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateBranchRoute extends CreateRecord
@@ -28,8 +29,16 @@ class CreateBranchRoute extends CreateRecord
             );
         }
 
+
         return $data;
     }
+
+    protected function afterCreate(): void
+    {
+        AppointmentHepler::generateForRoute($this->record->id);
+    }
+
+
 
     private function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {

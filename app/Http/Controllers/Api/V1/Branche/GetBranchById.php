@@ -14,32 +14,22 @@ class GetBranchById extends Controller
     use ApiResponse;
     public function __invoke($id)
     {
-        $branch = Branch::select(
-            'id',
-            'address',
-            'phone',
-            'email',
-            'latitude',
-            'longitude',
-            'city_id'
-        )
-            ->where('id', $id)
-            ->first();
+        /**
+         * updated to Eager Loading 
+         * 2 by 1 get brach and inject city with it 
+         * Author: Hussein Kurhaily
+         * Updated : 2025-09-07
+         */
+        $branch = Branch::with('city:id,country_id,ar_name,en_name')->find($id);
+
         if (empty($branch))
             return $this->errorResponse(
                 'No branch found for this id',
                 HttpStatus::NOT_FOUND->value,
             );
-        $city = City::select(
-            'id',
-            'country_id',
-            'ar_name',
-            'en_name'
-        )
-            ->where('id', $branch->city_id)
-            ->first();
-        $branch->city = $city;
-        // unset($branch->city_id);
+
+
+
         return $this->successResponse(
             ['branch' => $branch],
             'get Branch by id successfuly'
