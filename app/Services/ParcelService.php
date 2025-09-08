@@ -55,6 +55,8 @@ class ParcelService
         ]);
         return $parcel->fresh();
     }
+
+    
     public function updateParcel($parcelId, $parcel)
     {
         $parcelModel = Parcel::where('id', $parcelId)

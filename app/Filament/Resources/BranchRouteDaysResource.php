@@ -32,7 +32,9 @@ class BranchRouteDaysResource extends Resource
         return $form
             ->schema([
                 Select::make('day_of_week')
-                    ->options(DaysOfWeek::values())
+                    ->options(
+                        DaysOfWeek::values()
+                    )
                     ->required(),
                 Select::make('branch_route_id')
                     ->options(function () {
@@ -52,6 +54,7 @@ class BranchRouteDaysResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('day_of_week'),
+
                 TextColumn::make('branch_route_id.branchRote.from_branch_id')
                     ->sortable(),
                 TextColumn::make('branch_route_id.branchRote.to_branch_id')

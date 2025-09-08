@@ -13,14 +13,15 @@ class BranchByCityController extends Controller
     use ApiResponse;
     public function __invoke($cityId)
     {
-        $branches = Branch::select('id', 'address', 'phone', 'email', 'latitude', 'longitude', 'city_id')
-            ->where('city_id', $cityId)
-            ->get();
+        $branches = Branch::all()
+            ->where('city_id', $cityId);
+
         if (!$branches->isEmpty())
             return $this->successResponse(
                 ['branches' => $branches->fresh()],
                 message: "Get all branches by city $cityId",
             );
+
         return $this->errorResponse(
             'error',
         );

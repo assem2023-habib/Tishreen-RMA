@@ -101,12 +101,13 @@ class BranchResource extends Resource
                                     $city = $response['display_name'];
                                     $set('address', $city); // قم بتعيين اسم المدينة لحقل 'city'
                                 } catch (\Exception $e) {
-                                    // معالجة الأخطاء
-                                    Log::error("Failed to reverse geocode: " . $e->getMessage());
+
+
                                     $set('city', 'Error');
                                 }
-                            }
-                        ),
+                            }),
+
+                            
                     TextInput::make('latitude')
                         ->readonly(),
                     TextInput::make('longitude')
@@ -164,7 +165,7 @@ class BranchResource extends Resource
                 TextColumn::make('branch_name')
                     ->label('Branch Name')
                     ->searchable(),
-                TextColumn::make('city_id')
+                TextColumn::make('city.ar_name')
                     ->label('City Name')
                     ->searchable(),
                 TextColumn::make('phone'),

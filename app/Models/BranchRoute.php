@@ -9,12 +9,17 @@ class BranchRoute extends Model
     protected $fillable = [
         'from_branch_id',
         'to_branch_id',
-        'day',
+        //'day',
         'is_active',
         'estimated_departur_time',
         'estimated_arrival_time',
         'distance_per_kilo',
     ];
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'route_id');
+    }
     public function fromBranch()
     {
         return $this->belongsTo(Branch::class, 'from_branch_id');

@@ -47,13 +47,13 @@ class ProcessNotificationJob implements ShouldQueue
                 'user_id' => $this->userId
             ]);
 
-            // إنشاء الإشعار
+            // create notification
             $notification = $notificationService->createNotification(
                 $this->notificationData,
                 $this->userIds
             );
 
-            // إرسال الإشعارات
+            // send notification
             if (!empty($this->userIds)) {
                 $notificationService->sendNotification($this->notificationData, $this->userIds);
             } else {

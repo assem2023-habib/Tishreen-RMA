@@ -40,6 +40,7 @@ class ParcelResource extends Resource
         return $form
             ->schema([
                 Wizard::make([
+                    // select the sender type user - guest
                     Step::make('Choose Sender Type')
                         ->schema(
                             [
@@ -55,6 +56,7 @@ class ParcelResource extends Resource
                                     ->required(),
                             ],
                         ),
+                    // select sender account 
                     Step::make('Sender Authenticated Details')
                         ->label('Sender Details')
                         ->columns(1)
@@ -72,6 +74,8 @@ class ParcelResource extends Resource
                             ],
                         )
                         ->visible(fn(callable $get) => $get('sender_type') === User::class),
+
+                    // parcel details for guest
                     Step::make('Sender Guest Details')
                         ->label('Sender Details')
                         ->columns(2)
@@ -120,6 +124,9 @@ class ParcelResource extends Resource
                             ],
                         )
                         ->visible(self::getVisible()),
+
+
+                    // ---------- paracel details for user 
                     Step::make('Parcel Details')
                         ->columns(2)
                         ->schema([
@@ -132,32 +139,44 @@ class ParcelResource extends Resource
                                             return [$branchRoute->id => $branchRoute->fromBranch->branch_name . " --> " . $branchRoute->toBranch->branch_name];
                                         });
                                 }),
+
                             Forms\Components\TextInput::make('reciver_name')
                                 ->required()
                                 ->maxLength(255),
+
                             Forms\Components\TextInput::make('reciver_address')
                                 ->required()
                                 ->maxLength(255),
+
                             Forms\Components\TextInput::make('reciver_phone')
                                 ->tel()
                                 ->required()
                                 ->maxLength(255),
-                            Forms\Components\TextInput::make('weight')
-                                ->required()
-                                ->numeric(),
-                            Forms\Components\TextInput::make('cost')
-                                ->disabled()
-                                ->numeric()
-                                ->prefix('$'),
+
                             Select::make('parcel_status')
                                 ->label('Parcel Status')
                                 ->options(ParcelStatus::class)
                                 ->enum(ParcelStatus::class)
                                 ->default(ParcelStatus::PENDING->value),
+
                             TextInput::make('tracking_number')
                                 ->label('Tracking Number : ')
                                 ->dehydrated(false)
                                 ->disabled(),
+
+                            // hussein update : 
+                            // ---------- cost detial -----------
+                            Forms\Components\TextInput::make('weight')
+                                ->required()
+                                ->numeric()
+                                ->reactive() //
+                                ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                    if ($state && $get('price_policy_id')) {
+                                        $price = PricingPolicy::find($get('price_policy_id'))?->price ?? 0;
+                                        $set('cost', $state * $price);
+                                    }
+                                }),
+
                             Select::make('price_policy_id')
                                 ->label('Price Policy')
                                 ->options(function () {
@@ -166,7 +185,31 @@ class ParcelResource extends Resource
                                         ->mapWithKeys(function ($pricingPolicy) {
                                             return [$pricingPolicy->id => 'price : ' . $pricingPolicy->price . ', price unit : ' . $pricingPolicy->price_unit];
                                         });
+                                })
+                                ->reactive() // for tracking updates 
+                                ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                    if ($state && $get('weight')) {
+                                        $price = PricingPolicy::find($state)?->price ?? 0;
+                                        $set('cost', $get('weight') * $price);
+                                    }
                                 }),
+
+                            Forms\Components\TextInput::make('cost')
+                                ->readOnly()
+                                ->numeric()
+                                ->prefix('$')
+                                ->dehydrateStateUsing(
+                                    fn($state, $get) =>
+                                    $get('weight') && $get('price_policy_id')
+                                        ? $get('weight') * PricingPolicy::find($get('price_policy_id'))->price
+                                        : 0
+                                )
+                                ->afterStateHydrated(function ($set, $get) {
+                                    if ($get('weight') && $get('price_policy_id')) {
+                                        $set('cost', $get('weight') * PricingPolicy::find($get('price_policy_id'))->price);
+                                    }
+                                }),
+
                             Grid::make(1)->schema([
                                 Toggle::make('is_paid')
                                     ->label('Paid')

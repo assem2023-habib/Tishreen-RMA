@@ -16,6 +16,12 @@ class PricingPolicy extends Model
         'currency',
         'is_active',
     ];
+
+    protected $casts = [
+        'price' => 'float',
+        'limit_min' => 'float',
+        'limit_max' => 'float',
+    ];
     public function parcels()
     {
         return $this->hasMany(Parcel::class);
