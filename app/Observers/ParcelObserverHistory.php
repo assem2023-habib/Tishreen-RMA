@@ -2,8 +2,10 @@
 
 namespace App\Observers;
 
+use App\Enums\CurrencyType;
 use App\Enums\OperationTypes;
 use App\Enums\PolicyTypes;
+use App\Enums\PriceUnit;
 use App\Models\PricingPolicy;
 use App\Models\{Parcel, ParcelHistory};
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +19,8 @@ class ParcelObserverHistory
     public function creating(Parcel $parcel)
     {
         $parcel->tracking_number = $this->generateUniqueTrackingNumber();
-        $parcel->cost = $this->calculateCostByPricePolicy($parcel->weight, $parcel->price);
+        $pricePolicy = $this->getPriceFromPricePolicy($parcel->weight);
+        $parcel->cost = $this->calculateCostByPricePolicy($parcel->weight, $pricePolicy);
     }
     public function updating(Parcel $parcel)
     {
@@ -75,5 +78,26 @@ class ParcelObserverHistory
     private function calculateCostByPricePolicy($weight, $pricePolicy)
     {
         return $weight * $pricePolicy;
+    }
+    private function getPriceFromPricePolicy($weight)
+    {
+        $policy = PricingPolicy::select(
+            'policy_type',
+            'price',
+            'price_unit',
+            'limit_max',
+            'limit_min',
+            'currency',
+            'is_active'
+        )
+            ->where('price_unit', PriceUnit::KG->value)
+            ->where('policy_type', PolicyTypes::WEIGHT->value)
+            ->where('limit_min', '<=', $weight)
+            ->where('limit_max', '>=', $weight)
+            ->where('currency', CurrencyType::SYRIA->value)
+            ->where('is_active', 1)
+            ->first()
+            ->price;
+        return $policy;
     }
 }

@@ -56,7 +56,7 @@ class ParcelResource extends Resource
                                     ->required(),
                             ],
                         ),
-                    // select sender account 
+                    // select sender account
                     Step::make('Sender Authenticated Details')
                         ->label('Sender Details')
                         ->columns(1)
@@ -126,7 +126,7 @@ class ParcelResource extends Resource
                         ->visible(self::getVisible()),
 
 
-                    // ---------- paracel details for user 
+                    // ---------- paracel details for user
                     Step::make('Parcel Details')
                         ->columns(2)
                         ->schema([
@@ -164,7 +164,7 @@ class ParcelResource extends Resource
                                 ->dehydrated(false)
                                 ->disabled(),
 
-                            // hussein update : 
+                            // hussein update :
                             // ---------- cost detial -----------
                             Forms\Components\TextInput::make('weight')
                                 ->required()
@@ -177,22 +177,22 @@ class ParcelResource extends Resource
                                     }
                                 }),
 
-                            Select::make('price_policy_id')
-                                ->label('Price Policy')
-                                ->options(function () {
-                                    return PricingPolicy::select('id', 'price', 'price_unit', 'currency')
-                                        ->get()
-                                        ->mapWithKeys(function ($pricingPolicy) {
-                                            return [$pricingPolicy->id => 'price : ' . $pricingPolicy->price . ', price unit : ' . $pricingPolicy->price_unit];
-                                        });
-                                })
-                                ->reactive() // for tracking updates 
-                                ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                    if ($state && $get('weight')) {
-                                        $price = PricingPolicy::find($state)?->price ?? 0;
-                                        $set('cost', $get('weight') * $price);
-                                    }
-                                }),
+                            // Select::make('price_policy_id')
+                            //     ->label('Price Policy')
+                            //     ->options(function () {
+                            //         return PricingPolicy::select('id', 'price', 'price_unit', 'currency')
+                            //             ->get()
+                            //             ->mapWithKeys(function ($pricingPolicy) {
+                            //                 return [$pricingPolicy->id => 'price : ' . $pricingPolicy->price . ', price unit : ' . $pricingPolicy->price_unit];
+                            //             });
+                            //     })
+                            //     ->reactive() // for tracking updates
+                            //     ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                            //         if ($state && $get('weight')) {
+                            //             $price = PricingPolicy::find($state)?->price ?? 0;
+                            //             $set('cost', $get('weight') * $price);
+                            //         }
+                            //     }),
 
                             Forms\Components\TextInput::make('cost')
                                 ->readOnly()
@@ -287,20 +287,20 @@ class ParcelResource extends Resource
                     }),
                 TextColumn::make('tracking_number')
                     ->searchable(),
-                TextColumn::make('pricePolicy.policy_type')
-                    ->label('Policy Type')
-                    ->sortable(),
-                TextColumn::make('pricePolicy.price')
-                    ->label('Policy Price')
-                    ->getStateUsing(function ($record) {
-                        if ($record->pricePolicy) {
-                            $icon = CurrencyType::from($record->pricePolicy->currency)->currencyIcon();
-                            return $icon . ' ' . number_format($record->pricePolicy->price, 2);
-                        }
-                        return '-';
-                    })
-                    ->numeric()
-                    ->sortable(),
+                // TextColumn::make('pricePolicy.policy_type')
+                //     ->label('Policy Type')
+                //     ->sortable(), // remove from the table
+                // TextColumn::make('pricePolicy.price')
+                //     ->label('Policy Price')
+                //     ->getStateUsing(function ($record) {
+                //         if ($record->pricePolicy) {
+                //             $icon = CurrencyType::from($record->pricePolicy->currency)->currencyIcon();
+                //             return $icon . ' ' . number_format($record->pricePolicy->price, 2);
+                //         }
+                //         return '-';
+                //     })
+                //     ->numeric()
+                //     ->sortable(), // remove from the table
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

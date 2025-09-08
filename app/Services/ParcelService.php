@@ -35,11 +35,11 @@ class ParcelService
     }
     public function createParcel($data)
     {
-        $policy = PricingPolicy::select('id', 'price')
-            ->where('policy_type', PolicyTypes::WEIGHT->value)
-            ->where('limit_min', '<=', $data['weight'])
-            ->where('limit_max', '>=', $data['weight'])
-            ->first();
+        // $policy = PricingPolicy::select('id', 'price')
+        //     ->where('policy_type', PolicyTypes::WEIGHT->value)
+        //     ->where('limit_min', '<=', $data['weight'])
+        //     ->where('limit_max', '>=', $data['weight'])
+        //     ->first(); //remove because this section add in ParcelObserveHistory
 
         $parcel = Parcel::create([
             'sender_id' => Auth::user()->id,
@@ -51,12 +51,12 @@ class ParcelService
             'weight' => $data['weight'],
             'is_paid' => $data['is_paid'] ? 1 : 0,
             'parcel_status' => ParcelStatus::PENDING->value,
-            'price_policy_id' => $policy->price,
+            // 'price_policy_id' => $policy->price, // remove from data base
         ]);
         return $parcel->fresh();
     }
 
-    
+
     public function updateParcel($parcelId, $parcel)
     {
         $parcelModel = Parcel::where('id', $parcelId)
