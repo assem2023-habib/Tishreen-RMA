@@ -8,7 +8,7 @@ class UserRestriction extends Model
 {
     protected $fillable = [
         'user_id',
-        'type',
+        'restriction_type',
         'reason',
         'starts_at',
         'ends_at',

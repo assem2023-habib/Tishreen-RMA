@@ -49,7 +49,10 @@ class UserRestrictionResource extends Resource
                             }),
                         Select::make('restriction_type')
                             ->label('Restriction Type')
-                            ->options(UserAccountStatus::class),
+                            ->options(
+                                UserAccountStatus::class
+                            )
+                            ->default(UserAccountStatus::BANED),
                     ]
                 ),
                 Grid::make(1)->schema(

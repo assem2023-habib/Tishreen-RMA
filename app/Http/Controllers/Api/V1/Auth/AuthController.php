@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Api\V1\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Auth\ConfirmEmailOtpAndVerifyEmailRequest;
 use App\Http\Requests\Api\V1\Auth\ForgetPasswordRequest;
+use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Requests\Api\V1\Auth\LogoutRequest;
 use App\Http\Requests\Api\V1\Auth\RegisterRequest;
-use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Requests\Api\V1\Auth\ResetPasswordRequest;
 use App\Http\Requests\Api\V1\Auth\VerifyEmailCodeRequest;
 use App\Http\Requests\Api\V1\Auth\VerifyOtpAndReset;
 use App\Models\User;
+use App\Models\UserRestriction;
 use App\Notifications\SendEmailVerificationOtpNotification;
 use App\Notifications\SendPasswordOtpNotification;
 use App\Services\AuthService;
@@ -19,9 +20,9 @@ use App\Services\UserService;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -85,11 +86,45 @@ class AuthController extends Controller
                     ['credentials' => __('auth.invalid_credentials_details')]
                 );
             }
+            $user = $result['user'];
 
+            $restriction = UserRestriction::where('user_id', $user->id)
+                ->where('is_active', true)
+                ->where(function ($query) {
+                    $now = now();
+                    $query->where(function ($q) use ($now) {
+                        $q->whereNull('ends_at')->orWhere('ends_at', '>', $now);
+                    });
+                })
+                ->latest()
+                ->first();
+
+            if ($restriction) {
+                // لو النوع BANED
+                if ($restriction->type === \App\Enums\UserAccountStatus::BANED->value) {
+                    return $this->errorResponse(
+                        __('auth.account_banned'),
+                        403,
+                        ['reason' => $restriction->reason]
+                    );
+                }
+
+                // لو النوع FROZEN
+                if ($restriction->type === \App\Enums\UserAccountStatus::FROZEN->value) {
+                    return $this->errorResponse(
+                        __('auth.account_frozen'),
+                        403,
+                        [
+                            'reason'    => $restriction->reason,
+                            'ends_at'   => $restriction->ends_at,
+                        ]
+                    );
+                }
+            }
 
             return $this->successResponse(
                 [
-                    'user'  => $result['user'],
+                    'user'  => $user,
                     'token' => $result['token'],
                 ],
                 __('auth.login_success')

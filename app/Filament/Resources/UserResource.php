@@ -79,12 +79,12 @@ class UserResource extends Resource
                                 'email' => 'Please enter a valid email',
                                 'unique' => 'This email is already registered',
                             ]),
-                        Select::make('account_status')
-                            ->label('Account Status')
-                            ->options(UserAccountStatus::class)
-                            ->enum(UserAccountStatus::class)
-                            ->default(null)
-                            ->required(),
+                        // Select::make('account_status')
+                        //     ->label('Account Status')
+                        //     ->options(UserAccountStatus::class)
+                        //     ->enum(UserAccountStatus::class)
+                        //     ->default(null)
+                        //     ->required(), // delete the column for restrication users
                     ]),
 
                 Grid::make(2)

@@ -61,4 +61,10 @@ return [
     'otp_sent_to_email' => 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.',
     'password_not_correct' => 'كلمة المرور خاطئة.',
 
+    'server_error' => 'حدث خطأ في الخادم',
+
+    'account_banned' => 'تم حظر حسابك بشكل دائم',
+    'account_frozen' => 'تم تجميد حسابك مؤقتًا',
+
+
 ];
