@@ -40,6 +40,7 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
         'national_number',
         'birthday',
         'email_verified_at',
+        'image_profile',
     ];
 
     /**

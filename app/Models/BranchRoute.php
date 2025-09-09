@@ -51,6 +51,6 @@ class BranchRoute extends Model
 
     public function parcels()
     {
-        return $this->hasMany(Parcel::class);
+        return $this->hasMany(Parcel::class, 'route_id'); // حددنا العمود route_id
     }
 }

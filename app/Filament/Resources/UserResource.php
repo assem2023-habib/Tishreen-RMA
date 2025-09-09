@@ -2,7 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\UserAccountStatus;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\FileUpload;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\Country;
 use App\Models\User;
@@ -11,8 +12,6 @@ use Filament\Forms\Components\{TextInput, Grid, Select, DatePicker, Toggle};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
@@ -79,16 +78,6 @@ class UserResource extends Resource
                                 'email' => 'Please enter a valid email',
                                 'unique' => 'This email is already registered',
                             ]),
-                        // Select::make('account_status')
-                        //     ->label('Account Status')
-                        //     ->options(UserAccountStatus::class)
-                        //     ->enum(UserAccountStatus::class)
-                        //     ->default(null)
-                        //     ->required(), // delete the column for restrication users
-                    ]),
-
-                Grid::make(2)
-                    ->schema([
                         TextInput::make('password')
                             ->label('Password')
                             ->password()
@@ -106,22 +95,16 @@ class UserResource extends Resource
                             ])
                             ->dehydrated(fn($state) => filled($state)),
 
-                        TextInput::make('national_number')
-                            ->label('National Number')
-                            ->helperText('Exactly 11 digits')
-                            ->unique(ignoreRecord: true)
-                            ->rules([
-                                'required',
-                                'digits:11',
-                                'regex:/^[0-9]+$/',
-                            ])
-                            ->validationMessages([
-                                'required' => 'National number is required',
-                                'digits' => 'Must be exactly 11 digits',
-                                'regex' => 'Only digits are allowed',
-                                'unique' => 'This national number is already used',
-                            ]),
+                        // Select::make('account_status')
+                        //     ->label('Account Status')
+                        //     ->options(UserAccountStatus::class)
+                        //     ->enum(UserAccountStatus::class)
+                        //     ->default(null)
+                        //     ->required(), // delete the column for restrication users
                     ]),
+
+                Grid::make(2)
+                    ->schema([]),
 
                 Grid::make(2)
                     ->schema([
@@ -169,6 +152,21 @@ class UserResource extends Resource
 
                     ]),
 
+                TextInput::make('national_number')
+                    ->label('National Number')
+                    ->helperText('Exactly 11 digits')
+                    ->unique(ignoreRecord: true)
+                    ->rules([
+                        'required',
+                        'digits:11',
+                        'regex:/^[0-9]+$/',
+                    ])
+                    ->validationMessages([
+                        'required' => 'National number is required',
+                        'digits' => 'Must be exactly 11 digits',
+                        'regex' => 'Only digits are allowed',
+                        'unique' => 'This national number is already used',
+                    ]),
                 DatePicker::make('birthday')
                     ->label('Date of Birth')
                     ->native(false)
@@ -178,6 +176,18 @@ class UserResource extends Resource
                     ]),
                 Toggle::make('is_verified')
                     ->label('email Verified ? '),
+                FileUpload::make('image_profile')
+                    ->disk('public')
+                    ->image()
+                    ->imageEditor()
+                    ->imageEditorViewportWidth('1920')
+                    ->imageEditorViewportHeight('1080')
+                    ->imageCropAspectRatio('1:1')
+                    ->imageResizeTargetWidth(300)
+                    ->imageResizeTargetHeight(300)
+                    ->helperText('Please make user the image size is 300*300')
+                    ->directory('flags')
+                    ->label('Image'),
             ]);
     }
 
@@ -219,6 +229,8 @@ class UserResource extends Resource
 
                 TextColumn::make('phone')
                     ->label('Phone'),
+                ImageColumn::make('image_profile')
+                    ->disk('public')->label('image'),
             ])
             ->filters([
                 //

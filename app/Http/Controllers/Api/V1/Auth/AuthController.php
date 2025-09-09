@@ -68,13 +68,13 @@ class AuthController extends Controller
         try {
 
             // check if the email verifited
-            // if (!($this->authService->checkIfEmailVerifited($request->email))) {
-            //     return $this->errorResponse(
-            //         __('auth.email_not_verified'),
-            //         403,
-            //         []
-            //     );
-            // }
+            if (!($this->authService->checkIfEmailVerifited($request->email))) {
+                return $this->errorResponse(
+                    __('auth.email_not_verified'),
+                    403,
+                    []
+                );
+            }
 
             // check email and password from login fun in AuthService class
             // call it if the email verifited
@@ -87,6 +87,7 @@ class AuthController extends Controller
                     ['credentials' => __('auth.invalid_credentials_details')]
                 );
             }
+
             $user = $result['user'];
 
             $restriction = UserRestriction::where('user_id', $user->id)

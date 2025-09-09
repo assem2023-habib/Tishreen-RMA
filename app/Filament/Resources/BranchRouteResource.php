@@ -169,8 +169,40 @@ class BranchRouteResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\Action::make('markAsArrived')
+                        ->label('Mark as Arrived')
+                        ->icon('heroicon-s-check')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(function (BranchRoute $record) {
+                            // Get all parcels related to this route
+                            $parcels = $record->parcels;
+
+                            foreach ($parcels as $parcel) {
+                                // Send SMS with tracking number
+                                $message = "Your parcel has arrived at the destination. Tracking code: {$parcel->tracking_number}";
+                                // Example: call your SMS service
+                                // SMSService::send($parcel->reciver_phone, $message);
+
+                                // Record history
+                                $parcel->parcelsHistories()->create([
+                                    'status' => 'arrived',
+                                    'notes' => $message,
+                                ]);
+                            }
+
+                            // Show success notification
+                            \Filament\Notifications\Notification::make()
+                                ->title('All related parcels have been updated!')
+                                ->success()
+                                ->send();
+                        }),
+                ])->icon('heroicon-s-ellipsis-vertical'), // three vertical dots
             ])
+
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
