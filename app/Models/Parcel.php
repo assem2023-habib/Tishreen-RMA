@@ -21,7 +21,6 @@ class Parcel extends Model
         'is_paid',
         'parcel_status',
         'tracking_number',
-        // 'price_policy_id', // remove the column
         'appointment_id',
 
     ];

@@ -21,9 +21,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-    //----------------------------------Appointment-------------------------------------
-    Route::get('/get-getCalender/{tracking_number}', [AppointmentController::class, 'getCalenderByParcelTrackingNumber']);
-    Route::post('/book-appointment', [AppointmentController::class, 'bookAppointment']);
+
+
+    // Hussein 
 
     //-----------------------------------Auth-----------------------------
     Route::post('register', [AuthController::class, 'register']);
@@ -33,18 +33,22 @@ Route::prefix('v1')->group(function () {
     Route::post('verify-email', [AuthController::class, 'verifyEmailCode']);
     Route::post('confirm-email-otp', [AuthController::class, 'confirmEmailOtpAndVerifyEmail']);
 
-    //-----------------------------------OTP TELEGRAM----------------------------------
-
-    Route::prefix('telegram')->group(function () {
-        Route::post('otp/send', [TelegramOtpController::class, 'send']);
-        Route::post('otp/verify', [TelegramOtpController::class, 'verify']);
-        Route::post('webhook', [TelegramOtpController::class, 'handle']); // من اجل اعطاء معرف المحادثة ضمن بوت التلغرام
-    });
-
     //-----------------------------------Country And City-------------------------------
 
     Route::get('/countries', [CountryController::class, 'getCountries']);
     Route::get('/countries/{country_id}/cities', [CountryController::class, 'getCitiesByCountry']);
+
+
+    //-------------------------------BranchRoute-----------------------------------------------
+
+    Route::get('/routes', BranchRouteController::class);
+    Route::get('/routes/{day}', [BranchRouteController::class, 'showRoutesByDay']);
+
+    //----------------------------------Appointment-------------------------------------
+    Route::get('/get-getCalender/{tracking_number}', [AppointmentController::class, 'getCalenderByParcelTrackingNumber']);
+    Route::post('/book-appointment', [AppointmentController::class, 'bookAppointment']);
+
+    // End Hussein 
 
 
 
@@ -56,18 +60,19 @@ Route::prefix('v1')->group(function () {
     Route::get('/branches/{cityId}', BranchByCityController::class)->name('branches.show');
     Route::get('/branches/{id}/detail', GetBranchById::class);
 
+    //-----------------------------------OTP TELEGRAM----------------------------------
+
+    Route::prefix('telegram')->group(function () {
+        Route::post('otp/send', [TelegramOtpController::class, 'send']);
+        Route::post('otp/verify', [TelegramOtpController::class, 'verify']);
+        Route::post('webhook', [TelegramOtpController::class, 'handle']); // من اجل اعطاء معرف المحادثة ضمن بوت التلغرام
+    });
+
     //----------------------------------PricingPolicy---------------------------------
 
     Route::get('/pricing-policy', PricingPolicyController::class)->name('pricingPolicy.index');
 
-    //-------------------------------BranchRoute-----------------------------------------------
 
-    Route::get('/routes', BranchRouteController::class);
-    Route::get('/routes/{day}', [BranchRouteController::class, 'showRoutesByDay']);
-
-    //------------------------------Day--------------------------------------------------------
-
-    Route::get('/days', DaysController::class);
 
     //----------------------------------------------------------------------------------------------------------------------------
 
@@ -75,9 +80,6 @@ Route::prefix('v1')->group(function () {
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
-
-
-
 
 
         //----------------------------------Parcel----------------------------------------
