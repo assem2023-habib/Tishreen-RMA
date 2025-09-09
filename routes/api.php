@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Appointment\AppointmentController;
 use App\Http\Controllers\Api\V1\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\TelegramOtpController;
@@ -20,6 +21,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
+    //----------------------------------Appointment-------------------------------------
+    Route::get('/get-getCalender/{tracking_number}', [AppointmentController::class, 'getCalenderByParcelTrackingNumber']);
+    Route::post('/book-appointment', [AppointmentController::class, 'bookAppointment']);
 
     //-----------------------------------Auth-----------------------------
     Route::post('register', [AuthController::class, 'register']);
@@ -41,6 +45,10 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/countries', [CountryController::class, 'getCountries']);
     Route::get('/countries/{country_id}/cities', [CountryController::class, 'getCitiesByCountry']);
+
+
+
+
 
     //----------------------------------Branches-------------------------------------
 
@@ -67,6 +75,10 @@ Route::prefix('v1')->group(function () {
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
+
+
+
 
         //----------------------------------Parcel----------------------------------------
 

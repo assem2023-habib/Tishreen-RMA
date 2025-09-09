@@ -4,21 +4,16 @@ namespace App\Filament\Resources;
 
 use App\Enums\DaysOfWeek;
 use App\Filament\Resources\BranchRouteResource\Pages;
-use App\Filament\Resources\BranchRouteResource\RelationManagers;
 use App\Models\Branch;
 use App\Models\BranchRoute;
-use Dotswan\MapPicker\Fields\Map;
-use Filament\Forms;
 use Filament\Forms\Components\{Select, TextInput, TimePicker, Toggle, Grid, Hidden, View};
 use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Support\Facades\FilamentAsset;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\DateTimePicker;
+
 
 class BranchRouteResource extends Resource
 {
@@ -96,49 +91,42 @@ class BranchRouteResource extends Resource
                         })
                         ->required(),
                 ]),
+
                 Grid::make(2)->schema(
                     [
-                        Select::make('day')
-                            ->options(DaysOfWeek::class)
-                            ->default(DaysOfWeek::SUNDAY->value)
-                            ->placeholder('please select a day!..'),
+                        DateTimePicker::make('estimated_departur_time')
+                            ->label('Departure Time')
+                            ->required()
+
+                            ->displayFormat('Y-m-d H:i'), // عرض التاريخ والوقت
+                        DateTimePicker::make('estimated_arrival_time')
+                            ->label('Arrival Time')
+                            ->afterOrEqual('estimated_departur_time')
+                            ->required()
+
+                            ->displayFormat('Y-m-d H:i'),
+                    ]
+                ),
+                Grid::make(2)->schema(
+                    [
+
                         TextInput::make('distance_per_kilo')
                             ->numeric()
                             ->suffix('KM')
                             ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                // هذا الجزء يكون في PHP إذا عندك lat/lng جاهزة
-                            }),
-                    ]
-                ),
-                Grid::make(2)->schema(
-                    [
-                        TimePicker::make('estimated_departur_time')
-                            ->label('Time Go')
-                            ->native(false)
-                            ->minutesStep(10)
-                            ->seconds(false)
-                            ->displayFormat('H:i')
-                            ->suffix('H:M'),
-                        TimePicker::make('estimated_arrival_time')
-                            ->afterOrEqual('estimated_departure_time')
-                            ->seconds(false)
-                            ->displayFormat('h:i A')
-                            ->suffix('H:M'),
-                    ]
-                ),
-                Grid::make(1)->schema(
-                    [
+                            ->afterStateUpdated(function ($state, callable $set) {})
+                            ->columnSpan(1), // half width
                         Toggle::make('is_active')
                             ->label('?... is Active')
                             ->onIcon('')
                             ->offIcon('')
                             ->onColor('success')
                             ->offColor('danger')
-                            ->default(1),
+                            ->default(1)
+                            ->columnSpan(1),
                     ]
-                )
-                    ->extraAttributes(['dir' => 'rtl']),
+                ),
+
             ]);
     }
 
@@ -153,12 +141,18 @@ class BranchRouteResource extends Resource
                     ->label('From Branch')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('day'),
                 TextColumn::make('is_active')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('estimated_departur_time'),
-                TextColumn::make('estimated_arrival_time'),
+                TextColumn::make('estimated_departur_time')
+                    ->label('Departure Time')
+                    ->dateTime('Y-m-d H:i')
+                    ->sortable(),
+
+                TextColumn::make('estimated_arrival_time')
+                    ->label('Arrival Time')
+                    ->dateTime('Y-m-d H:i')
+                    ->sortable(),
                 TextColumn::make('distance_per_kilo')
                     ->numeric()
                     ->sortable(),

@@ -33,12 +33,6 @@ class CreateBranchRoute extends CreateRecord
         return $data;
     }
 
-    protected function afterCreate(): void
-    {
-        AppointmentHepler::generateForRoute($this->record->id);
-    }
-
-
 
     private function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {

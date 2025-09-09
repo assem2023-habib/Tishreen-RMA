@@ -18,10 +18,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('from_branch_id')->constrained('branches')->cascadeOnDelete();
             $table->foreignId('to_branch_id')->constrained('branches')->cascadeOnDelete();
-            //$table->enum('day', DaysOfWeek::values())->nullable();
             $table->tinyInteger('is_active')->default(1);
-            $table->time('estimated_departur_time')->nullable();
-            $table->time('estimated_arrival_time')->nullable();
+            $table->dateTime('estimated_departur_time')->nullable();
+            $table->dateTime('estimated_arrival_time')->nullable();
             $table->decimal('distance_per_kilo', 11, 3)->nullable();
             $table->unique(['from_branch_id', 'to_branch_id', 'estimated_departur_time'],  'branch_routes_from_to_departure_unique');
             $table->timestamps();

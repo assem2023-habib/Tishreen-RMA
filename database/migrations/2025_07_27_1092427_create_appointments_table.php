@@ -13,15 +13,17 @@ return new class extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->constrained('branches')->cascadeOnDelete();
-            $table->foreignId('route_id')->constrained('branch_routes')->cascadeOnDelete(); // الرحلة المرتبطة
-            $table->date('date'); // تاريخ الموعد
-            $table->time('time'); // وقت البداية للموعد
-            $table->tinyInteger('capacity')->default(4); // عدد الطرود الممكن استيعابها في هذا الموعد
-            $table->tinyInteger('booked_count')->default(0); // عدد الطرود المحجوزة حتى الآن
+
+            $table->foreignId('branch_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+
+            $table->date('date'); // 
+            $table->time('time'); // 
+            $table->boolean('booked')->default(false);
+
             $table->timestamps();
 
-            $table->unique(['branch_id', 'date', 'time']); // لضمان عدم وجود موعد مكرر للفرع
+            $table->unique(['branch_id', 'date', 'time']);
         });
     }
 

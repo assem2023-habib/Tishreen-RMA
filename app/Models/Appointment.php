@@ -7,25 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Appointment extends Model
 {
     protected $fillable = [
-        'branch_id',
-        'route_id',
+        'user_id',
+        'branch_id', // calender for each branch
         'date',
-        'time',
-        'available_slots',
+        'time', // this time is for specific user 
     ];
 
-    public function route()
+    public function user()
     {
-        return $this->belongsTo(BranchRoute::class, 'route_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
-
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'branch_id');
-    }
-
-    public function parcels()
-    {
-        return $this->hasMany(Parcel::class, 'appointment_id');
     }
 }
