@@ -108,14 +108,6 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
     {
         return $this->hasMany(Rate::class);
     }
-    public function roles()
-    {
-        return  $this->belongsToMany(Role::class, 'roles_users');
-    }
-    public function permissions()
-    {
-        return $this->belongsToMany(Permission::class, 'users_permissions');
-    }
     public function notifications()
     {
         return $this->belongsToMany(Notification::class, 'notification_user')
