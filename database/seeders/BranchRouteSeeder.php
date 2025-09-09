@@ -16,7 +16,7 @@ class BranchRouteSeeder extends Seeder
             [
                 'from_branch_id' => 1,
                 'to_branch_id' => 2,
-                'day' => 'Sunday',
+                // 'day' => 'Sunday',
                 'is_active' => 1,
                 'estimated_departur_time' => '08:00:00',
                 'estimated_arrival_time' => '12:00:00',
@@ -25,7 +25,7 @@ class BranchRouteSeeder extends Seeder
             [
                 'from_branch_id' => 2,
                 'to_branch_id' => 3,
-                'day' => 'Monday',
+                // 'day' => 'Monday',
                 'is_active' => 1,
                 'estimated_departur_time' => '09:00:00',
                 'estimated_arrival_time' => '13:30:00',
@@ -34,7 +34,7 @@ class BranchRouteSeeder extends Seeder
             [
                 'from_branch_id' => 1,
                 'to_branch_id' => 4,
-                'day' => 'Tuesday',
+                // 'day' => 'Tuesday',
                 'is_active' => 1,
                 'estimated_departur_time' => '07:30:00',
                 'estimated_arrival_time' => '11:45:00',
@@ -43,7 +43,7 @@ class BranchRouteSeeder extends Seeder
             [
                 'from_branch_id' => 3,
                 'to_branch_id' => 5,
-                'day' => 'Wednesday',
+                // 'day' => 'Wednesday',
                 'is_active' => 1,
                 'estimated_departur_time' => '10:15:00',
                 'estimated_arrival_time' => '14:30:00',

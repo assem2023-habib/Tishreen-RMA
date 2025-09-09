@@ -72,13 +72,10 @@ Route::prefix('v1')->group(function () {
     //----------------------------------------------------------------------------------------------------------------------------
 
     Route::middleware('auth:api')->group(function () {
+
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
-
-
-
-
 
         //----------------------------------Parcel----------------------------------------
 
