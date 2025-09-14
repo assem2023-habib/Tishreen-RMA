@@ -26,5 +26,6 @@ flutter_notification_example.dart
 NOTIFICATIONS_API.postman_collection.json
 NOTIFICATIONS_README.md
 flutter_pubspec.yaml
+
 # Ignore OAuth secrets folder
-/app/secrets/oauth/*
+# /app/secrets/oauth/*
