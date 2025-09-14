@@ -3,9 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Parcel;
+
+use App\Enums\PermissionName;
+use App\Enums\RoleName;
 use App\Models\Branch;
 use App\Models\Employee;
+use App\Models\Parcel;
 use App\Trait\BlamableTrait;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
@@ -17,11 +20,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasName, OAuthenticatable, MustVerifyEmail, FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -103,7 +108,10 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
     }
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        if ($this->hasRole(RoleName::SUPER_ADMIN->value) || $this->hasPermissionTo(PermissionName::CAN_ACCESS_PANEL->value)) {
+            return true;
+        }
+        return false;
     }
     public function rates()
     {

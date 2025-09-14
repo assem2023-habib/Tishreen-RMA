@@ -23,7 +23,12 @@ class DatabaseSeeder extends Seeder
                 FrequentlyAskedQuestionsSeeder::class,
                 PricingPolicySeeder::class,
                 BranchRouteSeeder::class,
-                ParcelSeeder::class
+                ParcelSeeder::class,
+                RoleSeeder::class,
+                PermissionSeeder::class,
+                RolePermissionSeeder::class,
+                UserRoleSeeder::class,
+                EmployeeSeeder::class,
             ]
         );
     }
