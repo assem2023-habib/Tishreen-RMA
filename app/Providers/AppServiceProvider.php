@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Providers;
+
+use App\Enums\SenderType;
+use App\Models\{Employee, GuestUser, Parcel, ParcelAuthorization, User, ParcelHistory};
+use App\Observers\{EmployeeObserver, ParcelObserver, ParcelObserverHistory, UserObserve, ParcelAuthorizationObserver};
+use Carbon\CarbonInterval;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Passport;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void {}
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        Relation::morphMap([
+            SenderType::GUEST_USER->value => \App\Models\GuestUser::class,
+            SenderType::AUTHENTICATED_USER->value => \App\Models\User::class,
+        ]);
+
+        Passport::loadKeysFrom(base_path('app/secrets/oauth'));
+
+        Passport::tokensExpireIn(CarbonInterval::year(1));
+        Passport::refreshTokensExpireIn(CarbonInterval::year(1));
+        Passport::personalAccessTokensExpireIn(CarbonInterval::year(1));
+        Passport::enablePasswordGrant();
+
+        User::observe(UserObserve::class);
+        Parcel::observe(ParcelObserverHistory::class);
+        ParcelAuthorization::observe(ParcelAuthorizationObserver::class);
+        Employee::observe(EmployeeObserver::class);
+    }
+}
