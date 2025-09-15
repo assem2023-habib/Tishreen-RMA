@@ -75,7 +75,7 @@ rma-gradioation-project/
 
 ```bash
 # Clone المشروع
-git clone <repository-url>
+git clone https://github.com/assem2023-habib/Tishreen-RMA.git
 cd rma-gradioation-project
 
 # تثبيت Dependencies
