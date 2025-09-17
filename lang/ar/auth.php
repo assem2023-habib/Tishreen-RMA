@@ -66,5 +66,10 @@ return [
     'account_banned' => 'تم حظر حسابك بشكل دائم',
     'account_frozen' => 'تم تجميد حسابك مؤقتًا',
 
+    // Password
+    'otp_sent' => 'تم إرسال رمز التحقق (OTP).',
 
+    'invalid_or_expired_otp' => 'رمز التحقق (OTP) غير صالح أو منتهي.',
+
+    'authenticated_user' => 'تم استرجاع بيانات المستخدم المصادق عليه بنجاح.',
 ];

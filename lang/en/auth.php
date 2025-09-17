@@ -34,7 +34,7 @@ return [
     'user_name_required' => 'Username is required.',
     'user_name_unique' => 'This username is already taken.',
 
-    // register 
+    // register
     'register_success' => 'User and token created successfully',
 
     'field_to_create_token' => 'Failed when trying to create token',
@@ -67,4 +67,21 @@ return [
     'email_not_verified' => 'Your account is not verified. Please check your email.',
     'otp_sent_to_email' => 'Verification code has been sent to your email.',
     'password_not_correct' => 'The passwrod is wrong',
+
+    // Account status
+    'account_banned' => 'Your account has been banned.',
+    'account_frozen' => 'Your account has been frozen.',
+
+
+    // Server
+    'server_error' => 'Server error occurred.',
+
+    // Logout
+
+    // Password
+    'otp_sent' => 'OTP code has been sent.',
+
+    'invalid_or_expired_otp' => 'Invalid or expired OTP code.',
+
+    'authenticated_user' => 'Authenticated user retrieved successfully.',
 ];

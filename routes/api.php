@@ -76,54 +76,54 @@ Route::prefix('v1')->group(function () {
 
     //----------------------------------------------------------------------------------------------------------------------------
 
-    // Route::middleware('auth:api')->group(function () {
+    Route::middleware('auth:api')->group(function () {
 
-    Route::get('logout', [AuthController::class, 'logout']);
-    Route::get('me', [AuthController::class, 'me']);
-    Route::post('reset-password', [AuthController::class, 'resetPassword']);
+        Route::get('logout', [AuthController::class, 'logout']);
+        Route::get('me', [AuthController::class, 'me']);
+        Route::post('reset-password', [AuthController::class, 'resetPassword']);
 
-    //----------------------------------Parcel----------------------------------------
+        //----------------------------------Parcel----------------------------------------
 
-    Route::resource('/parcel', ParcelController::class)
-        ->only(['index', 'show', 'store', 'update', 'destroy']);
+        Route::resource('/parcel', ParcelController::class)
+            ->only(['index', 'show', 'store', 'update', 'destroy']);
 
-    //---------------------------------Authorization--------------------------------------------
+        //---------------------------------Authorization--------------------------------------------
 
-    Route::resource('/authorization', AuthorizationController::class)
-        ->only(['index', 'show', 'store', 'update', 'destroy']);
+        Route::resource('/authorization', AuthorizationController::class)
+            ->only(['index', 'show', 'store', 'update', 'destroy']);
 
-    Route::post('/authorization/use/{id}', [AuthorizationController::class, 'use'])
-        ->name('authorization.use');
+        Route::post('/authorization/use/{id}', [AuthorizationController::class, 'use'])
+            ->name('authorization.use');
 
-    //--------------------------------Rates----------------------------------------------------
-    Route::resource('/rates', RatesController::class)
-        ->only(['index', 'show', 'store', 'update', 'destroy']);
+        //--------------------------------Rates----------------------------------------------------
+        Route::resource('/rates', RatesController::class)
+            ->only(['index', 'show', 'store', 'update', 'destroy']);
 
-    //--------------------------------Users----------------------------------------------------
+        //--------------------------------Users----------------------------------------------------
 
-    Route::get('/users', UsersController::class)->name('users');
+        Route::get('/users', UsersController::class)->name('users');
 
-    //-------------------------------Notification---------------------------------------------
+        //-------------------------------Notification---------------------------------------------
 
-    Route::prefix('notifications')->group(function () {
-        Route::get('/', [NotificationController::class, 'index']);
-        Route::post('/', [NotificationController::class, 'store']);
-        Route::post('/bulk', [NotificationController::class, 'sendBulk']);
-        Route::get('/stats', [NotificationController::class, 'getStats']);
-        Route::get('/unread-count', [NotificationController::class, 'getUnreadCount']);
-        Route::post('/{id}/read', [NotificationController::class, 'markAsRead']);
-        Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
-        Route::delete('/{id}', [NotificationController::class, 'delete']);
-        Route::post('/test-broadcast', [NotificationController::class, 'testBroadcast']);
+        Route::prefix('notifications')->group(function () {
+            Route::get('/', [NotificationController::class, 'index']);
+            Route::post('/', [NotificationController::class, 'store']);
+            Route::post('/bulk', [NotificationController::class, 'sendBulk']);
+            Route::get('/stats', [NotificationController::class, 'getStats']);
+            Route::get('/unread-count', [NotificationController::class, 'getUnreadCount']);
+            Route::post('/{id}/read', [NotificationController::class, 'markAsRead']);
+            Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+            Route::delete('/{id}', [NotificationController::class, 'delete']);
+            Route::post('/test-broadcast', [NotificationController::class, 'testBroadcast']);
+        });
+
+        //-------------------------------Broadcasting---------------------------------------------
+
+        Route::prefix('broadcasting')->group(function () {
+            Route::post('/auth', [BroadcastController::class, 'authenticate']);
+            Route::get('/channels', [BroadcastController::class, 'channels']);
+            Route::get('/test', [BroadcastController::class, 'test']);
+        });
     });
-
-    //-------------------------------Broadcasting---------------------------------------------
-
-    Route::prefix('broadcasting')->group(function () {
-        Route::post('/auth', [BroadcastController::class, 'authenticate']);
-        Route::get('/channels', [BroadcastController::class, 'channels']);
-        Route::get('/test', [BroadcastController::class, 'test']);
-    });
-});
-// });
-// ->middleware('throttle:6');
+})
+    ->middleware('throttle:6');

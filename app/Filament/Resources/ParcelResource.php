@@ -163,34 +163,16 @@ class ParcelResource extends Resource
                                 ->dehydrated(false)
                                 ->disabled(),
 
-                            // hussein update :
                             // ---------- cost detial -----------
                             TextInput::make('weight')
                                 ->required()
                                 ->numeric()
-                                ->reactive(), //
-                            // ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                            //     if ($state && $get('price_policy_id')) {
-                            //         $price = PricingPolicy::find($get('price_policy_id'))?->price ?? 0;
-                            //         $set('cost', $state * $price);
-                            //     }
-                            // }),
+                                ->reactive(),
 
                             TextInput::make('cost')
                                 ->readOnly()
                                 ->numeric()
                                 ->prefix('$'),
-                            // ->dehydrateStateUsing(
-                            //     fn($state, $get) =>
-                            //     $get('weight') && $get('price_policy_id')
-                            //         ? $get('weight') * PricingPolicy::find($get('price_policy_id'))->price
-                            //         : 0
-                            // )
-                            // ->afterStateHydrated(function ($set, $get) {
-                            //     if ($get('weight') && $get('price_policy_id')) {
-                            //         $set('cost', $get('weight') * PricingPolicy::find($get('price_policy_id'))->price);
-                            //     }
-                            // }),
 
                             Grid::make(1)->schema([
                                 Toggle::make('is_paid')
@@ -269,20 +251,7 @@ class ParcelResource extends Resource
                     }),
                 TextColumn::make('tracking_number')
                     ->searchable(),
-                // TextColumn::make('pricePolicy.policy_type')
-                //     ->label('Policy Type')
-                //     ->sortable(), // remove from the table
-                // TextColumn::make('pricePolicy.price')
-                //     ->label('Policy Price')
-                //     ->getStateUsing(function ($record) {
-                //         if ($record->pricePolicy) {
-                //             $icon = CurrencyType::from($record->pricePolicy->currency)->currencyIcon();
-                //             return $icon . ' ' . number_format($record->pricePolicy->price, 2);
-                //         }
-                //         return '-';
-                //     })
-                //     ->numeric()
-                //     ->sortable(), // remove from the table
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -20,6 +20,7 @@ use App\Services\AuthService;
 use App\Services\UserService;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -172,10 +173,15 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-
-        return $this->successResponse(
-            $request->user(),
-            __('auth.authenticated_user')
+        $data = $request->user();
+        if (!empty($data))
+            return $this->successResponse(
+                $data,
+                __('auth.authenticated_user')
+            );
+        return $this->errorResponse(
+            __('auth.not_authenticated'),
+            401
         );
     }
 
