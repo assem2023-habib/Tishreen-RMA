@@ -26,7 +26,8 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+// use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use App\Filament\Forms\Components\PhoneNumber;
 
 class ParcelResource extends Resource
 {
@@ -149,15 +150,7 @@ class ParcelResource extends Resource
                                 ->required()
                                 ->maxLength(255),
 
-                            PhoneInput::make('reciver_phone')
-                                ->label('Reciver Phone')
-                                ->autoPlaceholder('aggressive')
-                                ->helperText('Include country code, e.g. +9639XXXXXXX')
-                                ->rules(['required', 'regex:/^(\+?\d{6,15})$/'])
-                                ->validationMessages([
-                                    'required' => 'Phone number is required',
-                                    'regex' => 'Invalid phone number format',
-                                ]),
+                            PhoneNumber::make('reciver_phone', 'Reciver Phone'),
 
                             Select::make('parcel_status')
                                 ->label('Parcel Status')

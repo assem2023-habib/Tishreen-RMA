@@ -9,7 +9,7 @@ use Filament\Actions;
 use Filament\Forms\Components\{Grid, Select, TextInput, Toggle};
 use Filament\Forms\Form;
 use Filament\Resources\Pages\EditRecord;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use App\Filament\Forms\Components\PhoneNumber;
 
 class EditParcel extends EditRecord
 {
@@ -44,16 +44,7 @@ class EditParcel extends EditRecord
 
                 TextInput::make('reciver_address')
                     ->required(),
-                PhoneInput::make('reciver_phone')
-                    ->label('Reciver Phone')
-                    ->autoPlaceholder('aggressive')
-                    ->helperText('Include country code, e.g. +9639XXXXXXX')
-                    ->rules(['required', 'regex:/^(\+?\d{6,15})$/'])
-                    ->validationMessages([
-                        'required' => 'Phone number is required',
-                        'regex' => 'Invalid phone number format',
-                    ]),
-
+                PhoneNumber::make('reciver_phone', 'Reciver Phone'),
                 Select::make('parcel_status')
                     ->options(ParcelStatus::class)
                     ->enum(ParcelStatus::class),

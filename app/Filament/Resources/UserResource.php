@@ -2,19 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\FileUpload;
+use App\Filament\Forms\Components\PhoneNumber;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\Country;
 use App\Models\User;
 use App\Models\UserRestriction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\{TextInput, Grid, Select, DatePicker, Toggle};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class UserResource extends Resource
 {
@@ -140,16 +140,7 @@ class UserResource extends Resource
                                 'required' => 'Address is required',
                                 'max' => 'Maximum 255 characters allowed',
                             ]),
-
-                        PhoneInput::make('phone')
-                            ->autoPlaceholder('aggressive')
-                            ->helperText('Include country code, e.g. +9639XXXXXXX')
-                            ->rules(['required', 'regex:/^(\+?\d{6,15})$/'])
-                            ->validationMessages([
-                                'required' => 'Phone number is required',
-                                'regex' => 'Invalid phone number format',
-                            ]),
-
+                        PhoneNumber::make('phone', 'User Phone'),
                     ]),
 
                 TextInput::make('national_number')
