@@ -26,6 +26,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class ParcelResource extends Resource
 {
@@ -140,18 +141,23 @@ class ParcelResource extends Resource
                                         });
                                 }),
 
-                            Forms\Components\TextInput::make('reciver_name')
+                            TextInput::make('reciver_name')
                                 ->required()
                                 ->maxLength(255),
 
-                            Forms\Components\TextInput::make('reciver_address')
+                            TextInput::make('reciver_address')
                                 ->required()
                                 ->maxLength(255),
 
-                            Forms\Components\TextInput::make('reciver_phone')
-                                ->tel()
-                                ->required()
-                                ->maxLength(255),
+                            PhoneInput::make('reciver_phone')
+                                ->label('Reciver Phone')
+                                ->autoPlaceholder('aggressive')
+                                ->helperText('Include country code, e.g. +9639XXXXXXX')
+                                ->rules(['required', 'regex:/^(\+?\d{6,15})$/'])
+                                ->validationMessages([
+                                    'required' => 'Phone number is required',
+                                    'regex' => 'Invalid phone number format',
+                                ]),
 
                             Select::make('parcel_status')
                                 ->label('Parcel Status')
@@ -166,49 +172,32 @@ class ParcelResource extends Resource
 
                             // hussein update :
                             // ---------- cost detial -----------
-                            Forms\Components\TextInput::make('weight')
+                            TextInput::make('weight')
                                 ->required()
                                 ->numeric()
-                                ->reactive() //
-                                ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                    if ($state && $get('price_policy_id')) {
-                                        $price = PricingPolicy::find($get('price_policy_id'))?->price ?? 0;
-                                        $set('cost', $state * $price);
-                                    }
-                                }),
+                                ->reactive(), //
+                            // ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                            //     if ($state && $get('price_policy_id')) {
+                            //         $price = PricingPolicy::find($get('price_policy_id'))?->price ?? 0;
+                            //         $set('cost', $state * $price);
+                            //     }
+                            // }),
 
-                            // Select::make('price_policy_id')
-                            //     ->label('Price Policy')
-                            //     ->options(function () {
-                            //         return PricingPolicy::select('id', 'price', 'price_unit', 'currency')
-                            //             ->get()
-                            //             ->mapWithKeys(function ($pricingPolicy) {
-                            //                 return [$pricingPolicy->id => 'price : ' . $pricingPolicy->price . ', price unit : ' . $pricingPolicy->price_unit];
-                            //             });
-                            //     })
-                            //     ->reactive() // for tracking updates
-                            //     ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                            //         if ($state && $get('weight')) {
-                            //             $price = PricingPolicy::find($state)?->price ?? 0;
-                            //             $set('cost', $get('weight') * $price);
-                            //         }
-                            //     }),
-
-                            Forms\Components\TextInput::make('cost')
+                            TextInput::make('cost')
                                 ->readOnly()
                                 ->numeric()
-                                ->prefix('$')
-                                ->dehydrateStateUsing(
-                                    fn($state, $get) =>
-                                    $get('weight') && $get('price_policy_id')
-                                        ? $get('weight') * PricingPolicy::find($get('price_policy_id'))->price
-                                        : 0
-                                )
-                                ->afterStateHydrated(function ($set, $get) {
-                                    if ($get('weight') && $get('price_policy_id')) {
-                                        $set('cost', $get('weight') * PricingPolicy::find($get('price_policy_id'))->price);
-                                    }
-                                }),
+                                ->prefix('$'),
+                            // ->dehydrateStateUsing(
+                            //     fn($state, $get) =>
+                            //     $get('weight') && $get('price_policy_id')
+                            //         ? $get('weight') * PricingPolicy::find($get('price_policy_id'))->price
+                            //         : 0
+                            // )
+                            // ->afterStateHydrated(function ($set, $get) {
+                            //     if ($get('weight') && $get('price_policy_id')) {
+                            //         $set('cost', $get('weight') * PricingPolicy::find($get('price_policy_id'))->price);
+                            //     }
+                            // }),
 
                             Grid::make(1)->schema([
                                 Toggle::make('is_paid')
