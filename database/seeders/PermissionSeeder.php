@@ -14,10 +14,14 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            ['name' => 'can_access_panel'],
+            'can_access_panel',
+            'user.create',
+            'user.view',
+            'user.update',
+            'user.delete',
         ];
         foreach ($permissions as $permission) {
-            Permission::create($permission);
+            Permission::firstOrCreate(['name' => $permission]);
         }
     }
 }

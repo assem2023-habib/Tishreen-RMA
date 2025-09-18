@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\EmployeeResource\Pages;
 
+use App\Enums\RoleName;
+use App\Enums\RolesName;
 use App\Filament\Resources\EmployeeResource;
 use Filament\Actions;
 use Filament\Notifications\Notification;
@@ -16,9 +18,10 @@ class CreateEmployee extends CreateRecord
     }
     protected function getCreatedNotification(): ?Notification
     {
+        $user = $this->record->user;
         return Notification::make()
             ->success()
             ->title('Employee Add SuccessFully')
-            ->body('The employee has been created successfully.');
+            ->body("The role 'Employee' has been assigned to user" . $user->first_name . " " . $user->last_name . ".");
     }
 }

@@ -27,12 +27,16 @@ class EmployeeObserver
         //
     }
 
+    public function deleting(Employee $employee): void
+    {
+        $employee->user->removeRole(RoleName::EMPLOYEE->value);
+    }
     /**
      * Handle the Employee "deleted" event.
      */
     public function deleted(Employee $employee): void
     {
-        //
+        // $employee->user->removeRole(RoleName::EMPLOYEE->value);
     }
 
     /**
