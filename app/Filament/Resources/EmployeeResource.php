@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EmployeeResource\Pages;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
+use App\Filament\Tables\Actions\ToggleEmployeeRole;
 use App\Models\{Branch, Employee, User};
 use Carbon\Carbon;
 use Filament\Forms;
@@ -135,6 +136,7 @@ class EmployeeResource extends Resource
                 //
             ])
             ->actions([
+                ToggleEmployeeRole::make(),
                 ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),

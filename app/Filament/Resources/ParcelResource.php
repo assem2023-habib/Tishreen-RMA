@@ -290,6 +290,10 @@ class ParcelResource extends Resource
             'edit' => Pages\EditParcel::route('/{record}/edit'),
         ];
     }
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
     private static function getVisible()
     {
         return fn(callable $get) => $get('sender_type') === GuestUser::class;
