@@ -2,9 +2,10 @@
 
 namespace App\Filament\Tables\Actions;
 
-use App\Models\Role;
 use App\Models\User;
 use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class ToggleEmployeeRole extends Action
 {
@@ -23,10 +24,10 @@ class ToggleEmployeeRole extends Action
             : 'success');
         $this->requiresConfirmation();
         $this->modalHeading('change role employee');
-        $this->modalSubheading('are you shure to exchange the status employee role');
-        $this->modalButton('yes, change that');
+        $this->modalDescription('Are you sure you want to change the Employee role status?');
+        $this->modalSubmitActionLabel('yes, change that');
         $this->action(function (User $record): void {
-            if (!auth()->user()->can('Make Employee') && !auth()->user()->hasRole('Admin')) {
+            if (!Auth::user()->can('Make Employee') && !Auth::user()->hasRole('Admin')) {
                 $this->failure();
                 $this->failureNotificationTitle('you dont have permission for that procedure.');
                 return;
@@ -42,7 +43,7 @@ class ToggleEmployeeRole extends Action
                 $this->successNotificationTitle('Employee Role Assignment successfully');
             }
         });
-        $this->hidden(fn(): bool => !auth()->user()->can('Make Employee') && !auth()->user()->hasRole('Admin'));
+        $this->hidden(fn(): bool => !Auth::user()->can('Make Employee') && !Auth::user()->hasRole('Admin'));
     }
     public static function getDefaultName(): ?string
     {

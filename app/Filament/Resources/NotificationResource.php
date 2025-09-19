@@ -24,8 +24,9 @@ class NotificationResource extends Resource
 {
     protected static ?string $model = Notification::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $navigationIcon = 'heroicon-o-bell';
+    protected static ?string $navigationGroup = "Notifications";
+    protected static ?int $navigationSort = 1;
     public static function form(Form $form): Form
     {
         return $form
@@ -38,7 +39,7 @@ class NotificationResource extends Resource
                     ->maxLength(512),
                 Select::make('notification_priority')
                     ->label('الأولوية')
-                    ->options(NotificationPriority::values())
+                    ->options(NotificationPriority::class)
                     ->required(),
                 Select::make('notification_type')
                     ->label('نوع الإشعار')
@@ -59,7 +60,7 @@ class NotificationResource extends Resource
                     ->relationship('users', 'name')
                     ->preload()
                     ->searchable()
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->first_name . ' ' . $record->last_name),
+                    ->getOptionLabelFromRecordUsing(fn($record) => $record->first_name . ' ' . $record->last_name),
             ]);
     }
 
@@ -69,82 +70,75 @@ class NotificationResource extends Resource
             ->columns([
                 TextColumn::make('title')->sortable()->searchable(),
                 TextColumn::make('message')->limit(50),
-                Tables\Columns\IconColumn::make('notification_type')
-                    ->label('نوع الإشعار')
-                    ->icon('heroicon-o-information-circle')
-                    ->color('primary')
-                    ->getStateUsing(function ($state) {
-                        $iconMap = [
-                            'info' => 'heroicon-o-information-circle',
-                            'success' => 'heroicon-o-check-circle',
-                            'warning' => 'heroicon-o-exclamation-triangle',
-                            'danger' => 'heroicon-o-x-circle',
-                            'reminder' => 'heroicon-o-clock',
-                            'update' => 'heroicon-o-arrow-path',
-                            'announcement' => 'heroicon-o-megaphone',
-                        ];
+                // Tables\Columns\IconColumn::make('notification_type')
+                //     ->label('نوع الإشعار')
+                //     ->icon('heroicon-o-information-circle')
+                //     ->color('primary')
+                //     ->getStateUsing(function ($state) {
+                //         $iconMap = [
+                //             'info' => 'heroicon-o-information-circle',
+                //             'success' => 'heroicon-o-check-circle',
+                //             'warning' => 'heroicon-o-exclamation-triangle',
+                //             'danger' => 'heroicon-o-x-circle',
+                //             'reminder' => 'heroicon-o-clock',
+                //             'update' => 'heroicon-o-arrow-path',
+                //             'announcement' => 'heroicon-o-megaphone',
+                //         ];
 
-                        return $iconMap[$state] ?? 'heroicon-o-information-circle';
-                    })
-                    ->color(function ($state) {
-                        $colorMap = [
-                            'info' => 'primary',
-                            'success' => 'success',
-                            'warning' => 'warning',
-                            'danger' => 'danger',
-                            'reminder' => 'info',
-                            'update' => 'success',
-                            'announcement' => 'warning',
-                        ];
+                //         return $iconMap[$state] ?? 'heroicon-o-information-circle';
+                //     })
+                //     ->color(function ($state) {
+                //         $colorMap = [
+                //             'info' => 'primary',
+                //             'success' => 'success',
+                //             'warning' => 'warning',
+                //             'danger' => 'danger',
+                //             'reminder' => 'info',
+                //             'update' => 'success',
+                //             'announcement' => 'warning',
+                //         ];
 
-                        return $colorMap[$state] ?? 'primary';
-                    }),
-                Tables\Columns\BadgeColumn::make('notification_type')
-                    ->label('نوع الإشعار')
-                    ->colors([
-                        'primary' => 'info',
-                        'success' => 'success',
-                        'warning' => 'warning',
-                        'danger' => 'danger',
-                    ])
-                    ->formatStateUsing(function ($state) {
-                        $types = [
-                            'info' => 'معلومات',
-                            'success' => 'نجاح',
-                            'warning' => 'تحذير',
-                            'danger' => 'خطر',
-                            'reminder' => 'تذكير',
-                            'update' => 'تحديث',
-                            'announcement' => 'إعلان',
-                        ];
+                //         return $colorMap[$state] ?? 'primary';
+                //     }),
+                // Tables\Columns\BadgeColumn::make('notification_type')
+                //     ->label('نوع الإشعار')
+                //     ->colors([
+                //         'primary' => 'info',
+                //         'success' => 'success',
+                //         'warning' => 'warning',
+                //         'danger' => 'danger',
+                //     ])
+                //     ->formatStateUsing(function ($state) {
+                //         $types = [
+                //             'info' => 'معلومات',
+                //             'success' => 'نجاح',
+                //             'warning' => 'تحذير',
+                //             'danger' => 'خطر',
+                //             'reminder' => 'تذكير',
+                //             'update' => 'تحديث',
+                //             'announcement' => 'إعلان',
+                //         ];
 
-                        return $types[$state] ?? $state;
-                    }),
-                Tables\Columns\BadgeColumn::make('notification_priority')
+                //         return $types[$state] ?? $state;
+                //     }),
+                TextColumn::make('notification_priority')
                     ->label('الأولوية')
                     ->colors([
-                        'danger' => 'Important',
-                        'warning' => 'Reminder',
-                        'success' => 'Loyalty',
+                        'danger' => NotificationPriority::IMPORTANT->value,
+                        'warning' => NotificationPriority::REMINDER->value,
+                        'success' => 'default',
                     ])
-                    ->formatStateUsing(function ($state) {
-                        $priorities = [
-                            'Important' => 'مهم',
-                            'Reminder' => 'تذكير',
-                            'Loyalty' => 'ولاء',
-                        ];
-
-                        return $priorities[$state] ?? $state;
-                    }),
+                    ->badge(),
                 TextColumn::make('user_names')
                     ->label('المستخدمون')
                     ->getStateUsing(fn($record) => $record->users->pluck('name')->join(', '))
+                    ->badge()
                     ->searchable()
                     ->sortable(),
                 BooleanColumn::make('is_read_for_current_user')
                     ->label('مقروء؟')
                     ->getStateUsing(function ($record) {
-                        $user = auth()->user();
+                        $user = Auth::user();
                         $pivot = $record->users->firstWhere('id', $user->id)?->pivot;
                         return $pivot ? $pivot->is_read : false;
                     }),
@@ -175,8 +169,8 @@ class NotificationResource extends Resource
                     ->options(NotificationPriority::values()),
                 Tables\Filters\Filter::make('unread_only')
                     ->label('غير مقروءة فقط')
-                    ->query(fn (Builder $query) => $query->whereHas('users', function ($q) {
-                        $q->where('user_id', auth()->id())->where('is_read', false);
+                    ->query(fn(Builder $query) => $query->whereHas('users', function ($q) {
+                        $q->where('user_id', Auth::user()->id())->where('is_read', false);
                     })),
             ])
             ->actions([

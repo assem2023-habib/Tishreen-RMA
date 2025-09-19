@@ -1,7 +1,7 @@
 <?php
 
+use App\Events\NotificationSent;
 use App\Http\Controllers\Api\V1\Appointment\AppointmentController;
-use App\Http\Controllers\Api\V1\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\TelegramOtpController;
 use App\Http\Controllers\Api\V1\Authorization\AuthorizationController;
@@ -10,15 +10,14 @@ use App\Http\Controllers\Api\V1\Branche\BranchController;
 use App\Http\Controllers\Api\V1\Branche\GetBranchById;
 use App\Http\Controllers\Api\V1\BranchRoute\BranchRouteController;
 use App\Http\Controllers\Api\V1\CountryAndCity\CountryController;
-use App\Http\Controllers\Api\V1\Day\DaysController;
+use App\Http\Controllers\Api\V1\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Parcel\ParcelController;
 use App\Http\Controllers\Api\V1\PricingPolicy\PricingPolicyController;
 use App\Http\Controllers\Api\V1\Rates\RatesController;
 use App\Http\Controllers\Api\V1\Users\UsersController;
 use App\Http\Controllers\BroadcastController;
-use App\Models\BranchRoute;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 Route::prefix('v1')->group(function () {
 

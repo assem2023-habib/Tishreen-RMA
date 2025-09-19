@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\SenderType;
+use App\Models\Notification;
 use App\Models\{Employee, GuestUser, Parcel, ParcelAuthorization, User, ParcelHistory};
 use App\Observers\{EmployeeObserver, ParcelObserver, ParcelObserverHistory, UserObserve, ParcelAuthorizationObserver};
 use Carbon\CarbonInterval;
@@ -38,5 +39,6 @@ class AppServiceProvider extends ServiceProvider
         Parcel::observe(ParcelObserverHistory::class);
         ParcelAuthorization::observe(ParcelAuthorizationObserver::class);
         Employee::observe(EmployeeObserver::class);
+        Notification::observe(\App\Observers\NotificationObserver::class);
     }
 }

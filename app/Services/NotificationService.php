@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
+use App\Events\NotificationSent;
 use App\Models\Notification;
 use App\Models\User;
 use App\Notifications\SendNotification;
-use Illuminate\Support\Facades\Notification as NotificationFacade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
 
 class NotificationService
 {
@@ -69,6 +70,19 @@ class NotificationService
             // إنشاء الإشعار في قاعدة البيانات
             $notification = $this->createNotification($data, $userIds ?? []);
 
+            // تحديد المستخدمين
+            // $users = $userIds
+            //     ? User::whereIn('id', $userIds)->get()
+            //     : User::all();
+
+            // إرسال الإشعارات عبر نظام Laravel Notifications (لو عندك قنوات ثانية زي البريد أو الـ DB)
+            // NotificationFacade::send($users, new SendNotification($data));
+
+            // 🔥 بث الإشعارات عبر WebSockets
+            // foreach ($users as $user) {
+            //     broadcast(new NotificationSent($notification, $user, $data))->toOthers();
+            // }
+
             // إرسال الإشعارات المباشرة
             if ($userIds) {
                 $users = User::whereIn('id', $userIds)->get();
@@ -77,6 +91,13 @@ class NotificationService
                 $users = User::all();
                 NotificationFacade::send($users, new SendNotification($data));
             }
+
+            // تسجيل الإشعار في اللوج
+            // Log::info('Notification sent successfully', [
+            //     'notification_id' => $notification->id,
+            //     'users_count' => $users->count(),
+            //     'type' => $data['notification_type'] ?? 'unknown'
+            // ]);
 
             // تسجيل الإشعار
             Log::info('Notification sent successfully', [

@@ -71,6 +71,10 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label('Parcels'),
                 NavigationGroup::make()
+                    ->label('Notifications'),
+                NavigationGroup::make()
+                    ->label('Appointments'),
+                NavigationGroup::make()
                     ->label('Geographical Data'),
                 NavigationGroup::make()
                     ->label('Transport'),
