@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
                 RolePermissionSeeder::class,
                 UserRoleSeeder::class,
                 EmployeeSeeder::class,
+                BranchRouteDaySeeder::class,
             ]
         );
     }

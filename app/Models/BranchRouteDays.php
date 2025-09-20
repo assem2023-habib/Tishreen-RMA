@@ -9,6 +9,8 @@ class BranchRouteDays extends Model
     protected $fillable = [
         'day_of_week',
         'branch_route_id',
+        'estimated_departur_time',
+        'estimated_arrival_time'
     ];
     public function branchRoute()
     {
