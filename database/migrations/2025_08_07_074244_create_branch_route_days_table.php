@@ -16,7 +16,9 @@ return new class extends Migration
             $table->id();
             $table->enum('day_of_week', DaysOfWeek::values());
             $table->foreignId('branch_route_id')->constrained('branches')->cascadeOnDelete();
-            $table->unique(['day_of_week', 'branch_route_id']);
+            $table->time('estimated_departur_time')->nullable();
+            $table->time('estimated_arrival_time')->nullable();
+            $table->unique(['day_of_week', 'branch_route_id', 'estimated_departur_time'], 'branch_routes_from_to_departure_unique');
             $table->timestamps();
         });
     }

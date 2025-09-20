@@ -85,20 +85,21 @@ class ParcelResource extends Resource
                             [
                                 TextInput::make('guest_first_name')
                                     ->label('First Name')
-                                    ->required()
-                                    ->visible(self::getVisible()),
+                                    ->required(),
+                                // ->visible(self::getVisible()),
                                 TextInput::make('guest_last_name')
                                     ->label('Last Name')
                                     ->required()
                                     ->visible(self::getVisible()),
-                                TextInput::make('guest_phone')
-                                    ->label('Phone')
-                                    ->required()
-                                    ->visible(self::getVisible()),
+                                // TextInput::make('guest_phone')
+                                //     ->label('Phone')
+                                //     ->required()
+                                //     ->visible(self::getVisible()),
+                                PhoneNumber::make('guest_phone', 'Phone'),
                                 TextInput::make('guest_address')
                                     ->label('Address')
-                                    ->required()
-                                    ->visible(self::getVisible()),
+                                    ->required(),
+                                // ->visible(self::getVisible()),
                                 Select::make('guest_city_id')
                                     ->label('City')
                                     ->options(function () {
@@ -107,8 +108,8 @@ class ParcelResource extends Resource
                                             ->mapWithKeys(function ($city) {
                                                 return [$city->id => $city->en_name];
                                             });
-                                    })
-                                    ->visible(self::getVisible()),
+                                    }),
+                                // ->visible(self::getVisible()),
                                 TextInput::make('guest_national_number')
                                     ->label('National Number')
                                     ->required()
@@ -156,7 +157,7 @@ class ParcelResource extends Resource
                                 ->label('Parcel Status')
                                 ->options(ParcelStatus::class)
                                 ->enum(ParcelStatus::class)
-                                ->default(ParcelStatus::PENDING->value),
+                                ->default(ParcelStatus::CONFIRMED->value),
 
                             TextInput::make('tracking_number')
                                 ->label('Tracking Number : ')

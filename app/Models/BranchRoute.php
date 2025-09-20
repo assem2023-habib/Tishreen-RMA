@@ -53,4 +53,11 @@ class BranchRoute extends Model
     {
         return $this->hasMany(Parcel::class, 'route_id'); // حددنا العمود route_id
     }
+    public function getRouteLabelAttribute(): string
+    {
+        if ($this->fromBranch && $this->toBranch) {
+            return $this->fromBranch->branch_name . " --> " . $this->toBranch->branch_name;
+        }
+        return "-";
+    }
 }

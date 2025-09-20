@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Forms\Components\ActiveToggle;
 use App\Filament\Resources\EmployeeResource\Pages;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
 use App\Filament\Tables\Actions\ToggleEmployeeRole;
@@ -72,18 +73,11 @@ class EmployeeResource extends Resource
                 ),
                 Grid::make(1)->schema(
                     [
-                        Toggle::make('is_active')
-                            ->label('...? is Working')
-                            ->onIcon('heroicon-o-check-circle')
-                            ->offIcon('heroicon-o-no-symbol')
-                            ->onColor('success')
-                            ->offColor('danger')
-                            ->extraAttributes(['class' => 'ml-auto']),
-                    ],
-                )
-                    // ->extraAttributes(['class' => 'h-full flex flex-col justify-end']),
-                    ->extraAttributes(['class' => 'justify-end-safe', 'dir' => 'rtl']),
+                        ActiveToggle::makeRtl('is_active', '...? is Working'),
 
+                    ]
+                )
+                    ->extraAttributes(['class' => 'justify-end-safe', 'dir' => 'rtl']),
             ]);
     }
 
