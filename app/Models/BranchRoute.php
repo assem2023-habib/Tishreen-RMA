@@ -39,10 +39,10 @@ class BranchRoute extends Model
         return $this->belongsTo(Branch::class, 'to_branch_id');
     }
 
-    public function trucks()
-    {
-        return $this->belongsToMany(Truck::class, 'trucks_branch_routes', 'route_id', 'truck_id');
-    }
+    // public function trucks()
+    // {
+    //     return $this->belongsToMany(Truck::class, 'trucks_branch_routes', 'route_id', 'truck_id');
+    // }
 
     public function branchRouteDays()
     {

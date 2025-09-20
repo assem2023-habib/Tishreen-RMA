@@ -8,7 +8,9 @@ use App\Filament\Resources\BranchRouteDaysResource\RelationManagers;
 use App\Models\BranchRoute;
 use App\Models\BranchRouteDays;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -29,26 +31,50 @@ class BranchRouteDaysResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('day_of_week')
-                    ->label('Day')
-                    ->options(DaysOfWeek::class)
-                    ->multiple()
-                    ->required(),
-                Select::make('branch_route_id')
-                    ->label('Brand Route')
-                    ->options(
-                        function () {
-                            return BranchRoute::select('id', 'from_branch_id', 'to_branch_id', 'is_active')
-                                ->where('is_active', 1)
-                                ->get()
-                                ->mapWithKeys(
-                                    function ($branchRoute) {
-                                        return [$branchRoute->id => $branchRoute->fromBranch->branch_name . " --> " . $branchRoute->toBranch->branch_name];
-                                    }
-                                );
-                        }
-                    )
-                    ->required(),
+                Grid::make(2)
+                    ->schema([
+                        Select::make('day_of_week')
+                            ->label('Day')
+                            ->options(DaysOfWeek::class)
+                            ->multiple()
+                            ->required(),
+                        Select::make('branch_route_id')
+                            ->label('Brand Route')
+                            ->options(
+                                function () {
+                                    return BranchRoute::select('id', 'from_branch_id', 'to_branch_id', 'is_active')
+                                        ->where('is_active', 1)
+                                        ->get()
+                                        ->mapWithKeys(
+                                            function ($branchRoute) {
+                                                return [$branchRoute->id => $branchRoute->fromBranch->branch_name . " --> " . $branchRoute->toBranch->branch_name];
+                                            }
+                                        );
+                                }
+                            )
+                            ->required(),
+                    ]),
+                Grid::make(2)
+                    ->schema([
+                        TimePicker::make('estimated_departur_time')
+                            ->label('Estimated Departure Time')
+                            ->required(),
+
+                        TimePicker::make('estimated_arrival_time')
+                            ->label('Estimated Arrival Time')
+                            ->required(),
+                    ]),
+                Grid::make(1)
+                    ->schema([
+                        // هون بتحط السطر تبع الشاحنات
+                        Select::make('trucks')
+                            ->label('Trucks')
+                            ->multiple()
+                            ->relationship('trucks', 'plate_number') // plate_number هو العمود المميز بالشاحنات
+                            ->preload()
+                            ->searchable(),
+                    ]),
+
             ]);
     }
 
@@ -72,6 +98,13 @@ class BranchRouteDaysResource extends Resource
                     ->badge()
                     ->sortable()
                     ->searchable(),
+                TextColumn::make('estimated_departur_time')
+                    ->label('Departure')
+                    ->time(),
+
+                TextColumn::make('estimated_arrival_time')
+                    ->label('Arrival')
+                    ->time(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('trucks_branch_routes', function (Blueprint $table) {
+        Schema::create('trucks_branch_routes_days', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('route_id')->constrained('branch_routes')->cascadeOnDelete();
-            $table->foreignId('truck_id')->constrained('trucks')->cascadeOnDelete();
+            $table->foreignId('branch_route_day_id')->constrained('branch_route_days');
+            $table->foreignId('truck_id')->constrained('trucks');
+
+            $table->unique(['branch_route_day_id', 'truck_id'], 'branch_route_day_truck_unique');
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trucks_branch_routes');
+        Schema::dropIfExists('trucks_branch_routes_days');
     }
 };
