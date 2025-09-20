@@ -19,5 +19,6 @@ class UserRoleSeeder extends Seeder
             ->where('email', 'admin@gmail.com')
             ->first();
         $admin->assignRole(RoleName::SUPER_ADMIN->value);
+        
     }
 }

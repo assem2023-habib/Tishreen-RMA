@@ -16,8 +16,28 @@ class EmployeeSeeder extends Seeder
     {
         $employee = Employee::create(
             [
-                'user_id' => '2',
+                'user_id' => '4',
                 'branch_id' => '1',
+                'beging_date' => now(),
+                'is_active' => 1,
+            ]
+        );
+        $employee->user->assignRole(RoleName::EMPLOYEE->value);
+
+        $employee = Employee::create(
+            [
+                'user_id' => '5',
+                'branch_id' => '2',
+                'beging_date' => now(),
+                'is_active' => 1,
+            ]
+        );
+        $employee->user->assignRole(RoleName::EMPLOYEE->value);
+
+        $employee = Employee::create(
+            [
+                'user_id' => '6',
+                'branch_id' => '3',
                 'beging_date' => now(),
                 'is_active' => 1,
             ]

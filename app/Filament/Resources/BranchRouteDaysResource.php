@@ -24,7 +24,8 @@ class BranchRouteDaysResource extends Resource
 {
     protected static ?string $model = BranchRouteDays::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static ?string $navigationLabel = 'Route Schedules';
     protected static ?string $navigationGroup = 'Transport';
     protected static ?int $navigationSort = 3;
     public static function form(Form $form): Form
@@ -36,7 +37,6 @@ class BranchRouteDaysResource extends Resource
                         Select::make('day_of_week')
                             ->label('Day')
                             ->options(DaysOfWeek::class)
-                            ->multiple()
                             ->required(),
                         Select::make('branch_route_id')
                             ->label('Brand Route')
@@ -70,7 +70,7 @@ class BranchRouteDaysResource extends Resource
                         Select::make('trucks')
                             ->label('Trucks')
                             ->multiple()
-                            ->relationship('trucks', 'plate_number') // plate_number هو العمود المميز بالشاحنات
+                            ->relationship('trucks', 'truck_number') // truck_number هو العمود المميز بالشاحنات
                             ->preload()
                             ->searchable(),
                     ]),
@@ -105,6 +105,12 @@ class BranchRouteDaysResource extends Resource
                 TextColumn::make('estimated_arrival_time')
                     ->label('Arrival')
                     ->time(),
+                TextColumn::make('trucks.truck_number')
+                    ->label('Trucks')
+                    ->badge()
+                    ->separator(', ')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
