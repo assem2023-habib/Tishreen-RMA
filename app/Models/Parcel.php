@@ -52,10 +52,6 @@ class Parcel extends Model
     {
         return $this->hasMany(ParcelHistory::class);
     }
-    // public function pricePolicy()
-    // {
-    //     return $this->belongsTo(PricingPolicy::class);
-    // } // remove the realtion ship
     public function parcelAuthorization()
     {
         return $this->hasMany(ParcelAuthorization::class);
@@ -64,14 +60,4 @@ class Parcel extends Model
     {
         return $this->morphMany(Rate::class, 'rateable');
     }
-
-
-    // public function targetBranch()
-    // {
-    //     return $this->belongsTo(BranchRoute::class, 'from_branch_id');
-    // }
-    // public function sourceBranch()
-    // {
-    //     return $this->belongsTo(BranchRoute::class, 'to_branch_id');
-    // }
 }
