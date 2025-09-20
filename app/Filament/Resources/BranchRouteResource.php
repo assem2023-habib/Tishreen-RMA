@@ -97,21 +97,6 @@ class BranchRouteResource extends Resource
 
                 Grid::make(2)->schema(
                     [
-                        DateTimePicker::make('estimated_departur_time')
-                            ->label('Departure Time')
-                            ->required()
-
-                            ->displayFormat('Y-m-d H:i'), // عرض التاريخ والوقت
-                        DateTimePicker::make('estimated_arrival_time')
-                            ->label('Arrival Time')
-                            ->afterOrEqual('estimated_departur_time')
-                            ->required()
-
-                            ->displayFormat('Y-m-d H:i'),
-                    ]
-                ),
-                Grid::make(2)->schema(
-                    [
 
                         TextInput::make('distance_per_kilo')
                             ->numeric()
@@ -162,8 +147,10 @@ class BranchRouteResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
-                    MarkAsArrivedAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    // MarkAsArrivedAction::make(),
                 ]),
             ])
 

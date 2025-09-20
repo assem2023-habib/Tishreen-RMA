@@ -74,16 +74,4 @@ class Parcel extends Model
     // {
     //     return $this->belongsTo(BranchRoute::class, 'to_branch_id');
     // }
-
-    // protected static function booted()
-    // {
-    //     static::creating(function ($parcel) {
-    //         if (!empty($parcel->weight) && !empty($parcel->price_policy_id)) {
-    //             $pricePolicy = PricingPolicy::find($parcel->price_policy_id);
-    //             $parcel->cost = (float) $parcel->weight * (float) ($pricePolicy->price ?? 0);
-    //         } else {
-    //             $parcel->cost = 2;
-    //         }
-    //     });
-    // } // remove becuse all of that exists in obsrever name ParcelObserverHistory
 }

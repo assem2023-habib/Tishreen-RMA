@@ -27,10 +27,10 @@ class MarkAsArrivedAction
                     // SMSService::send($parcel->reciver_phone, $message);
 
                     // Record history
-                    $parcel->parcelsHistories()->create([
-                        'status' => 'arrived',
-                        'notes' => $message,
-                    ]);
+                    // $parcel->parcelsHistories()->create([
+                    //     'status' => 'arrived',
+                    //     'notes' => $message,
+                    // ]);
                 }
 
                 // Show success notification
