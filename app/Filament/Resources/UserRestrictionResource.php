@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\UserAccountStatus;
+use App\Filament\Forms\Components\ActiveToggleColumn;
 use App\Filament\Resources\UserRestrictionResource\Pages;
 use App\Filament\Resources\UserRestrictionResource\RelationManagers;
 use App\Models\User;
@@ -115,12 +116,7 @@ class UserRestrictionResource extends Resource
                 TextColumn::make('ends_at')
                     ->dateTime('Y-M-d')
                     ->sortable(),
-                ToggleColumn::make('is_active')
-                    ->onIcon('heroicon-o-check-circle')
-                    ->offIcon('heroicon-o-no-symbol')
-                    ->onColor('success')
-                    ->offColor('danger')
-                    ->sortable(),
+                ActiveToggleColumn::make('is_active'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

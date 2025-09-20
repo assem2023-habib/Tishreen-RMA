@@ -3,16 +3,19 @@
 namespace App\Filament\Resources;
 
 use App\Enums\DaysOfWeek;
+use App\Filament\Forms\Components\ActiveToggle;
+use App\Filament\Forms\Components\ActiveToggleColumn;
 use App\Filament\Resources\BranchRouteResource\Pages;
+use App\Filament\Tables\Actions\MarkAsArrivedAction;
 use App\Models\Branch;
 use App\Models\BranchRoute;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\{Select, TextInput, TimePicker, Toggle, Grid, Hidden, View};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Forms\Components\DateTimePicker;
 
 
 class BranchRouteResource extends Resource
@@ -141,18 +144,7 @@ class BranchRouteResource extends Resource
                     ->label('From Branch')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('is_active')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('estimated_departur_time')
-                    ->label('Departure Time')
-                    ->dateTime('Y-m-d H:i')
-                    ->sortable(),
-
-                TextColumn::make('estimated_arrival_time')
-                    ->label('Arrival Time')
-                    ->dateTime('Y-m-d H:i')
-                    ->sortable(),
+                ActiveToggleColumn::make('is_active'),
                 TextColumn::make('distance_per_kilo')
                     ->numeric()
                     ->sortable(),
@@ -171,35 +163,8 @@ class BranchRouteResource extends Resource
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
-                    Tables\Actions\Action::make('markAsArrived')
-                        ->label('Mark as Arrived')
-                        ->icon('heroicon-s-check')
-                        ->color('success')
-                        ->requiresConfirmation()
-                        ->action(function (BranchRoute $record) {
-                            // Get all parcels related to this route
-                            $parcels = $record->parcels;
-
-                            foreach ($parcels as $parcel) {
-                                // Send SMS with tracking number
-                                $message = "Your parcel has arrived at the destination. Tracking code: {$parcel->tracking_number}";
-                                // Example: call your SMS service
-                                // SMSService::send($parcel->reciver_phone, $message);
-
-                                // Record history
-                                $parcel->parcelsHistories()->create([
-                                    'status' => 'arrived',
-                                    'notes' => $message,
-                                ]);
-                            }
-
-                            // Show success notification
-                            \Filament\Notifications\Notification::make()
-                                ->title('All related parcels have been updated!')
-                                ->success()
-                                ->send();
-                        }),
-                ])->icon('heroicon-s-ellipsis-vertical'), // three vertical dots
+                    MarkAsArrivedAction::make(),
+                ]),
             ])
 
 
