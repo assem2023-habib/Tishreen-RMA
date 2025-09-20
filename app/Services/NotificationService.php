@@ -67,9 +67,6 @@ class NotificationService
     public function sendNotification(array $data, ?array $userIds = null)
     {
         try {
-            // إنشاء الإشعار في قاعدة البيانات
-            $notification = $this->createNotification($data, $userIds ?? []);
-
             // تحديد المستخدمين
             // $users = $userIds
             //     ? User::whereIn('id', $userIds)->get()
@@ -83,6 +80,17 @@ class NotificationService
             //     broadcast(new NotificationSent($notification, $user, $data))->toOthers();
             // }
 
+            // تسجيل الإشعار في اللوج
+            // Log::info('Notification sent successfully', [
+            //     'notification_id' => $notification->id,
+            //     'users_count' => $users->count(),
+            //     'type' => $data['notification_type'] ?? 'unknown'
+            // ]);
+
+            // إنشاء الإشعار في قاعدة البيانات
+            $notification = $this->createNotification($data, $userIds ?? []);
+
+
             // إرسال الإشعارات المباشرة
             if ($userIds) {
                 $users = User::whereIn('id', $userIds)->get();
@@ -91,13 +99,6 @@ class NotificationService
                 $users = User::all();
                 NotificationFacade::send($users, new SendNotification($data));
             }
-
-            // تسجيل الإشعار في اللوج
-            // Log::info('Notification sent successfully', [
-            //     'notification_id' => $notification->id,
-            //     'users_count' => $users->count(),
-            //     'type' => $data['notification_type'] ?? 'unknown'
-            // ]);
 
             // تسجيل الإشعار
             Log::info('Notification sent successfully', [
