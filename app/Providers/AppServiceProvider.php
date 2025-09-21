@@ -4,8 +4,9 @@ namespace App\Providers;
 
 use App\Enums\SenderType;
 use App\Models\Notification;
-use App\Models\{Employee, GuestUser, Parcel, ParcelAuthorization, User, ParcelHistory};
-use App\Observers\{EmployeeObserver, ParcelObserver, ParcelObserverHistory, UserObserve, ParcelAuthorizationObserver};
+use App\Models\{Employee, Parcel, ParcelAuthorization, User};
+use App\Observers\ParcelLifecycleObserver;
+use App\Observers\{EmployeeObserver, UserObserve, ParcelAuthorizationObserver};
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
@@ -36,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
         Passport::enablePasswordGrant();
 
         User::observe(UserObserve::class);
-        Parcel::observe(ParcelObserverHistory::class);
+        Parcel::observe(ParcelLifecycleObserver::class);
         ParcelAuthorization::observe(ParcelAuthorizationObserver::class);
         Employee::observe(EmployeeObserver::class);
         Notification::observe(\App\Observers\NotificationObserver::class);

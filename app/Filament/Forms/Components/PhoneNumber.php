@@ -10,6 +10,7 @@ class PhoneNumber
     {
         return PhoneInput::make($name)
             ->label($label ?? 'Phone Number')
+            ->defaultCountry('SY') // ← هنا بتحدد سوريا كدولة افتراضية
             ->autoPlaceholder('aggressive')
             ->helperText('Include country code, e.g. +9639XXXXXXX')
             ->rules(['required', 'regex:/^(\+?\d{6,15})$/'])

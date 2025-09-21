@@ -5,13 +5,13 @@ namespace App\Filament\Resources;
 use App\Enums\CurrencyType;
 use App\Enums\ParcelStatus;
 use App\Enums\SenderType;
+use App\Filament\Forms\Components\PhoneNumber;
 use App\Filament\Resources\ParcelResource\Pages;
-use App\Filament\Resources\ParcelResource\RelationManagers;
-use App\Models\{User, PricingPolicy, Parcel, GuestUser, City, BranchRoute};
-use Filament\Forms;
+use App\Filament\Tables\Actions\ConfirmParcelAction;
+
+use App\Models\{User, Parcel, GuestUser, City, BranchRoute};
 
 use Filament\Forms\Components\Wizard\Step;
-
 use Filament\Forms\Components\{
     DatePicker,
     Grid,
@@ -23,11 +23,11 @@ use Filament\Forms\Components\{
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
+// use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-// use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
-use App\Filament\Forms\Components\PhoneNumber;
 
 class ParcelResource extends Resource
 {
@@ -86,20 +86,14 @@ class ParcelResource extends Resource
                                 TextInput::make('guest_first_name')
                                     ->label('First Name')
                                     ->required(),
-                                // ->visible(self::getVisible()),
                                 TextInput::make('guest_last_name')
                                     ->label('Last Name')
                                     ->required()
                                     ->visible(self::getVisible()),
-                                // TextInput::make('guest_phone')
-                                //     ->label('Phone')
-                                //     ->required()
-                                //     ->visible(self::getVisible()),
                                 PhoneNumber::make('guest_phone', 'Phone'),
                                 TextInput::make('guest_address')
                                     ->label('Address')
                                     ->required(),
-                                // ->visible(self::getVisible()),
                                 Select::make('guest_city_id')
                                     ->label('City')
                                     ->options(function () {
@@ -109,7 +103,6 @@ class ParcelResource extends Resource
                                                 return [$city->id => $city->en_name];
                                             });
                                     }),
-                                // ->visible(self::getVisible()),
                                 TextInput::make('guest_national_number')
                                     ->label('National Number')
                                     ->required()
@@ -249,8 +242,11 @@ class ParcelResource extends Resource
                         ParcelStatus::FAILED->value => 'secondary',
                         ParcelStatus::RETURNED->value => 'danger',
                         default => 'gray',
-                    }),
+                    })
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('tracking_number')
+                    ->badge()
                     ->searchable(),
 
                 TextColumn::make('created_at')
@@ -267,7 +263,13 @@ class ParcelResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ConfirmParcelAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -11,7 +11,7 @@ use App\Models\{Parcel, ParcelHistory};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
-class ParcelObserverHistory
+class ParcelLifecycleObserver
 {
     /**
      * Handle the Parcel "created" event.
@@ -19,8 +19,8 @@ class ParcelObserverHistory
     public function creating(Parcel $parcel)
     {
         $parcel->tracking_number = $this->generateUniqueTrackingNumber();
-        $pricePolicy = $this->getPriceFromPricePolicy($parcel->weight);
-        $parcel->cost = $this->calculateCostByPricePolicy($parcel->weight, $pricePolicy);
+        $pricePolicy = $this->resolvePriceByWeight($parcel->weight);
+        $parcel->cost = $this->calculateCost($parcel->weight, $pricePolicy);
     }
     public function updating(Parcel $parcel)
     {
@@ -33,7 +33,7 @@ class ParcelObserverHistory
             ->where('limit_max', '>=', $parcel['weight'])
             ->first();
         if ($pricePolicy) {
-            $parcel->cost = $this->calculateCostByPricePolicy($parcel->weight, $pricePolicy->price);
+            $parcel->cost = $this->calculateCost($parcel->weight, $pricePolicy->price);
             $parcel->saveQuietly();
         }
         $changes = $parcel->getChanges();
@@ -75,11 +75,11 @@ class ParcelObserverHistory
         } while (Parcel::where('tracking_number', $tracking)->exists());
         return $tracking;
     }
-    private function calculateCostByPricePolicy($weight, $pricePolicy)
+    private function calculateCost($weight, $pricePolicy)
     {
         return $weight * $pricePolicy;
     }
-    private function getPriceFromPricePolicy($weight)
+    private function resolvePriceByWeight($weight)
     {
         $policy = PricingPolicy::select(
             'policy_type',
