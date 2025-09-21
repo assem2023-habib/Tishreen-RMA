@@ -6,6 +6,8 @@ use App\Filament\Resources\ParcelHistoryResource\Pages;
 use App\Filament\Resources\ParcelHistoryResource\RelationManagers;
 use App\Models\ParcelHistory;
 use Filament\Forms;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -26,20 +28,38 @@ class ParcelHistoryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('parcel_id')
+                TextInput::make('modified_by')
+                    ->label('Modified By')
+                    ->disabled()
+                    ->formatStateUsing(fn($state, $record) => $record?->user?->user_name ?? '-'),
+
+                TextInput::make('parcel_sender')
+                    ->label('Parcel Sender')
+                    ->disabled()
+                    ->formatStateUsing(
+                        fn($state, $record) =>
+                        $record?->parcel?->sender instanceof \App\Models\User
+                            ? $record->parcel->sender->user_name
+                            : '-'
+                    ),
+                TextInput::make('user_id')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\Textarea::make('old_data')
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('new_data')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('changes')
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('operation_type')
+                Textarea::make('old_data')
+                    ->columnSpanFull()
+                    ->formatStateUsing(fn($state) => json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))
+                    ->disabled(),
+
+                Textarea::make('new_data')
+                    ->columnSpanFull()
+                    ->formatStateUsing(fn($state) => json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))
+                    ->disabled(),
+
+                Textarea::make('changes')
+                    ->columnSpanFull()
+                    ->formatStateUsing(fn($state) => json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))
+                    ->disabled(),
+                TextInput::make('operation_type')
                     ->required(),
             ]);
     }
@@ -48,25 +68,25 @@ class ParcelHistoryResource extends Resource
     {
         return $table
             ->columns([
-                // Tables\Columns\TextColumn::make('parcel_id')
-                //     ->numeric()
-                //     ->sortable(),
-                TextColumn::make('parcel')
-                    ->label('Reciver')
-                    ->getStateUsing(function ($record) {
-                        return $record->parcel->reciver_name ?? 'reciver_name';
-                    }),
-                TextColumn::make('user')
-                    ->label('Sender')
-                    ->getStateUsing(function ($record) {
-                        return $record->user->user_name;
-                    }),
-                // TextColumn::make('user_id')
-                //     ->numeric()
-                //     ->sortable(),
+                TextColumn::make('modified_by')
+                    ->label('Modified By')
+                    ->getStateUsing(fn($record) => $record->user?->user_name ?? '-'),
+
+                TextColumn::make('parcel_sender')
+                    ->label('Parcel Sender')
+                    ->getStateUsing(
+                        fn($record) =>
+                        $record->parcel?->sender instanceof \App\Models\User
+                            ? $record->parcel->sender->user_name
+                            : '-'
+                    ),
                 TextColumn::make('changes')
+                    ->label('Changes')
+                    ->formatStateUsing(fn($state) => is_array($state) ? json_encode($state, JSON_UNESCAPED_UNICODE) : $state)
+                    ->wrap()
                     ->searchable(),
-                TextColumn::make('operation_type'),
+                TextColumn::make('operation_type')
+                    ->badge(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -100,8 +120,11 @@ class ParcelHistoryResource extends Resource
     {
         return [
             'index' => Pages\ListParcelHistories::route('/'),
-            // 'create' => Pages\CreateParcelHistory::route('/create'),
-            // 'edit' => Pages\EditParcelHistory::route('/{record}/edit'),
         ];
+    }
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['user', 'parcel.sender']);
     }
 }
