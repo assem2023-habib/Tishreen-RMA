@@ -80,7 +80,7 @@ class ParcelHistoryResource extends Resource
                 //
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(), // remove the button edit
+                Tables\Actions\ViewAction::make('show'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

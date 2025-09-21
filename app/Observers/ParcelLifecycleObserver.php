@@ -39,7 +39,7 @@ class ParcelLifecycleObserver
         $changes = $parcel->getChanges();
         ParcelHistory::create([
             'parcel_id' => $parcel->id,
-            'operation_type' => OperationTypes::CREATED->value,
+            'operation_type' => OperationTypes::UPDATED->value,
             'old_data' =>  $parcel->getOriginal(),
             'new_data' => $parcel->toArray(),
             'changes' => $changes,
@@ -61,7 +61,7 @@ class ParcelLifecycleObserver
     {
         ParcelHistory::create([
             'parcel_id' => $parcel->id,
-            'operation_type' => OperationTypes::DELETED,
+            'operation_type' => OperationTypes::DELETED->value,
             'user_id' => Auth::user()->id,
             'new_data' => null,
             'old_data' => $parcel->toArray(),
