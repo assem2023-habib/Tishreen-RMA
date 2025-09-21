@@ -92,7 +92,9 @@ class BranchRouteDaysResource extends Resource
                         'info' => DaysOfWeek::THURSDAY->value,
                         'secondary' => DaysOfWeek::FRIDAY->value,
                         'gray' => DaysOfWeek::SATURDAY->value,
-                    ]),
+                    ])
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('branchRoute.routeLabel')
                     ->label('Route')
                     ->badge()

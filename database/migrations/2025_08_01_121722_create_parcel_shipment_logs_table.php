@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('parcel_id')->unique()->constrained('parcels')->cascadeOnDelete();
             $table->foreignId('pick_up_confirmed_by_emp_id')->constrained('employees')->cascadeOnDelete();
             $table->foreignId('delivery_confirmed_by_emp_id')->constrained('employees')->cascadeOnDelete();
-            $table->foreignId('truck_id')->constrained('trucks')->cascadeOnDelete();
+            $table->foreignId('truck_id')->constrained('trucks');
             $table->dateTime('pick_up_confiremd_date'); // تاريخ تأكيد تسليم الطرد إلى الغرع
             $table->dateTime('delivery_confirmed_date')->nullable(); // تاريخ الذي تم فيه تسليم الطرد للعمي
             $table->dateTime('assigned_truck_date')->nullable();

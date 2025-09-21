@@ -12,10 +12,10 @@ class NotificationObserver
      */
     public function created(Notification $notification): void
     {
-        // جلب المستخدمين المرتبطين (جدول notification_user)
-        $users = $notification->users()->get();
-        if ($users->isNotEmpty()) {
-            app(NotificationService::class)->sendNotification($notification->toArray(), $users->pluck('id')->toArray());
+        $userIds = $notification->users()->pluck('users.id')->toArray();
+
+        if (!empty($userIds)) {
+            app(NotificationService::class)->dispatchNotification($notification, $userIds);
         }
     }
 

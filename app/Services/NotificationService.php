@@ -177,4 +177,31 @@ class NotificationService
 
         return $results;
     }
+    public function dispatchNotification(Notification $notification, array $userIds)
+    {
+        try {
+            $users = User::whereIn('id', $userIds)->get();
+
+            // أرسل عبر قنوات Laravel Notifications
+            \Illuminate\Support\Facades\Notification::send(
+                $users,
+                new SendNotification($notification->toArray())
+            );
+
+            // بث عبر WebSockets لو بدك
+            // foreach ($users as $user) {
+            //     broadcast(new NotificationSent($notification, $user, $notification->toArray()))->toOthers();
+            // }
+
+            Log::info('Dispatched notification via observer', [
+                'notification_id' => $notification->id,
+                'users_count' => count($userIds),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to dispatch notification', [
+                'error' => $e->getMessage(),
+                'notification_id' => $notification->id,
+            ]);
+        }
+    }
 }
