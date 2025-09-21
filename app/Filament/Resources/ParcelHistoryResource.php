@@ -28,12 +28,12 @@ class ParcelHistoryResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('modified_by')
+                TextInput::make('user_id')
                     ->label('Modified By')
                     ->disabled()
                     ->formatStateUsing(fn($state, $record) => $record?->user?->user_name ?? '-'),
 
-                TextInput::make('parcel_sender')
+                TextInput::make('parcel_id')
                     ->label('Parcel Sender')
                     ->disabled()
                     ->formatStateUsing(
@@ -42,9 +42,6 @@ class ParcelHistoryResource extends Resource
                             ? $record->parcel->sender->user_name
                             : '-'
                     ),
-                TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
                 Textarea::make('old_data')
                     ->columnSpanFull()
                     ->formatStateUsing(fn($state) => json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))

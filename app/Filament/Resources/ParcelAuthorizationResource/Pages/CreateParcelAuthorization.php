@@ -5,9 +5,8 @@ namespace App\Filament\Resources\ParcelAuthorizationResource\Pages;
 use App\Enums\SenderType;
 use App\Filament\Resources\ParcelAuthorizationResource;
 use App\Models\GuestUser;
-use App\Models\ParcelAuthorization;
 use App\Models\User;
-use Filament\Actions;
+use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Str;
@@ -26,8 +25,13 @@ class CreateParcelAuthorization extends CreateRecord
         return Notification::make()
             ->success()
             ->title("Parcel Created : {$authoriztion->authorized_code}")
-            ->body("The parcel with status {$authoriztion->authorized_status}
-            has been created successfully at {$authoriztion->generated_at} and expired at {$authoriztion->expired_at}.");
+            ->body("The parcel with status "
+                . $authoriztion->authorized_status
+                . " has been created successfully at "
+                . $authoriztion->generated_at
+                . " and expired at "
+                . $authoriztion->expired_at
+                . " .");
     }
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -45,13 +49,6 @@ class CreateParcelAuthorization extends CreateRecord
 
         return $data;
     }
-    // private function generateUniqeAuthorizedCode()
-    // {
-    //     do {
-    //         $authorized_code = strtoupper(Str::random(10));
-    //     } while (ParcelAuthorization::where('authorized_code', $authorized_code)->exists());
-    //     return $authorized_code;
-    // }
     private function saveGuestUser($data)
     {
         return  GuestUser::create([
