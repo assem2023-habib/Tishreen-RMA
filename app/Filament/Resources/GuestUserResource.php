@@ -39,7 +39,6 @@ class GuestUserResource extends Resource
                 TextInput::make('last_name')
                     ->label('Last Name')
                     ->required(),
-                // ->visible(self::getVisible()),
                 PhoneNumber::make('phone', 'Phone'),
                 TextInput::make('address')
                     ->label('Address')

@@ -35,26 +35,11 @@ class CreateParcel extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
 
-        if ($data['sender_type'] === GuestUser::class) {
+        if ($data['sender_type'] === SenderType::GUEST_USER->value) {
             $guestUser = $this->saveGuestUser($data);
             $data['sender_id'] = $guestUser->id;
-            $data['sender_type'] = SenderType::GUEST_USER->value;
+            return $data;
         }
-
-        if ($data['sender_type'] === User::class) {
-            $data['sender_type'] = SenderType::AUTHENTICATED_USER->value;
-        }
-
-        // **حساب cost بعد التأكد من weight و price_policy_id**
-        if (!empty($data['weight']) && !empty($data['price_policy_id'])) {
-            $price = PricingPolicy::find($data['price_policy_id'])?->price ?? 0;
-            $data['cost'] = $data['weight'] * $price;
-        } else {
-            $data['cost'] = 0;
-        }
-
-
-        // dd($data);
         return $data;
     }
 
