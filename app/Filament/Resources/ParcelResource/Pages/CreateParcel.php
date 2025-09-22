@@ -20,6 +20,10 @@ class CreateParcel extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+    protected function getFormActions(): array
+    {
+        return []; // صحيح
+    }
     protected function getCreatedNotification(): ?Notification
     {
         $parcel = $this->record;

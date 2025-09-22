@@ -9,7 +9,9 @@ use App\Filament\Forms\Components\PhoneNumber;
 use App\Filament\Resources\ParcelResource\Pages;
 use App\Filament\Tables\Actions\{ConfirmParcelAction, ViewGuestSenderAction};
 use App\Models\{User, Parcel, GuestUser, City, BranchRoute};
+use Filament\Actions\Action;
 use Filament\Forms\Components\Wizard\Step;
+
 use Filament\Forms\Components\{
     DatePicker,
     Grid,
@@ -25,6 +27,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class ParcelResource extends Resource
 {
@@ -46,11 +49,13 @@ class ParcelResource extends Resource
                                 Select::make('sender_type')
                                     ->label('Sender Type')
                                     ->options(
-                                        [
-                                            User::class => SenderType::AUTHENTICATED_USER->value,
-                                            GuestUser::class => SenderType::GUEST_USER->value,
-                                        ],
+                                        SenderType::class
+                                        // [
+                                        //     User::class => SenderType::AUTHENTICATED_USER->value,
+                                        //     GuestUser::class => SenderType::GUEST_USER->value,
+                                        // ],
                                     )
+                                    // ->default(User::class)
                                     ->reactive()
                                     ->required(),
                             ],
@@ -72,7 +77,7 @@ class ParcelResource extends Resource
                                     })
                             ],
                         )
-                        ->visible(fn(callable $get) => $get('sender_type') === User::class),
+                        ->visible(self::getVisible(SenderType::AUTHENTICATED_USER->value)),
 
                     // parcel details for guest
                     Step::make('Sender Guest Details')
@@ -173,9 +178,10 @@ class ParcelResource extends Resource
                                     ->onColor('success')
                                     ->offColor('danger'),
                             ]),
-                        ]),
+                        ])
                 ])
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->submitAction(self::creteButton()),
             ]);
     }
 
@@ -295,8 +301,34 @@ class ParcelResource extends Resource
     {
         return static::getModel()::count();
     }
-    private static function getVisible()
+    private static function getVisible($senderType = SenderType::GUEST_USER->value)
     {
-        return fn(callable $get) => $get('sender_type') === GuestUser::class;
+        return fn(callable $get) => $get('sender_type') === $senderType;
+    }
+    private static function creteButton(): HtmlString
+    {
+        return new HtmlString(
+            "<button style=\"
+                border-radius: 12px;
+                padding: 10px 20px;
+                font-weight: 600;
+                font-size: 14px;
+                color: #fff;
+                background: linear-gradient(135deg, #ff7e5f, #feb47b);
+                border: none;
+                cursor: pointer;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            \"
+            onmouseover=\"
+                this.style.transform='translateY(-2px)';
+                this.style.boxShadow='0 4px 10px rgba(0,0,0,0.2)';
+            \"
+            onmouseout=\"
+                this.style.transform='translateY(0)';
+                this.style.boxShadow='none';
+            \">
+                Create Parcel
+            </button>"
+        );
     }
 }

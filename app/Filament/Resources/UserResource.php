@@ -34,26 +34,21 @@ class UserResource extends Resource
                     ->schema([
                         TextInput::make('first_name')
                             ->label('First Name')
-                            // ->helperText('Arabic letters only')
                             ->rules([
                                 'required',
-                                // 'regex:/^[A-Za-z\s]+$/',
                                 'min:2',
                                 'max:50',
                             ])
                             ->validationMessages([
                                 'required' => 'Last name is required',
-                                // 'regex' => 'Only English letters are allowed',
                                 'min' => 'At least 2 characters required',
                                 'max' => 'Maximum 50 characters allowed',
                             ]),
 
                         TextInput::make('last_name')
                             ->label('Last Name')
-                            // ->helperText('English letters only')
                             ->rules([
                                 'required',
-                                // 'regex:/^[A-Za-z\s]+$/',
                                 'min:2',
                                 'max:50',
                             ])
@@ -94,13 +89,6 @@ class UserResource extends Resource
                                 'min' => 'Password must be at least 8 characters',
                             ])
                             ->dehydrated(fn($state) => filled($state)),
-
-                        // Select::make('account_status')
-                        //     ->label('Account Status')
-                        //     ->options(UserAccountStatus::class)
-                        //     ->enum(UserAccountStatus::class)
-                        //     ->default(null)
-                        //     ->required(), // delete the column for restrication users
                     ]),
 
                 Grid::make(2)

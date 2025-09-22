@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\GuestType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,7 +21,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('national_number');
             $table->date('birthday');
-            $table->enum('user_type', ['Sender', 'Authorized'])->default('Sender');
+            $table->enum('user_type', GuestType::values())->default(GuestType::SENDER->value);
             $table->timestamps();
         });
     }

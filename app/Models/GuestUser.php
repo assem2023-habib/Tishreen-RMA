@@ -15,6 +15,7 @@ class GuestUser extends Model
         'address',
         'national_number',
         'birthday',
+        'user_type',
     ];
 
     public function parcels()
@@ -28,5 +29,9 @@ class GuestUser extends Model
     public function sender()
     {
         return  $this->morphMany(Parcel::class, 'sender');
+    }
+    public function city()
+    {
+        return $this->belongsTo(City::class);
     }
 }

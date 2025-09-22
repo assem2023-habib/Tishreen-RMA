@@ -9,4 +9,8 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateGuestUser extends CreateRecord
 {
     protected static string $resource = GuestUserResource::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
