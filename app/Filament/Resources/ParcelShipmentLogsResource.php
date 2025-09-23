@@ -148,8 +148,7 @@ class ParcelShipmentLogsResource extends Resource
                                     );
                             })
                             ->searchable()
-                            ->reactive()
-                            ->required(),
+                            ->reactive(),
                     ]),
 
                 // Select::make('truck_id')

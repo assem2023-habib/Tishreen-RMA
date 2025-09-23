@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('branch_route_day_id')->constrained('branch_route_days');
             $table->foreignId('truck_id')->constrained('trucks');
-
-            $table->unique(['branch_route_day_id', 'truck_id'], 'branch_route_day_truck_unique');
             $table->timestamps();
         });
     }

@@ -13,4 +13,10 @@ class CreateParcelShipmentLogs extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+
+        unset($data['route_id']);
+        return $data;
+    }
 }
