@@ -65,7 +65,7 @@ class PricingPolicySeeder extends Seeder
         PricingPolicy::insert([
             [
                 'policy_type' => PolicyTypes::WEIGHT->value,
-                'price' => 5000.00, // مثال: 5000 ليرة للكيلو حتى 5 كيلو
+                'price' => 50.00, // مثال: 5000 ليرة للكيلو حتى 5 كيلو
                 'price_unit' => PriceUnit::KG->value,
                 'limit_min' => 0,
                 'limit_max' => 5.99,
@@ -76,7 +76,7 @@ class PricingPolicySeeder extends Seeder
             ],
             [
                 'policy_type' => PolicyTypes::WEIGHT->value,
-                'price' => 9000.00, // من 6 إلى 10 كيلو
+                'price' => 90.00, // من 6 إلى 10 كيلو
                 'price_unit' => PriceUnit::KG->value,
                 'limit_min' => 6,
                 'limit_max' => 10.99,
@@ -87,7 +87,7 @@ class PricingPolicySeeder extends Seeder
             ],
             [
                 'policy_type' => PolicyTypes::WEIGHT->value,
-                'price' => 12500.00, // من 11 إلى 20 كيلو
+                'price' => 125.00, // من 11 إلى 20 كيلو
                 'price_unit' => PriceUnit::KG->value,
                 'limit_min' => 11,
                 'limit_max' => 20.99,
@@ -98,7 +98,7 @@ class PricingPolicySeeder extends Seeder
             ],
             [
                 'policy_type' => PolicyTypes::WEIGHT->value,
-                'price' => 15000.00, // من 11 إلى 20 كيلو
+                'price' => 150.00, // من 11 إلى 20 كيلو
                 'price_unit' => PriceUnit::KG->value,
                 'limit_min' => 21.00,
                 'limit_max' => 50.99,
@@ -108,8 +108,19 @@ class PricingPolicySeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'policy_type' => PolicyTypes::WEIGHT->value,
+                'price' => 150.00, // من 11 إلى 20 كيلو
+                'price_unit' => PriceUnit::KG->value,
+                'limit_min' => 51.00,
+                'limit_max' => 75.99,
+                'currency' => CurrencyType::SYRIA->value,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'policy_type' => PolicyTypes::FLAT->value,
-                'price' => 20000.00, // طرد 21 إلى 50 كيلو
+                'price' => 200.00, // طرد 21 إلى 50 كيلو
                 'price_unit' => PriceUnit::PER_PARCEL->value,
                 'limit_min' => 21,
                 'limit_max' => 50.99,
