@@ -6,6 +6,7 @@ use App\Enums\SenderType;
 use App\Filament\Resources\ParcelShipmentLogsResource\Pages;
 use App\Filament\Resources\ParcelShipmentLogsResource\RelationManagers;
 use App\Models\BranchRoute;
+use App\Models\BranchRouteDays;
 use App\Models\Employee;
 use App\Models\GuestUser;
 use App\Models\Parcel;
@@ -43,36 +44,58 @@ class ParcelShipmentLogsResource extends Resource
                         Select::make('route_id')
                             ->label('Routes')
                             ->options(self::getBranchRoutes())
+                            // ->live()
                             ->reactive()
-                            ->live()
-                            ->reactive(),
+                            ->afterStateUpdated(fn(callable $set) => $set('day_id', null)),
+                        Select::make('day_id')
+                            ->label('Day')
+                            ->options(function (callable $get) {
+                                $routeId = $get('route_id');
+                                if (!$routeId) return [];
+                                return BranchRouteDays::where('branch_route_id', $routeId)
+                                    ->get()
+                                    ->mapWithKeys(fn($day) => [$day->id => $day->day_of_week . " (" . $day->estimated_departur_time . ")"]);
+                            })
+                            ->reactive()
+                            ->afterStateUpdated(fn(callable $set) => $set('truck_id', null)),
+                        Select::make('truck_id')
+                            ->label('Truck')
+                            ->options(function (callable $get) {
+                                $dayId = $get('day_id');
+                                if (!$dayId) return [];
+                                return Truck::WhereHas('branchRouteDays', fn($q) => $q->where('branch_route_days.id', $dayId))
+                                    ->with('driver.user')
+                                    ->get()
+                                    ->mapWithKeys(fn($truck) => [
+                                        $truck->id => $truck->driver->user->user_name
+                                            . ' | '
+                                            . $truck->truck_model
+                                            . ' | Capactiy: '
+                                            . $truck->capacity_per_kilo_gram
+                                            . 'kg'
+                                    ]);
+                            })
+                            ->reactive()
+                            ->required(),
+                    ]),
+                Grid::make()
+                    ->schema([
                         Select::make('parcel_id')
                             ->label('Parcel')
                             ->options(
                                 function (callable $get) {
                                     $routeId = $get('route_id');
-                                    $query = Parcel::select('id', 'sender_id', 'sender_type', 'route_id');
-                                    if ($routeId)
-                                        $query->where('route_id', $routeId);
-                                    return $query
+                                    if (!$routeId) return [];
+
+                                    return Parcel::where('route_id', $routeId)
                                         ->get()
-                                        ->mapWithKeys(
-                                            function ($parcel) {
-                                                $label = "Unkonown";
-                                                if ($parcel->sender_type === SenderType::AUTHENTICATED_USER) {
-                                                    $label = User::select('id', 'user_name')
-                                                        ->where('id', $parcel->sender_id)
-                                                        ->first();
-                                                    $label = $label->user_name ?? "Unknown User";
-                                                } else if ($parcel->sender_type === SenderType::GUEST_USER) {
-                                                    $label = GuestUser::select('id', 'first_name', 'last_name')
-                                                        ->where('id', $parcel->sender_id)
-                                                        ->first();
-                                                    $label = ($label->first_name . ' ' . $label->last_name) ?? "Unkown Guest User";
-                                                }
-                                                return [$parcel->id =>  $label];
-                                            }
-                                        );
+                                        ->mapWithKeys(function ($parcel) {
+                                            $sender = $parcel->sender_type === SenderType::AUTHENTICATED_USER
+                                                ? optional(User::find($parcel->sender_id))->user_name
+                                                : optional(GuestUser::find($parcel->sender_id))->first_name . ' ' . optional(GuestUser::find($parcel->sender_id))->last_name;
+
+                                            return [$parcel->id => "Parcel #{$parcel->id} - {$sender}"];
+                                        });
                                 }
                             )
                             ->multiple()

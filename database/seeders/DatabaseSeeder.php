@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
                 EmployeeSeeder::class,
                 TruckSeeder::class,
                 BranchRouteDaySeeder::class,
+                TruckBranchRouteDaySeeder::class,
             ]
         );
     }

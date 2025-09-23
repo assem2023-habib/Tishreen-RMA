@@ -22,11 +22,11 @@ class ParcelShipmentLogs extends Model
     }
     public function empConfirmedPickupFromSender()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class, 'pick_up_confirmed_by_emp_id');
     }
     public function empConfirmedDelveriedToReciver()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class, 'delivery_confirmed_by_emp_id');
     }
     public function truck()
     {
