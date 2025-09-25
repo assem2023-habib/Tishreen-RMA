@@ -14,6 +14,11 @@ class UserRestriction extends Model
         'ends_at',
         'is_active',
     ];
+
+    protected $casts = [
+        'starts_at' => 'datetime:H:i',
+        'ends_at' => 'datetime:H:i',
+    ];
     public function user()
     {
         return $this->belongsTo(User::class);

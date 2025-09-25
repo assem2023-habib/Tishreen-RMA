@@ -14,6 +14,10 @@ class ParcelShipmentAssignment extends Model
         'delivery_confirmed_by_emp_id',
         'delivery_confirmed_date',
     ];
+    protected $casts = [
+        'pick_up_confirmed_date' => 'datetime:H:i',
+        'delivery_confirmed_date'  => 'datetime:H:i',
+    ];
     public function parcel()
     {
         return $this->belongsTo(Parcel::class);

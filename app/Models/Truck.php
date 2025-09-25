@@ -17,10 +17,6 @@ class Truck extends Model
     {
         return $this->belongsTo(Employee::class);
     }
-    // public function routes()
-    // {
-    //     return $this->belongsToMany(BranchRoute::class);
-    // }
     public function branchRouteDays()
     {
         return $this->belongsToMany(

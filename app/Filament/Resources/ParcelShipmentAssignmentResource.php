@@ -13,8 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\{Builder, SoftDeletingScope};
 
 class ParcelShipmentAssignmentResource extends Resource
 {
@@ -51,18 +50,20 @@ class ParcelShipmentAssignmentResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('parcel.id')
+                TextColumn::make('parcel.sender.first_name')
                     ->label('Parcel'),
                 TextColumn::make('shipment.id')
                     ->label('Shipment'),
-                TextColumn::make('receivedByEmployee.id')
+                TextColumn::make('receivedByEmployee.user.user_name')
                     ->label('Received By'),
                 TextColumn::make('pick_up_confirmed_date')
-                    ->dateTime(),
-                TextColumn::make('deliveredByEmployee.id')
+                    ->dateTime()
+                    ->label('Received At'),
+                TextColumn::make('deliveredByEmployee.user.user_name')
                     ->label('Delivered  By'),
-                DateTimePicker::make('delivery_confirmed_date')
-                    ->dateTime(),
+                TextColumn::make('delivery_confirmed_date')
+                    ->dateTime()
+                    ->label('Delivered At'),
             ])
             ->filters([
                 //

@@ -13,6 +13,10 @@ class Employee extends Model
         'end_date',
         'status'
     ];
+    protected $cast = [
+        'beging_date' => 'datetime:H:i',
+        'end_date' => 'datetime:H:i',
+    ];
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -28,11 +32,11 @@ class Employee extends Model
     public function parcelsConfirmedPickUpFromSender()
     {
 
-        return $this->hasMany(ParcelShipmentLogs::class, 'pick_up_confirmed_by_emp_id');
+        return $this->hasMany(ParcelShipmentAssignment::class, 'pick_up_confirmed_by_emp_id');
     }
     public function parcelsConfirmedDeliveredToReciver()
     {
-        return $this->hasMany(ParcelShipmentLogs::class, 'delivery_confirmed_by_emp_id');
+        return $this->hasMany(ParcelShipmentAssignment::class, 'delivery_confirmed_by_emp_id');
     }
     public function rates()
     {

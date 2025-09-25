@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('parcel_shipment_assignments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('parcel_id')->constrained('parcels');
-            $table->foreignId('shipment_id')->constrained('shipments');
+            $table->foreignId('shipment_id')->nullable()->constrained('shipments');
 
             $table->foreignId('pick_up_confirmed_by_emp_id')->constrained('employees');
             $table->dateTime('pick_up_confirmed_date');

@@ -4,8 +4,10 @@ namespace App\Observers;
 
 use App\Enums\CurrencyType;
 use App\Enums\OperationTypes;
+use App\Enums\ParcelStatus;
 use App\Enums\PolicyTypes;
 use App\Enums\PriceUnit;
+use App\Models\ParcelShipmentAssignment;
 use App\Models\PricingPolicy;
 use App\Models\{Parcel, ParcelHistory};
 use Illuminate\Support\Facades\Auth;
@@ -22,30 +24,6 @@ class ParcelLifecycleObserver
         $pricePolicy = $this->resolvePriceByWeight($parcel->weight);
         $parcel->cost = $this->calculateCost($parcel->weight, $pricePolicy);
     }
-    public function updating(Parcel $parcel)
-    {
-        if (!isset($parcel->weight)) {
-            return;
-        }
-        $pricePolicy =  PricingPolicy::select('id', 'price')
-            ->where('policy_type', PolicyTypes::WEIGHT->value)
-            ->where('limit_min', '<=', $parcel['weight'])
-            ->where('limit_max', '>=', $parcel['weight'])
-            ->first();
-        if ($pricePolicy) {
-            $parcel->cost = $this->calculateCost($parcel->weight, $pricePolicy->price);
-            $parcel->saveQuietly();
-        }
-        $changes = $parcel->getChanges();
-        ParcelHistory::create([
-            'parcel_id' => $parcel->id,
-            'operation_type' => OperationTypes::UPDATED->value,
-            'old_data' =>  $parcel->getOriginal(),
-            'new_data' => $parcel->toArray(),
-            'changes' => $changes,
-            'user_id' => Auth::user()->id,
-        ]);
-    }
     public function created(Parcel $parcel)
     {
         ParcelHistory::create(
@@ -56,13 +34,60 @@ class ParcelLifecycleObserver
                 'user_id' => Auth::user()->id ?? $parcel->sender_id,
             ]
         );
+        if ($parcel['parcel_status'] === ParcelStatus::CONFIRMED->value) {
+            $employeeId = Auth::user()?->employee?->id ?? auth::user()->id;
+            if ($employeeId) {
+                ParcelShipmentAssignment::create([
+                    'parcel_id' => $parcel->id,
+                    'shipment_id' => null,
+                    'pick_up_confirmed_by_emp_id' => $employeeId,
+                    'pick_up_confirmed_date' => now(),
+                ]);
+            }
+        }
     }
+    public function updating(Parcel $parcel)
+    {
+        if (isset($parcel->weight)) {
+            $price = $this->resolvePriceByWeight($parcel->weight);
+            if ($price) {
+                $parcel->cost = $this->calculateCost($parcel->weight, $price);
+                $parcel->saveQuietly();
+            }
+        }
+        $changes = $parcel->getChanges();
+        if (isset($changes['parcel_status']) && $changes['parcel_status'] === ParcelStatus::CONFIRMED->value) {
+            $employeeId = Auth::user()?->employee?->id ?? auth::user()->id;
+            dump($employeeId);
+            if ($employeeId) {
+                ParcelShipmentAssignment::create([
+                    'parcel_id' => $parcel->id,
+                    'shipment_id' => null,
+                    'pick_up_confirmed_by_emp_id' => $employeeId,
+                    'pick_up_confirmed_date' => now(),
+                ]);
+            }
+        }
+    }
+    public function updated(Parcel $parcel)
+    {
+        $changes = $parcel->getChanges();
+        ParcelHistory::create([
+            'parcel_id' => $parcel->id,
+            'operation_type' => OperationTypes::UPDATED->value,
+            'old_data' =>  $parcel->getOriginal(),
+            'new_data' => $parcel->toArray(),
+            'changes' => $changes,
+            'user_id' => Auth::user()->id ?? auth::user()->id ?? $parcel->sender_id,
+        ]);
+    }
+
     public function deleting(Parcel $parcel)
     {
         ParcelHistory::create([
             'parcel_id' => $parcel->id,
             'operation_type' => OperationTypes::DELETED->value,
-            'user_id' => Auth::user()->id,
+            'user_id' => Auth::user()->id ?? auth::user()->id ?? $parcel->sender_id,
             'new_data' => null,
             'old_data' => $parcel->toArray(),
             'changes' => $parcel->getChanges(),

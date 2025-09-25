@@ -55,7 +55,6 @@ class ParcelResource extends Resource
                                         //     GuestUser::class => SenderType::GUEST_USER->value,
                                         // ],
                                     )
-                                    // ->default(User::class)
                                     ->reactive()
                                     ->required(),
                             ],
