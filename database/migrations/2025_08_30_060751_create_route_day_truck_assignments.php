@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trucks_branch_routes_days');
+        Schema::dropIfExists('route_day_truck_assignments');
     }
 };
