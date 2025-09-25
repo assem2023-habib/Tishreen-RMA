@@ -23,6 +23,6 @@ class Truck extends Model
     // }
     public function branchRouteDays()
     {
-        return $this->belongsToMany(BranchRouteDays::class, 'trucks_branch_routes_days', 'truck_id', 'branch_route_day_id');
+        return $this->belongsToMany(BranchRouteDays::class, 'route_day_truck_assignments', 'truck_id', 'branch_route_day_id');
     }
 }

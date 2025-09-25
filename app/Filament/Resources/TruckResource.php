@@ -75,9 +75,6 @@ class TruckResource extends Resource
     {
         return $table
             ->columns([
-                // Tables\Columns\TextColumn::make('driver_id')
-                //     ->numeric()
-                //     ->sortable(),
                 TextColumn::make('driver.user.user_name')
                     ->label('Driver name')
                     ->searchable(),
@@ -88,9 +85,6 @@ class TruckResource extends Resource
                 TextColumn::make('capacity_per_kilo_gram')
                     ->numeric()
                     ->sortable(),
-                // TextColumn::make('is_active')
-                //     ->numeric()
-                //     ->sortable(),
                 ToggleColumn::make('is_active')
                     ->onIcon('heroicon-o-check-circle')
                     ->offIcon('heroicon-o-no-symbol')

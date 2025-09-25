@@ -19,6 +19,7 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeResource extends Resource
 {
@@ -37,13 +38,16 @@ class EmployeeResource extends Resource
                     Select::make('user_id')
                         ->label('User')
                         ->placeholder('Please select the user')
-                        ->options(function () {
-                            return User::select('id', 'first_name', 'last_name')
-                                ->get()
-                                ->mapWithKeys(function ($user) {
-                                    return  [$user->id => $user->first_name . " " . $user->last_name];
-                                });
-                        })
+                        ->options(
+                            function () {
+                                return User::pluck(DB::raw("CONCAT(first_name, ' ', last_name)"), 'id');
+                                // User::select('id', 'first_name', 'last_name')
+                                //     ->get()
+                                //     ->mapWithKeys(function ($user) {
+                                //         return  [$user->id => $user->first_name . " " . $user->last_name];
+                                //     });
+                            }
+                        )
                         ->searchable()
                         ->preload(),
                     Select::make('branch_id')

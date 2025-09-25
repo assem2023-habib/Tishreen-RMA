@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('route_day_truck_assignments', function (Blueprint $table) {
+        Schema::create('shipments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('branch_route_day_id')->constrained('branch_route_days');
             $table->foreignId('truck_id')->constrained('trucks');
+            $table->dateTime('actual_departure_time')->nullable();
+            $table->dateTime('actual_arrival_time')->nullable();    
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trucks_branch_routes_days');
+        Schema::dropIfExists('shipments');
     }
 };

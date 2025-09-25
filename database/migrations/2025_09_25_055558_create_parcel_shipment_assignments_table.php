@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('parcel_shipment_logs', function (Blueprint $table) {
+        Schema::create('parcel_shipment_assignments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('parcel_id')->constrained('parcels');
+            $table->foreignId('shipment_id')->constrained('shipments');
+
             $table->foreignId('pick_up_confirmed_by_emp_id')->constrained('employees');
+            $table->dateTime('pick_up_confirmed_date');
+
             $table->foreignId('delivery_confirmed_by_emp_id')->nullable()->constrained('employees');
-            $table->foreignId('trucks_branch_routes_day_id')->nullable()->constrained('trucks_branch_routes_days
-            ');
-            $table->foreignId('truck_id')->constrained('trucks');
-            $table->dateTime('pick_up_confiremd_date'); // تاريخ تأكيد تسليم الطرد إلى الغرع
-            $table->dateTime('delivery_confirmed_date')->nullable(); // تاريخ الذي تم فيه تسليم الطرد للعمي
-            $table->dateTime('assigned_truck_date')->nullable();
+            $table->dateTime('delivery_confirmed_date')->nullable();
+
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('parcel_shipment_logs');
+        Schema::dropIfExists('parcel_shipment_assignments');
     }
 };
