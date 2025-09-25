@@ -28,7 +28,7 @@ class TruckBranchRouteDaySeeder extends Seeder
             $assignedTrucks = $trucks->random(min(1, $trucks->count()));
 
             foreach ($assignedTrucks as $truck) {
-                DB::table('trucks_branch_routes_days')->updateOrInsert(
+                DB::table('route_day_truck_assignments')->updateOrInsert(
                     [
                         'branch_route_day_id' => $day->id,
                         'truck_id' => $truck->id,

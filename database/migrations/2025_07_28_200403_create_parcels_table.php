@@ -27,7 +27,6 @@ return new class extends Migration
             $table->tinyInteger('is_paid')->default(0); // 0 من اجل ان يتم دفع الفاتورة من قبل المستلم
             $table->enum('parcel_status', ParcelStatus::values())->default(ParcelStatus::PENDING->value);
             $table->string('tracking_number')->unique();
-            // $table->foreignId('price_policy_id')->constrained('pricing_policies')->cascadeOnDelete();
             $table->foreignId('appointment_id')->nullable()->constrained('appointments')->cascadeOnDelete(); // ✅ ربط الطرد بالموعد
             $table->timestamps();
         });
