@@ -7,10 +7,11 @@ use App\Filament\Resources\CityResource\RelationManagers;
 use App\Models\City;
 use App\Models\Country;
 use Filament\Forms;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\{Select, TextInput};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -28,16 +29,13 @@ class CityResource extends Resource
     {
         return $form
             ->schema([
-                // Forms\Components\TextInput::make('country_id')
-                //     ->required()
-                //     ->numeric(),
                 Select::make('country_id')
                     ->required()
                     ->options(Country::all()->pluck('en_name', 'id')),
-                Forms\Components\TextInput::make('en_name')
+                TextInput::make('en_name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('ar_name')
+                TextInput::make('ar_name')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -47,18 +45,18 @@ class CityResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('country_id')
+                TextColumn::make('country.en_name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('en_name')
+                TextColumn::make('en_name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('ar_name')
+                TextColumn::make('ar_name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

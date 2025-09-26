@@ -3,22 +3,18 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Forms\Components\ActiveToggle;
+use App\Filament\Forms\Components\ActiveToggleColumn;
 use App\Filament\Resources\EmployeeResource\Pages;
-use App\Filament\Resources\EmployeeResource\RelationManagers;
 use App\Filament\Tables\Actions\ToggleEmployeeRole;
 use App\Models\{Branch, Employee, User};
 use Carbon\Carbon;
-use Filament\Forms;
 use Filament\Forms\Components\{Grid, DatePicker, Select, Toggle};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeResource extends Resource
@@ -41,11 +37,6 @@ class EmployeeResource extends Resource
                         ->options(
                             function () {
                                 return User::pluck(DB::raw("CONCAT(first_name, ' ', last_name)"), 'id');
-                                // User::select('id', 'first_name', 'last_name')
-                                //     ->get()
-                                //     ->mapWithKeys(function ($user) {
-                                //         return  [$user->id => $user->first_name . " " . $user->last_name];
-                                //     });
                             }
                         )
                         ->searchable()
@@ -113,12 +104,7 @@ class EmployeeResource extends Resource
                             return Carbon::parse($state)->translatedFormat('Y-m-d');
                         }
                     ),
-
-                ToggleColumn::make('is_active')
-                    ->onIcon('heroicon-o-check-circle')
-                    ->offIcon('heroicon-o-no-symbol')
-                    ->onColor('success')
-                    ->offColor('danger'),
+                ActiveToggleColumn::make('is_active'),
 
                 TextColumn::make('created_at')
                     ->dateTime()

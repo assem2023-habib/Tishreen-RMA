@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ParcelAuthorizationResource\Pages;
 
 use App\Enums\AuthorizationStatus;
+use App\Enums\SenderType;
 use App\Filament\Resources\ParcelAuthorizationResource;
 use App\Models\{GuestUser, User};
 use Filament\Actions;
@@ -41,11 +42,11 @@ class EditParcelAuthorization extends EditRecord
                     ->options(function (callable $get) {
                         $type = $get('authorized_user_type');
 
-                        if ($type === User::class) {
+                        if ($type === SenderType::AUTHENTICATED_USER->value) {
                             return User::pluck('user_name', 'id');
                         }
 
-                        if ($type === GuestUser::class) {
+                        if ($type === SenderType::GUEST_USER->value) {
                             return GuestUser::pluck('full_name', 'id'); // أو أي حقل يمثل الاسم
                         }
 
@@ -53,14 +54,6 @@ class EditParcelAuthorization extends EditRecord
                     })
                     ->searchable()
                     ->visible(fn(callable $get) => $get('authorized_user_type') === User::class),
-                // Select::make('authorized_user_type')
-                //     ->label('Receiver Type')
-                //     ->options([
-                //         User::class => 'Authenticated User',
-                //         GuestUser::class => 'Guest User',
-                //     ])
-                //     ->reactive()
-                //     ->required(),
 
                 // مستلم مسجل
                 Select::make('authorized_user_id')
@@ -68,25 +61,6 @@ class EditParcelAuthorization extends EditRecord
                     ->relationship('authorizedUser', 'user_name')
                     ->searchable()
                     ->visible(fn(callable $get) => $get('authorized_user_type') === User::class),
-
-                // مستلم زائر
-                // TextInput::make('guest_first_name')
-                //     ->label('First Name')
-                //     ->visible(fn(callable $get) => $get('authorized_user_type') === GuestUser::class),
-
-                // TextInput::make('guest_last_name')
-                //     ->label('Last Name')
-                //     ->visible(fn(callable $get) => $get('authorized_user_type') === GuestUser::class),
-
-                // TextInput::make('guest_phone')
-                //     ->label('Phone')
-                //     ->visible(fn(callable $get) => $get('authorized_user_type') === GuestUser::class),
-
-                // Select::make('guest_city_id')
-                //     ->label('City')
-                //     ->relationship('city', 'en_name')
-                //     ->searchable()
-                //     ->visible(fn(callable $get) => $get('authorized_user_type') === GuestUser::class),
 
                 // الطرد
                 Select::make('parcel_id')

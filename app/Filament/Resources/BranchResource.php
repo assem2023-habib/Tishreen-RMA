@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Forms\Components\PhoneNumber;
 use \Log;
 use App\Filament\Resources\BranchResource\Pages;
 use App\Models\Branch;
@@ -105,9 +106,10 @@ class BranchResource extends Resource
 
                                     $set('city', 'Error');
                                 }
-                            }),
+                            }
+                        ),
 
-                            
+
                     TextInput::make('latitude')
                         ->readonly(),
                     TextInput::make('longitude')
@@ -130,14 +132,15 @@ class BranchResource extends Resource
                                 'max:128',
                             ]
                         ),
-                    TextInput::make('phone')
-                        ->label('Phone Number')
-                        ->rules(
-                            [
-                                'min:2',
-                                'max:20'
-                            ]
-                        ),
+                    // TextInput::make('phone')
+                    //     ->label('Phone Number')
+                    //     ->rules(
+                    //         [
+                    //             'min:2',
+                    //             'max:20'
+                    //         ]
+                    //     ),
+                    PhoneNumber::make('phone', 'Phone Number'),
                     Select::make('city_id')
                         ->label('city')
                         ->options(City::all()->pluck('en_name', 'id'))

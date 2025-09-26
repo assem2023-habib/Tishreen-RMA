@@ -60,12 +60,13 @@ class ParcelAuthorizationResource extends Resource
                                 Select::make('authorized_user_type')
                                     ->label('Sender Type')
                                     ->options(
-                                        [
-                                            User::class => SenderType::AUTHENTICATED_USER->value,
-                                            GuestUser::class => SenderType::GUEST_USER->value,
-                                        ],
+                                        SenderType::class
+                                        // options: [
+                                        //     User::class => SenderType::AUTHENTICATED_USER->value,
+                                        //     GuestUser::class => SenderType::GUEST_USER->value,
+                                        // ],
                                     )
-                                    ->default(User::class)
+                                    // ->default(User::class)
                                     ->reactive()
                                     ->required(),
                             ],
@@ -147,12 +148,16 @@ class ParcelAuthorizationResource extends Resource
                                             $sender_id = $get('user_id');
                                             return Parcel::select('id', 'sender_id', 'sender_type', 'route_id', 'reciver_name')
                                                 ->where('sender_id', $sender_id)
-                                                // ->with('route.fromBranch', 'route.toBranch')
                                                 ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
                                                 ->get()
                                                 ->mapWithKeys(
                                                     function ($parcel) {
-                                                        return [$parcel->id => 'reciver name: ' . $parcel->reciver_name . ' , route : ' . $parcel->routeLabel];
+                                                        return [
+                                                            $parcel->id => 'reciver name: '
+                                                                . $parcel->reciver_name
+                                                                . ' , route : '
+                                                                . $parcel->routeLabel
+                                                        ];
                                                     }
                                                 );
                                         }),
@@ -254,10 +259,10 @@ class ParcelAuthorizationResource extends Resource
     }
     private static function getVisible()
     {
-        return fn(callable $get) => $get('authorized_user_type') === GuestUser::class;
+        return fn(callable $get) => $get('authorized_user_type') === SenderType::GUEST_USER->value;
     }
     private static function getVisibleForUser()
     {
-        return fn(callable $get) => $get('authorized_user_type') === User::class;
+        return fn(callable $get) => $get('authorized_user_type') === SenderType::AUTHENTICATED_USER->value;
     }
 }

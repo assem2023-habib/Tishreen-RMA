@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\GuestType;
 use App\Enums\SenderType;
+use App\Filament\Forms\Components\NationalNumber;
 use App\Filament\Forms\Components\PhoneNumber;
 use App\Filament\Resources\GuestUserResource\Pages;
 use App\Filament\Resources\GuestUserResource\RelationManagers;
@@ -16,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -52,16 +54,17 @@ class GuestUserResource extends Resource
                                 return [$city->id => $city->en_name];
                             });
                     }),
-                TextInput::make('national_number')
-                    ->label('National Number')
-                    ->required()
-                    ->maxLength(11)
-                    ->minLength(11)
-                    ->ValidationMessages(
-                        [
-                            'required' => 'this filed was required',
-                        ]
-                    ),
+                // TextInput::make('national_number')
+                //     ->label('National Number')
+                //     ->required()
+                //     ->maxLength(11)
+                //     ->minLength(11)
+                //     ->ValidationMessages(
+                //         [
+                //             'required' => 'this filed was required',
+                //         ]
+                //     ),
+                NationalNumber::make('national_number', 'National Number'),
                 DatePicker::make('birthday')
                     ->label('Birthday')
                     ->native(false),
@@ -77,32 +80,32 @@ class GuestUserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('first_name')
+                TextColumn::make('first_name')
                     ->label('Name')
                     ->formatStateUsing(fn(GuestUser $record) => $record->first_name . ' ' . $record->last_name)
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('phone')
+                TextColumn::make('phone')
                     ->label('Phone')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('national_number')
+                TextColumn::make('national_number')
                     ->label('National No.')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('city.en_name')
+                TextColumn::make('city.en_name')
                     ->label('City')
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('address')
+                TextColumn::make('address')
                     ->label('Address')
                     ->limit(25)
                     ->tooltip(fn($record) => $record->address),
 
-                Tables\Columns\TextColumn::make('user_type')
+                TextColumn::make('user_type')
                     ->label('Sender Type')
                     ->getStateUsing(fn($record) => $record->user_type) // القيم المخزنة في قاعدة البيانات
                     ->badge() // يعطي شكل Badge ملون
@@ -113,18 +116,18 @@ class GuestUserResource extends Resource
                     })
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('birthday')
+                TextColumn::make('birthday')
                     ->label('Birthday')
                     ->date()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label('Updated At')
                     ->dateTime()
                     ->sortable()

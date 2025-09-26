@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ParcelAuthorizationResource\Pages;
 
+use App\Enums\GuestType;
 use App\Enums\SenderType;
 use App\Filament\Resources\ParcelAuthorizationResource;
 use App\Models\GuestUser;
@@ -36,22 +37,16 @@ class CreateParcelAuthorization extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
 
-        if ($data['authorized_user_type'] === GuestUser::class) {
+        if ($data['authorized_user_type'] === SenderType::GUEST_USER->value) {
             $guestUser = $this->saveGuestUser($data);
             $data['authorized_user_id'] = $guestUser->id;
-            $data['authorized_user_type'] = SenderType::GUEST_USER->value;
         }
-        if ($data['authorized_user_type'] === User::class) {
-            $data['authorized_user_type'] = SenderType::AUTHENTICATED_USER->value;
-        }
-
-
-
         return $data;
     }
     private function saveGuestUser($data)
     {
         return  GuestUser::create([
+            'user_type' => GuestType::AUTHORIZED->value,
             'first_name' => $data['guest_first_name'],
             'last_name' => $data['guest_last_name'],
             'phone' => $data['guest_phone'],
