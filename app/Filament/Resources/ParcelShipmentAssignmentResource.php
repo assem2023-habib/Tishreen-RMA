@@ -20,8 +20,8 @@ class ParcelShipmentAssignmentResource extends Resource
     protected static ?string $model = ParcelShipmentAssignment::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = "Transport";
-    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationGroup = "Parcels";
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {
@@ -50,7 +50,7 @@ class ParcelShipmentAssignmentResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('parcel.sender.first_name')
+                TextColumn::make('parcel.sender_name')
                     ->label('Parcel'),
                 TextColumn::make('shipment.id')
                     ->label('Shipment'),

@@ -38,6 +38,13 @@ class BranchRoute extends Model
     {
         return $this->belongsTo(Branch::class, 'to_branch_id');
     }
+    public function getRouteLabelAttribute(): string
+    {
+        if ($this->fromBranch && $this->toBranch) {
+            return $this->fromBranch->branch_name . " --> " . $this->toBranch->branch_name;
+        }
+        return "-";
+    }
 
     // public function trucks()
     // {
@@ -56,12 +63,5 @@ class BranchRoute extends Model
     public function days()
     {
         return $this->hasMany(BranchRouteDays::class);
-    }
-    public function getRouteLabelAttribute(): string
-    {
-        if ($this->fromBranch && $this->toBranch) {
-            return $this->fromBranch->branch_name . " --> " . $this->toBranch->branch_name;
-        }
-        return "-";
     }
 }

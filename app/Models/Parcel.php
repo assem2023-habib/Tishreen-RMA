@@ -50,13 +50,7 @@ class Parcel extends Model
     }
     public function getSenderNameAttribute()
     {
-        // return $this->sender->user_name ?? ($this->sender->first_name . $this->sender->last_name);
-        if ($this->sender_type === SenderType::AUTHENTICATED_USER->value)
-            return $this->sender->user_name;
-        else if ($this->sender_type === SenderType::GUEST_USER->value)
-            return $this->sender->first_name . " " . $this->sender->last_name;
-        else
-            return "Not Known!...";
+        return $this->sender->user_name ?? ($this->sender->first_name . $this->sender->last_name);
     }
     public function parcelsHistories()
     {

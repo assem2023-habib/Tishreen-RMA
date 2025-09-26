@@ -12,7 +12,7 @@ class Shipment extends Model
         'actual_departure_time',
         'actual_arrival_time',
     ];
-    public function branchRoute()
+    public function branchRouteDay()
     {
         return $this->belongsTo(BranchRouteDays::class);
     }
