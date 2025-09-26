@@ -61,12 +61,8 @@ class ParcelAuthorizationResource extends Resource
                                     ->label('Sender Type')
                                     ->options(
                                         SenderType::class
-                                        // options: [
-                                        //     User::class => SenderType::AUTHENTICATED_USER->value,
-                                        //     GuestUser::class => SenderType::GUEST_USER->value,
-                                        // ],
                                     )
-                                    // ->default(User::class)
+                                    ->default(SenderType::AUTHENTICATED_USER)
                                     ->reactive()
                                     ->required(),
                             ],

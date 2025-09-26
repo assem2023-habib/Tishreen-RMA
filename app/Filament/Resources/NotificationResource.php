@@ -4,20 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Enums\NotificationPriority;
 use App\Filament\Resources\NotificationResource\Pages;
-use App\Filament\Resources\NotificationResource\RelationManagers;
 use App\Models\Notification;
-use Filament\Forms;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\{Select, TextInput};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Columns\BooleanColumn;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\{BooleanColumn, TextColumn};
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationResource extends Resource
@@ -60,7 +54,10 @@ class NotificationResource extends Resource
                     ->relationship('users', 'name')
                     ->preload()
                     ->searchable()
-                    ->getOptionLabelFromRecordUsing(fn($record) => $record->first_name . ' ' . $record->last_name),
+                    ->getOptionLabelFromRecordUsing(
+                        fn($record)
+                        => $record->name
+                    ),
             ]);
     }
 
@@ -142,11 +139,11 @@ class NotificationResource extends Resource
                         $pivot = $record->users->firstWhere('id', $user->id)?->pivot;
                         return $pivot ? $pivot->is_read : false;
                     }),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -170,19 +167,11 @@ class NotificationResource extends Resource
                 Tables\Filters\Filter::make('unread_only')
                     ->label('غير مقروءة فقط')
                     ->query(fn(Builder $query) => $query->whereHas('users', function ($q) {
-                        $q->where('user_id', Auth::user()->id())->where('is_read', false);
+                        $q->where('user_id', auth::user()->id())->where('is_read', false);
                     })),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Action::make('markAsRead')
-                    ->label('تعليم كمقروء')
-                    ->action(function ($record) {
-                        $record->users()->updateExistingPivot(
-                            Auth::user()->id,
-                            ['is_read' => true, 'read_at' => now()]
-                        );
-                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
