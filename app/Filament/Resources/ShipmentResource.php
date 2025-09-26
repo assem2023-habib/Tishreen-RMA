@@ -46,7 +46,7 @@ class ShipmentResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('branchRouteDay.branchRoute.route_label')
-                    ->label('From Branch')
+                    ->label('Branch Route')
                     ->sortable(),
                 TextColumn::make('truck.truck_number')
                     ->label('Truck'),

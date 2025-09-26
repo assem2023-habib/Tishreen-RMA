@@ -2,12 +2,10 @@
 
 namespace App\Providers;
 
+use App\Enums\RatingForType;
 use App\Enums\SenderType;
-use App\Models\Notification;
-use App\Models\{Employee, Parcel, ParcelAuthorization, User};
-use App\Observers\NotificationObserver;
-use App\Observers\ParcelLifecycleObserver;
-use App\Observers\{EmployeeObserver, UserObserve, ParcelAuthorizationObserver};
+use App\Models\{Branch, Employee, Parcel, ParcelAuthorization, User, GuestUser, Notification};
+use App\Observers\{EmployeeObserver, UserObserve, ParcelAuthorizationObserver, NotificationObserver, ParcelLifecycleObserver};
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
@@ -26,8 +24,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::morphMap([
-            SenderType::GUEST_USER->value => \App\Models\GuestUser::class,
-            SenderType::AUTHENTICATED_USER->value => \App\Models\User::class,
+            SenderType::GUEST_USER->value => GuestUser::class,
+            SenderType::AUTHENTICATED_USER->value => User::class,
+        ]);
+        Relation::morphMap([
+            RatingForType::BRANCH->value => Branch::class,
+            RatingForType::EMPLOYEE->value => Employee::class,
+            RatingForType::PARCEL->value => Parcel::class,
         ]);
 
         Passport::loadKeysFrom(base_path('app/secrets/oauth'));

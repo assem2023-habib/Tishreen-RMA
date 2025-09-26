@@ -115,7 +115,7 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
     }
     public function rates()
     {
-        return $this->hasMany(Rate::class);
+        return $this->morphMany(Rate::class, 'rateable');
     }
     public function notifications()
     {

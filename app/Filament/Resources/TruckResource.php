@@ -44,10 +44,10 @@ class TruckResource extends Resource
                 ]),
                 Grid::make(2)->schema(
                     [
-                        Forms\Components\TextInput::make('truck_model')
+                        TextInput::make('truck_model')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('capacity_per_kilo_gram')
+                        TextInput::make('capacity_per_kilo_gram')
                             ->label('Capacity')
                             ->placeholder('please insert capactiy per kilo gram')
                             ->required()
@@ -63,10 +63,8 @@ class TruckResource extends Resource
                             ->onColor('success')
                             ->offColor('danger')
                             ->default(1),
-                        // ->extraAttributes(['order' => 3]),
                     ],
                 ),
-                // ->extraAttributes(['justify-content' => 'end']),
 
             ]);
     }

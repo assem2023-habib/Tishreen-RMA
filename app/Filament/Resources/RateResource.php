@@ -64,39 +64,7 @@ class RateResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('rateable_name')
-                    ->label('Rateable Name')
-                    ->getStateUsing(function ($record) {
-                        if ($record->rateable_type === RatingForType::APPLICATION->value) {
-                            return 'Application : ' . $record->rateable_id;
-                        }
-                        if ($record->rateable_type === RatingForType::BRANCH->value) {
-                            $banch = Branch::select('id', 'branch_name')->where('id', '=', $record->rateable_id)->get();
-                            return 'Branch : ' . $banch;
-                        }
-                        if ($record->rateable_type === RatingForType::EMPLOYEE->value) {
-                            $employee = Employee::select('id', 'user_id')
-                                ->where('id', $record->rateable_id)
-                                ->with('user')
-                                ->first();
-                            return 'Employee : ' . $employee->user->first_name . ' ' . $employee->user->last_name;
-                        }
-                        if ($record->rateable_type === RatingForType::SERVICE->value) {
-                            return 'Service : ' . $record->rateable_id;
-                        }
-                        if ($record->rateable_type === RatingForType::DELIVERY->value) {
-                            return 'Delivery : ' . $record->rateable_id;
-                        }
-
-                        if ($record->rateable_type === RatingForType::CHATSESSION->value) {
-                            return 'ChatSession : ' . $record->rateable_id;
-                        }
-
-                        if (! $record->rateable) {
-                            return '-';
-                        }
-                    })
-                    ->sortable()
-                    ->searchable(),
+                    ->label('Rateable Name'),
                 TextColumn::make('rating')
                     ->label('Rating')
                     ->formatStateUsing(callback: function ($state) {
@@ -109,10 +77,13 @@ class RateResource extends Resource
                     ->badge()
                     ->color(fn(string $state) =>
                     match ($state) {
-
-                        RatingForType::APPLICATION->value => 'success',
-                        RatingForType::SERVICE->value => 'gray',
-                        RatingForType::BRANCH->value => 'danger',
+                        RatingForType::APPLICATION->value => 'success',   // أخضر
+                        RatingForType::SERVICE->value     => 'gray',      // رمادي
+                        RatingForType::BRANCH->value      => 'danger',    // أحمر
+                        RatingForType::EMPLOYEE->value    => 'warning',   // أصفر
+                        RatingForType::PARCEL->value      => 'info',      // أزرق
+                        RatingForType::DELIVERY->value    => 'primary',   // أزرق داكن
+                        RatingForType::CHATSESSION->value => 'purple',    // بنفسجي
                         default => 'secondary',
                     })
                     ->formatStateUsing(fn(string $state) => __($state)),
