@@ -54,16 +54,6 @@ class GuestUserResource extends Resource
                                 return [$city->id => $city->en_name];
                             });
                     }),
-                // TextInput::make('national_number')
-                //     ->label('National Number')
-                //     ->required()
-                //     ->maxLength(11)
-                //     ->minLength(11)
-                //     ->ValidationMessages(
-                //         [
-                //             'required' => 'this filed was required',
-                //         ]
-                //     ),
                 NationalNumber::make('national_number', 'National Number'),
                 DatePicker::make('birthday')
                     ->label('Birthday')

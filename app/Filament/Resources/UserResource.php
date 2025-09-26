@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Forms\Components\ActiveToggle;
+use App\Filament\Forms\Components\NationalNumber;
 use App\Filament\Forms\Components\PhoneNumber;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\Country;
@@ -12,6 +14,7 @@ use Filament\Forms\Components\{TextInput, Grid, Select, DatePicker, Toggle};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -131,21 +134,7 @@ class UserResource extends Resource
                         PhoneNumber::make('phone', 'User Phone'),
                     ]),
 
-                TextInput::make('national_number')
-                    ->label('National Number')
-                    ->helperText('Exactly 11 digits')
-                    ->unique(ignoreRecord: true)
-                    ->rules([
-                        'required',
-                        'digits:11',
-                        'regex:/^[0-9]+$/',
-                    ])
-                    ->validationMessages([
-                        'required' => 'National number is required',
-                        'digits' => 'Must be exactly 11 digits',
-                        'regex' => 'Only digits are allowed',
-                        'unique' => 'This national number is already used',
-                    ]),
+                NationalNumber::make('national_number', 'National Number'),
                 DatePicker::make('birthday')
                     ->label('Date of Birth')
                     ->native(false)
@@ -153,8 +142,7 @@ class UserResource extends Resource
                     ->validationMessages([
                         'required' => 'Date of birth is required',
                     ]),
-                Toggle::make('is_verified')
-                    ->label('email Verified ? '),
+                ActiveToggle::make('is_verified', 'email Verified ? '),
                 FileUpload::make('image_profile')
                     ->disk('public')
                     ->image()
@@ -174,11 +162,8 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('first_name')
-                    ->label('Name')
-                    ->formatStateUsing(function (User $record) {
-                        return $record->first_name . ' ' . $record->last_name;
-                    }),
+                TextColumn::make('name')
+                    ->label('Name'),
 
                 TextColumn::make('user_name')
                     ->label('Username')
@@ -215,7 +200,11 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
