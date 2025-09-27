@@ -126,9 +126,12 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
 
     public function getNameAttribute()
     {
+        return $this->user_name;
+    }
+    public function getFullNameAttribute()
+    {
         return $this->first_name . ' ' . $this->last_name;
     }
-
 
     // user can book many appointment
     public function appointments()

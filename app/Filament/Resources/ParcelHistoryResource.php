@@ -3,18 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ParcelHistoryResource\Pages;
-use App\Filament\Resources\ParcelHistoryResource\RelationManagers;
 use App\Models\ParcelHistory;
-use Filament\Forms;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\{Textarea, TextInput};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ParcelHistoryResource extends Resource
 {
@@ -31,16 +27,17 @@ class ParcelHistoryResource extends Resource
                 TextInput::make('user_id')
                     ->label('Modified By')
                     ->disabled()
-                    ->formatStateUsing(fn($state, $record) => $record?->user?->user_name ?? '-'),
+                    ->formatStateUsing(
+                        fn($state, $record)
+                        => $record?->user?->name ?? '-'
+                    ),
 
                 TextInput::make('parcel_id')
                     ->label('Parcel Sender')
                     ->disabled()
                     ->formatStateUsing(
                         fn($state, $record) =>
-                        $record?->parcel?->sender instanceof \App\Models\User
-                            ? $record->parcel->sender->user_name
-                            : '-'
+                        $record->parcel->sender->name,
                     ),
                 Textarea::make('old_data')
                     ->columnSpanFull()
@@ -65,18 +62,11 @@ class ParcelHistoryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('modified_by')
-                    ->label('Modified By')
-                    ->getStateUsing(fn($record) => $record->user?->user_name ?? '-'),
+                TextColumn::make('user.name')
+                    ->label('Modified By'),
 
-                TextColumn::make('parcel_sender')
-                    ->label('Parcel Sender')
-                    ->getStateUsing(
-                        fn($record) =>
-                        $record->parcel?->sender instanceof \App\Models\User
-                            ? $record->parcel->sender->user_name
-                            : '-'
-                    ),
+                TextColumn::make('parcel.sender.name')
+                    ->label('Parcel Sender'),
                 TextColumn::make('changes')
                     ->label('Changes')
                     ->formatStateUsing(fn($state) => is_array($state) ? json_encode($state, JSON_UNESCAPED_UNICODE) : $state)
@@ -97,7 +87,8 @@ class ParcelHistoryResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make('show'),
+                Tables\Actions\ViewAction::make('show')
+                    ->label('Show'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

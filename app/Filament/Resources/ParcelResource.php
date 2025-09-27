@@ -5,11 +5,13 @@ namespace App\Filament\Resources;
 use App\Enums\CurrencyType;
 use App\Enums\ParcelStatus;
 use App\Enums\SenderType;
+use App\Filament\Forms\Components\ActiveToggleColumn;
 use App\Filament\Forms\Components\PhoneNumber;
 use App\Filament\Resources\ParcelResource\Pages;
 use App\Filament\Tables\Actions\{ConfirmParcelAction, ViewGuestSenderAction};
 use App\Models\{User, Parcel, GuestUser, City, BranchRoute};
 use Filament\Actions\Action;
+
 use Filament\Forms\Components\Wizard\Step;
 
 use Filament\Forms\Components\{
@@ -188,20 +190,8 @@ class ParcelResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('sender_name')
-                    ->label('Sender')
-                    ->getStateUsing(function ($record) {
-                        if ($record->sender_type === SenderType::AUTHENTICATED_USER) {
-
-                            $user = User::findOrFail($record->sender_id);
-                            return $user->user_name;
-                        } else if ($record->sender_type === SenderType::GUEST_USER) {
-                            $guestUser = GuestUser::findOrFail($record->sender_id);
-
-                            return $guestUser->first_name . $guestUser->last_name;
-                        }
-                        return '-';
-                    }),
+                TextColumn::make('sender.name')
+                    ->label('Sender'),
                 TextColumn::make('sender_type')
                     ->label('Sender Type')
                     ->badge()
@@ -209,9 +199,8 @@ class ParcelResource extends Resource
                         fn($state) =>
                         $state === SenderType::GUEST_USER ? 'success' : 'danger'
                     ),
-                TextColumn::make('routeLabel')
-                    ->label('Route')
-                    ->getStateUsing(fn($record) => $record->routeLabel),
+                TextColumn::make('route_label')
+                    ->label('Route'),
                 TextColumn::make('reciver_name')
                     ->searchable(),
                 TextColumn::make('reciver_address')
@@ -221,14 +210,10 @@ class ParcelResource extends Resource
                 TextColumn::make('weight')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('cost')
-                    ->money()
+                TextColumn::make('cost')
+                    ->money('SYR')
                     ->sortable(),
-                ToggleColumn::make('is_paid')
-                    ->onIcon('')
-                    ->offIcon('')
-                    ->onColor('success')
-                    ->offColor('danger')
+                ActiveToggleColumn::make('is_paid')
                     ->disabled(),
                 TextColumn::make('parcel_status')
                     ->label('Parcel Status')

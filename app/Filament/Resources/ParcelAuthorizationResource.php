@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\AuthorizationStatus;
 use App\Enums\SenderType;
+use App\Filament\Forms\Components\NationalNumber;
 use App\Filament\Resources\ParcelAuthorizationResource\Pages;
 use App\Filament\Resources\ParcelAuthorizationResource\RelationManagers;
 use App\Models\City;
@@ -21,6 +22,7 @@ use Filament\Forms\Components\{Wizard, Select, TextInput};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -87,26 +89,22 @@ class ParcelAuthorizationResource extends Resource
                         )
                         ->visible(self::getVisibleForUser()),
                     Step::make('Sender Guest Details')
-                        ->label('Sender Details')
+                        ->label('Reciver Details')
                         ->columns(2)
                         ->schema(
                             [
                                 TextInput::make('guest_first_name')
                                     ->label('First Name')
-                                    ->required()
-                                    ->visible(self::getVisible()),
+                                    ->required(),
                                 TextInput::make('guest_last_name')
                                     ->label('Last Name')
-                                    ->required()
-                                    ->visible(self::getVisible()),
+                                    ->required(),
                                 TextInput::make('guest_phone')
                                     ->label('Phone')
-                                    ->required()
-                                    ->visible(self::getVisible()),
+                                    ->required(),
                                 TextInput::make('guest_address')
                                     ->label('Address')
-                                    ->required()
-                                    ->visible(self::getVisible()),
+                                    ->required(),
                                 Select::make('guest_city_id')
                                     ->label('City')
                                     ->options(function () {
@@ -115,18 +113,8 @@ class ParcelAuthorizationResource extends Resource
                                             ->mapWithKeys(function ($city) {
                                                 return [$city->id => $city->en_name];
                                             });
-                                    })
-                                    ->visible(self::getVisible()),
-                                TextInput::make('guest_national_number')
-                                    ->label('National Number')
-                                    ->required()
-                                    ->maxLength(11)
-                                    ->minLength(11)
-                                    ->ValidationMessages(
-                                        [
-                                            'required' => 'this filed was required',
-                                        ]
-                                    ),
+                                    }),
+                                NationalNumber::make('guest_national_number', 'National Number'),
                                 DatePicker::make('birthday')
                                     ->label('Birthday')
                                     ->native(false),
@@ -164,8 +152,8 @@ class ParcelAuthorizationResource extends Resource
                                         ->disabled(),
                                     Select::make('authorized_status')
                                         ->label('Authorized Status')
-                                        ->options(AuthorizationStatus::values())
-                                        ->default('Pending')
+                                        ->options(AuthorizationStatus::class)
+                                        ->default(AuthorizationStatus::PENDING->value)
                                         ->required(),
                                 ]),
                             Grid::make(3)->schema([
@@ -191,14 +179,18 @@ class ParcelAuthorizationResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('user.user_name')
-                    ->sortable(),
+                    ->searchable(),
                 TextColumn::make('parcel.reciver_name')
-                    ->numeric()
                     ->sortable(),
-                TextColumn::make('authorizedUser.first_name')
-                    ->numeric()
+                TextColumn::make('authorizedUser.name')
                     ->sortable(),
-                TextColumn::make('authorized_user_type'),
+                TextColumn::make('authorized_user_type')
+                    ->label('Authorized Type')
+                    ->badge()
+                    ->color(
+                        fn($state) =>
+                        $state === SenderType::GUEST_USER->value ? 'success' : 'danger'
+                    ),
                 TextColumn::make('authorized_code')
                     ->searchable(),
                 TextColumn::make('authorized_status')
@@ -207,11 +199,11 @@ class ParcelAuthorizationResource extends Resource
                     ->color(
                         fn($state) =>
                         match ($state) {
-                            AuthorizationStatus::PENDING->value => 'danger',
-                            AuthorizationStatus::ACTIVE->value => 'success',
+                            AuthorizationStatus::PENDING->value => 'primary',
+                            AuthorizationStatus::ACTIVE->value => 'secondary',
                             AuthorizationStatus::EXPIRED->value => 'danger',
-                            AuthorizationStatus::USED->value => 'danger',
-                            AuthorizationStatus::CANCELLED->value => 'success',
+                            AuthorizationStatus::USED->value => 'success',
+                            AuthorizationStatus::CANCELLED->value => 'danger',
                             default => 'gray',
                         }
                     ),
@@ -229,7 +221,11 @@ class ParcelAuthorizationResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -255,10 +251,10 @@ class ParcelAuthorizationResource extends Resource
     }
     private static function getVisible()
     {
-        return fn(callable $get) => $get('authorized_user_type') === SenderType::GUEST_USER->value;
+        return fn(callable $get) => $get('authorized_user_type') === SenderType::GUEST_USER;
     }
     private static function getVisibleForUser()
     {
-        return fn(callable $get) => $get('authorized_user_type') === SenderType::AUTHENTICATED_USER->value;
+        return fn(callable $get) => $get('authorized_user_type') === SenderType::AUTHENTICATED_USER;
     }
 }

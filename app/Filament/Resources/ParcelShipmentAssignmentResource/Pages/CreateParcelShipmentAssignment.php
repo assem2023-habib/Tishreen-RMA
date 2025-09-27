@@ -9,4 +9,8 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateParcelShipmentAssignment extends CreateRecord
 {
     protected static string $resource = ParcelShipmentAssignmentResource::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

@@ -30,6 +30,10 @@ class GuestUser extends Model
     {
         return  $this->morphMany(Parcel::class, 'sender');
     }
+    public function getNameAttribute()
+    {
+        return $this->first_name . " " . $this->last_name;
+    }
     public function city()
     {
         return $this->belongsTo(City::class);
