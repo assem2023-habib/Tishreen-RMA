@@ -14,32 +14,6 @@ class ListRates extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            // Actions\CreateAction::make(),
-        ];
-    }
-
-    public function infolist(Infolist $infolist): Infolist
-    {
-        return $infolist
-            ->schema([
-                TextEntry::make('rating')
-                    ->label('Rating'),
-
-                TextEntry::make('comment')
-                    ->label('Comment'),
-
-                TextEntry::make('user.user_name')
-                    ->label('Rated By'),
-
-                TextEntry::make('rateable_type')
-                    ->label('Type'),
-
-                TextEntry::make('relatedDetails')
-                    ->label('Related Details'),
-
-                TextEntry::make('created_at')
-                    ->label('Created At'),
-            ]);
+        return [];
     }
 }

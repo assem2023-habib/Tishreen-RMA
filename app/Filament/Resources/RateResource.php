@@ -95,8 +95,6 @@ class RateResource extends Resource
     {
         return [
             'index' => Pages\ListRates::route('/'),
-            'create' => Pages\CreateRate::route('/create'),
-            // 'edit' => Pages\EditRate::route('/{record}/edit'),
             'view' => Pages\ViewRate::route('/{record}'),
         ];
     }
