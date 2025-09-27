@@ -3,27 +3,19 @@
 namespace App\Filament\Resources;
 
 use App\Enums\UserAccountStatus;
-use App\Filament\Forms\Components\ActiveToggleColumn;
 use App\Filament\Resources\UserRestrictionResource\Pages;
-use App\Filament\Resources\UserRestrictionResource\RelationManagers;
-use App\Models\User;
-use App\Models\UserRestriction;
-use Filament\Forms;
+use App\Filament\Tables\Columns\ActiveToggleColumn;
+use App\Models\{User, UserRestriction};
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserRestrictionResource extends Resource
 {

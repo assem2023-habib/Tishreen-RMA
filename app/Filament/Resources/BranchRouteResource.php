@@ -3,10 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Enums\DaysOfWeek;
-use App\Filament\Forms\Components\ActiveToggle;
-use App\Filament\Forms\Components\ActiveToggleColumn;
 use App\Filament\Resources\BranchRouteResource\Pages;
 use App\Filament\Tables\Actions\MarkAsArrivedAction;
+use App\Filament\Tables\Columns\ActiveToggleColumn;
 use App\Models\Branch;
 use App\Models\BranchRoute;
 use Filament\Forms\Components\DateTimePicker;

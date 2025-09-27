@@ -2,18 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\CurrencyType;
 use App\Enums\ParcelStatus;
 use App\Enums\SenderType;
-use App\Filament\Forms\Components\ActiveToggleColumn;
 use App\Filament\Forms\Components\PhoneNumber;
 use App\Filament\Resources\ParcelResource\Pages;
 use App\Filament\Tables\Actions\{ConfirmParcelAction, ViewGuestSenderAction};
+use App\Filament\Tables\Columns\ActiveToggleColumn;
 use App\Models\{User, Parcel, GuestUser, City, BranchRoute};
-use Filament\Actions\Action;
-
 use Filament\Forms\Components\Wizard\Step;
-
 use Filament\Forms\Components\{
     DatePicker,
     Grid,

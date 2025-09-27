@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Forms\Components;
+namespace App\Filament\Tables\Columns;
 
 use Filament\Tables\Columns\ToggleColumn;
 

@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Forms\Components\PhoneNumber;
 use \Log;
+use App\Filament\Forms\Components\PhoneNumber;
 use App\Filament\Resources\BranchResource\Pages;
 use App\Models\Branch;
 use App\Models\City;
+use App\Services\GeocodingService;
 use Dotswan\MapPicker\Fields\Map;
 use Filament\Forms\Components\{Grid, TextInput, Select};
 use Filament\Forms\Form;
@@ -14,10 +15,11 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
 
+use Filament\Tables\Table;
 use function PHPUnit\Framework\isEmpty;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\HtmlString;
 
 class BranchResource extends Resource
 {
@@ -31,7 +33,8 @@ class BranchResource extends Resource
     {
         return $form
             ->schema([
-                Grid::make(2)->schema([
+                Grid::make(1)->schema([
+                    /** @var \Dotswan\MapPicker\Fields\Map $map */
                     Map::make('map')
                         ->defaultLocation(latitude: 33.5138, longitude: 36.2765) // the default position is damscus
                         ->draggable(true)
@@ -39,35 +42,7 @@ class BranchResource extends Resource
                         ->zoom(9)
                         ->showMarker(true)
                         ->markerColor("#3b82f6")
-                        ->markerHtml('
-                            <style>
-                                #branch-pointer {
-                                position:relative;
-                                background-color: #3b82f6;
-                                width:fit-content;
-                                color: white;
-                                padding: 8px 12px;
-                                border-radius: 20px;
-                                font-weight: bold;
-                                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                                display: flex;
-                                align-items: center;
-                                gap: 8px;
-                                transition: all 0.3s ease;
-                                transform:scale(1);
-                                }
-                                #branch-pointer:hover{
-                                    transform:scale(1.05);
-                                }
-                            </style>
-                            <div id="branch-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
-                            الفرع
-                        </div>')
-                        ->columnSpanFull()
+                        ->markerHtml(self::getMapStyle())
                         ->extraStyles([
                             'min-height: 60vh',
                             'border-radius: 50px',
@@ -76,40 +51,22 @@ class BranchResource extends Resource
                         ->showFullscreenControl(true)
                         ->showZoomControl(true)
                         ->liveLocation(true)
+                        // @intelephense-ignore-next-line
                         ->afterStateUpdated(
-                            function (Set $set, ?array $state): void {
-                                if (is_array($state) && isset($state['lat']) && isset($state['lng'])) {
-                                    $lat = $state['lat'];
-                                    $lng = $state['lng'];
-                                }
-                                // إذا كان الحقل يُرجع كائنًا (object)
-                                elseif (is_object($state) && property_exists($state, 'lat') && property_exists($state, 'lng')) {
-                                    $lat = $state->lat;
-                                    $lng = $state->lng;
+                            callback: function (Set $set, ?array $state): void {
+                                $lat = data_get($state, 'lat');
+                                $lng = data_get($state, 'lng');
+                                if (! $lat || ! $lng) {
+                                    return;
                                 }
                                 $set('latitude', $lat);
                                 $set('longitude', $lng);
-                                try {
-                                    $response = Http::withHeaders([
-                                        'User-Agent' => 'RMA (099assemhb@gmail.com)'
-                                    ])->get("https://nominatim.openstreetmap.org/reverse", [
-                                        'format' => 'jsonv2',
-                                        'lat' => $state['lat'],
-                                        'lon' => $state['lng'],
-                                        'zoom' => 18, // مستوى التكبير للحصول على تفاصيل أدق
-                                        'addressdetails' => 1 // لطلب تفاصيل العنوان
-                                    ]);
-                                    $city = $response['display_name'];
-                                    $set('address', $city); // قم بتعيين اسم المدينة لحقل 'city'
-                                } catch (\Exception $e) {
-
-
-                                    $set('city', 'Error');
-                                }
+                                $response = GeocodingService::reverseGeocode($lat, $lng);
+                                $set('address', $response['display_name'] ?? 'Unknown');
                             }
                         ),
-
-
+                ]),
+                Grid::make(2)->schema([
                     TextInput::make('latitude')
                         ->readonly(),
                     TextInput::make('longitude')
@@ -132,15 +89,7 @@ class BranchResource extends Resource
                                 'max:128',
                             ]
                         ),
-                    // TextInput::make('phone')
-                    //     ->label('Phone Number')
-                    //     ->rules(
-                    //         [
-                    //             'min:2',
-                    //             'max:20'
-                    //         ]
-                    //     ),
-                    PhoneNumber::make('phone', 'Phone Number'),
+                    PhoneNumber::make('phone', 'Phone Number', false),
                     Select::make('city_id')
                         ->label('city')
                         ->options(City::all()->pluck('en_name', 'id'))
@@ -224,5 +173,41 @@ class BranchResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+    private static function getMapStyle(): HtmlString
+    {
+        return
+            new HtmlString('
+                            <style>
+                                #branch-pointer {
+                                position:relative;
+                                background-color: #3b82f6;
+                                width:fit-content;
+                                color: white;
+                                padding: 8px 12px;
+                                border-radius: 20px;
+                                font-weight: bold;
+                                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                                transition: all 0.3s ease;
+                                transform:scale(1);
+                                }
+                                #branch-pointer:hover{
+                                    transform:scale(1.05);
+                                }
+                            </style>
+                            <div id="branch-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            الفرع
+                        </div>');
+    }
+    private static function getCordinateAndAddress()
+    {
+        return;
     }
 }

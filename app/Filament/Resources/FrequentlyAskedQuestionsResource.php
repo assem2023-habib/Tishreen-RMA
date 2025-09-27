@@ -3,8 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Forms\Components\ActiveToggle;
-use App\Filament\Forms\Components\ActiveToggleColumn;
 use App\Filament\Resources\FrequentlyAskedQuestionsResource\Pages;
+use App\Filament\Tables\Columns\ActiveToggleColumn;
 use App\Models\FrequentlyAskedQuestions;
 use Filament\Forms;
 use Filament\Forms\Components\Textarea;

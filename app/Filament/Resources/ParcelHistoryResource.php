@@ -69,7 +69,7 @@ class ParcelHistoryResource extends Resource
                     ->label('Parcel Sender'),
                 TextColumn::make('changes')
                     ->label('Changes')
-                    ->formatStateUsing(fn($state) => is_array($state) ? json_encode($state, JSON_UNESCAPED_UNICODE) : $state)
+                    ->formatStateUsing(fn($state) => is_array($state) ? json_encode($state, flags: JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : $state)
                     ->wrap()
                     ->searchable(),
                 TextColumn::make('operation_type')

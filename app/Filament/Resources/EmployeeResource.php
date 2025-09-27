@@ -3,9 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Forms\Components\ActiveToggle;
-use App\Filament\Forms\Components\ActiveToggleColumn;
 use App\Filament\Resources\EmployeeResource\Pages;
 use App\Filament\Tables\Actions\ToggleEmployeeRole;
+use App\Filament\Tables\Columns\ActiveToggleColumn;
 use App\Models\{Branch, Employee, User};
 use Carbon\Carbon;
 use Filament\Forms\Components\{Grid, DatePicker, Select, Toggle};

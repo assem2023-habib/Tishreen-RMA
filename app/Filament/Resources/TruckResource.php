@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TruckResource\Pages;
+use App\Filament\Tables\Columns\ActiveToggleColumn;
 use App\Models\Employee;
 use App\Models\Truck;
 use Filament\Forms;
@@ -83,11 +84,7 @@ class TruckResource extends Resource
                 TextColumn::make('capacity_per_kilo_gram')
                     ->numeric()
                     ->sortable(),
-                ToggleColumn::make('is_active')
-                    ->onIcon('heroicon-o-check-circle')
-                    ->offIcon('heroicon-o-no-symbol')
-                    ->onColor('success')
-                    ->offColor('danger'),
+                ActiveToggleColumn::make('is_active'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

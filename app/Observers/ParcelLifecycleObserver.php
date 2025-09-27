@@ -56,30 +56,14 @@ class ParcelLifecycleObserver
             }
         }
         $changes = $parcel->getChanges();
+        $this->createParcelHistory($parcel, $changes);
         if (isset($changes['parcel_status']) && $changes['parcel_status'] === ParcelStatus::CONFIRMED->value) {
             $employeeId = Auth::user()?->employee?->id ?? auth::user()->id;
             dump($employeeId);
             if ($employeeId) {
-                ParcelShipmentAssignment::create([
-                    'parcel_id' => $parcel->id,
-                    'shipment_id' => null,
-                    'pick_up_confirmed_by_emp_id' => $employeeId,
-                    'pick_up_confirmed_date' => now(),
-                ]);
+                $this->createParcelShipmentAssignment($parcel, $employeeId);
             }
         }
-    }
-    public function updated(Parcel $parcel)
-    {
-        $changes = $parcel->getChanges();
-        ParcelHistory::create([
-            'parcel_id' => $parcel->id,
-            'operation_type' => OperationTypes::UPDATED->value,
-            'old_data' =>  $parcel->getOriginal(),
-            'new_data' => $parcel->toArray(),
-            'changes' => $changes,
-            'user_id' => Auth::user()->id ?? auth::user()->id ?? $parcel->sender_id,
-        ]);
     }
 
     public function deleting(Parcel $parcel)
@@ -91,6 +75,27 @@ class ParcelLifecycleObserver
             'new_data' => null,
             'old_data' => $parcel->toArray(),
             'changes' => $parcel->getChanges(),
+        ]);
+    }
+    private function createParcelHistory($parcel, $changes)
+    {
+        return
+            ParcelHistory::create([
+                'parcel_id' => $parcel->id,
+                'operation_type' => OperationTypes::UPDATED->value,
+                'old_data' =>  $parcel->getOriginal(),
+                'new_data' => $parcel->toArray(),
+                'changes' => $changes,
+                'user_id' => Auth::user()->id ?? auth::user()->id ?? $parcel->sender_id,
+            ]);
+    }
+    private function createParcelShipmentAssignment($parcel, $employeeId)
+    {
+        return ParcelShipmentAssignment::create([
+            'parcel_id' => $parcel->id,
+            'shipment_id' => null,
+            'pick_up_confirmed_by_emp_id' => $employeeId,
+            'pick_up_confirmed_date' => now(),
         ]);
     }
     private function generateUniqueTrackingNumber(): string
