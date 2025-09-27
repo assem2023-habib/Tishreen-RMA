@@ -4,18 +4,19 @@ namespace App\Filament\Resources;
 
 use App\Enums\RatingForType;
 use App\Filament\Resources\RateResource\{Pages, RelationManagers};
+use App\Filament\Tables\Columns\Timestamps;
 use App\Models\{Employee, Rate, User, Branch};
 use Filament\Forms;
 use Filament\Forms\Components\{Textarea, Select, TextInput};
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 
 class RateResource extends Resource
 {
@@ -53,49 +54,27 @@ class RateResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table
-            // ->query(
-            //     static::getEloquentQuery()->with('rateable'),
-
-            // )
-            ->columns([
-                TextColumn::make('user.user_name')
-                    ->label('User')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('rateable_name')
-                    ->label('Rateable Name'),
-                TextColumn::make('rating')
-                    ->label('Rating')
-                    ->formatStateUsing(callback: function ($state) {
-                        $stars = str_repeat('⭐', (int) $state);
-                        return $stars;
-                    })->html()
-                    ->sortable(),
-                TextColumn::make('rateable_type')
-                    ->label('Rateable Type')
-                    ->badge()
-                    ->color(fn(string $state) =>
-                    match ($state) {
-                        RatingForType::APPLICATION->value => 'success',   // أخضر
-                        RatingForType::SERVICE->value     => 'gray',      // رمادي
-                        RatingForType::BRANCH->value      => 'danger',    // أحمر
-                        RatingForType::EMPLOYEE->value    => 'warning',   // أصفر
-                        RatingForType::PARCEL->value      => 'info',      // أزرق
-                        RatingForType::DELIVERY->value    => 'primary',   // أزرق داكن
-                        RatingForType::CHATSESSION->value => 'purple',    // بنفسجي
-                        default => 'secondary',
-                    })
-                    ->formatStateUsing(fn(string $state) => __($state)),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
+        return $table->columns([
+            TextColumn::make('user.user_name')
+                ->label('User')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('rateable_name')
+                ->label('Rateable Name'),
+            TextColumn::make('rating')
+                ->label('Rating')
+                ->formatStateUsing(callback: function ($state) {
+                    $stars = str_repeat('⭐', (int) $state);
+                    return $stars;
+                })->html()
+                ->sortable(),
+            TextColumn::make('rateable_type')
+                ->label('Rateable Type')
+                ->badge()
+                ->color(fn($state) => RatingForType::color($state))
+                ->formatStateUsing(fn($state) => RatingForType::label($state)),
+            ...Timestamps::make(),
+        ])
             ->filters([])
             ->actions([])
             ->bulkActions([
@@ -120,28 +99,5 @@ class RateResource extends Resource
             // 'edit' => Pages\EditRate::route('/{record}/edit'),
             'view' => Pages\ViewRate::route('/{record}'),
         ];
-    }
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return $infolist
-            ->schema([
-                TextEntry::make('rating')
-                    ->label('Rating'),
-
-                TextEntry::make('comment')
-                    ->label('Comment'),
-
-                TextEntry::make('user.user_name')
-                    ->label('Rated By'),
-
-                TextEntry::make('rateable_type')
-                    ->label('Type'),
-
-                TextEntry::make('relatedDetails')
-                    ->label('Related Details'),
-
-                TextEntry::make('created_at')
-                    ->label('Created At'),
-            ]);
     }
 }

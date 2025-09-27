@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TruckResource\Pages;
 use App\Filament\Tables\Columns\ActiveToggleColumn;
+use App\Filament\Tables\Columns\Timestamps;
 use App\Models\Employee;
 use App\Models\Truck;
 use Filament\Forms;
@@ -85,14 +86,7 @@ class TruckResource extends Resource
                     ->numeric()
                     ->sortable(),
                 ActiveToggleColumn::make('is_active'),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...Timestamps::make(),
             ])
             ->filters([
                 //

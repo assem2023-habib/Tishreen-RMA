@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UsagePoliciesResource\Pages;
+use App\Filament\Tables\Columns\Timestamps;
 use App\Models\UsagePolicies;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -47,14 +48,7 @@ class UsagePoliciesResource extends Resource
                     ->badge()
                     ->color('primary')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...Timestamps::make(),
             ])
             ->filters([
                 //

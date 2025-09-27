@@ -2,9 +2,13 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\CurrencyType;
+use App\Enums\PolicyTypes;
+use App\Enums\PriceUnit;
+use App\Filament\Forms\Components\ActiveToggle;
 use App\Filament\Resources\PricingPolicyResource\Pages;
 use App\Models\PricingPolicy;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\{Select, TextInput, Grid};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -24,25 +28,52 @@ class PricingPolicyResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('policy_type')
-                    ->required(),
-                TextInput::make('price')
-                    ->required()
-                    ->numeric()
-                    ->prefix('$'),
-                TextInput::make('price_unit')
-                    ->required(),
-                TextInput::make('limit_min')
-                    ->numeric()
-                    ->default(null),
-                TextInput::make('limit_max')
-                    ->numeric()
-                    ->default(null),
-                TextInput::make('currency'),
-                TextInput::make('is_active')
-                    ->required()
-                    ->numeric()
-                    ->default(1),
+                Grid::make('2')
+                    ->schema([
+                        Select::make('policy_type')
+                            ->label('Policy Type')
+                            ->options(PolicyTypes::class)
+                            ->default(PolicyTypes::WEIGHT->value)
+                            ->required(),
+                        Select::make('currency')
+                            ->label('Currency')
+                            ->options(CurrencyType::class)
+                            ->default(CurrencyType::SYRIA->value),
+                    ]),
+                Grid::make('2')
+                    ->schema([
+                        Select::make('price_unit')
+                            ->label('Price Unit')
+                            ->options(PriceUnit::class)
+                            ->default(PriceUnit::KG)
+                            ->required(),
+                        TextInput::make('price')
+                            ->label('Price')
+                            ->required()
+                            ->numeric()
+                            ->rule('decimal:0,2')
+                            ->prefixIcon('heroicon-o-currency-dollar') // أيقونة دولار بدلاً من نص
+                            ->helperText('Enter the base price for this policy.')
+                            ->reactive()
+                            ->afterStateHydrated(function ($set, $state, $get) {
+                                $currency = $get('currency') ?? 'USD';
+                                $set('price', number_format((float) $state, 2, '.', ''));
+                            }),
+                    ]),
+                Grid::make('2')
+                    ->make([
+                        TextInput::make('limit_min')
+                            ->numeric()
+                            ->default(null),
+                        TextInput::make('limit_max')
+                            ->numeric()
+                            ->default(null),
+                    ]),
+                Grid::make('1')
+                    ->schema([
+                        ActiveToggle::make('is_active', 'Is Active ?'),
+
+                    ]),
             ]);
     }
 

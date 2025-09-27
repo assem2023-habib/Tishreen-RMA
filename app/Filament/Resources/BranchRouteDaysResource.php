@@ -4,21 +4,16 @@ namespace App\Filament\Resources;
 
 use App\Enums\DaysOfWeek;
 use App\Filament\Resources\BranchRouteDaysResource\Pages;
-use App\Filament\Resources\BranchRouteDaysResource\RelationManagers;
+use App\Filament\Tables\Columns\Timestamps;
 use App\Models\BranchRoute;
 use App\Models\BranchRouteDays;
-use Filament\Forms;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TimePicker;
+use Filament\Forms\Components\{Grid, TimePicker, Select};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class BranchRouteDaysResource extends Resource
 {
@@ -113,14 +108,15 @@ class BranchRouteDaysResource extends Resource
                     ->separator(', ')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...Timestamps::make(),
+                // TextColumn::make(name: 'created_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // TextColumn::make('updated_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

@@ -3,17 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Enums\UserAccountStatus;
+use App\Filament\Forms\Components\ActiveToggle;
 use App\Filament\Resources\UserRestrictionResource\Pages;
-use App\Filament\Tables\Columns\ActiveToggleColumn;
+use App\Filament\Tables\Columns\{ActiveToggleColumn, Timestamps};
 use App\Models\{User, UserRestriction};
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\{DatePicker, Grid, Select, Textarea};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -45,7 +43,7 @@ class UserRestrictionResource extends Resource
                             ->options(
                                 UserAccountStatus::class
                             )
-                            ->default(UserAccountStatus::BANED),
+                            ->default(UserAccountStatus::BANED->value),
                     ]
                 ),
                 Grid::make(1)->schema(
@@ -68,12 +66,7 @@ class UserRestrictionResource extends Resource
                 ),
                 Grid::make(1)->schema(
                     [
-                        Toggle::make('is_active')
-                            ->label('...?Restrtiction Activate')
-                            ->onIcon('heroicon-o-check-circle')
-                            ->offIcon('heroicon-o-no-symbol')
-                            ->onColor('success')
-                            ->offColor('danger')
+                        ActiveToggle::make('is_active', '...?Restrtiction Activate')
                             ->default(1)
                             ->columnSpanFull(),
                     ]
@@ -109,20 +102,18 @@ class UserRestrictionResource extends Resource
                     ->dateTime('Y-M-d')
                     ->sortable(),
                 ActiveToggleColumn::make('is_active'),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
+                ...Timestamps::make(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

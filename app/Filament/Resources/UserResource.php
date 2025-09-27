@@ -2,21 +2,15 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Forms\Components\ActiveToggle;
-use App\Filament\Forms\Components\NationalNumber;
-use App\Filament\Forms\Components\PhoneNumber;
+use App\Filament\Forms\Components\{ActiveToggle, PhoneNumber, NationalNumber};
 use App\Filament\Resources\UserResource\Pages;
-use App\Models\Country;
-use App\Models\User;
-use App\Models\UserRestriction;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\{TextInput, Grid, Select, DatePicker, Toggle};
+use App\Models\{Country, User};
+use Filament\Forms\Components\{TextInput, Grid, Select, DatePicker, FileUpload};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\{TextColumn, ImageColumn};
 use Filament\Tables\Table;
 
 class UserResource extends Resource
