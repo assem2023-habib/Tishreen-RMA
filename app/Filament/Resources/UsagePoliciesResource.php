@@ -18,7 +18,7 @@ class UsagePoliciesResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
     protected static ?string $navigationGroup = "Support & Information";
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
     protected static bool $shouldRegisterNavigation = true;
     public static function form(Form $form): Form
     {

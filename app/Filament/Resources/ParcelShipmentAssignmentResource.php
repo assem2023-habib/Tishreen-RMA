@@ -11,6 +11,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\{Builder, SoftDeletingScope};
@@ -19,7 +20,7 @@ class ParcelShipmentAssignmentResource extends Resource
 {
     protected static ?string $model = ParcelShipmentAssignment::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-link';
     protected static ?string $navigationGroup = "Parcels";
     protected static ?int $navigationSort = 4;
 
@@ -52,7 +53,7 @@ class ParcelShipmentAssignmentResource extends Resource
             ->columns([
                 TextColumn::make('parcel.sender_name')
                     ->label('Parcel'),
-                TextColumn::make('shipment.id')
+                TextColumn::make('shipment.branchRouteDay.branchRoute.route_label')
                     ->label('Shipment'),
                 TextColumn::make('receivedByEmployee.user.user_name')
                     ->label('Received By'),
@@ -69,9 +70,11 @@ class ParcelShipmentAssignmentResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

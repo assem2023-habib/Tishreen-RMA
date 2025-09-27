@@ -32,7 +32,7 @@ class ParcelAuthorizationResource extends Resource
 {
     protected static ?string $model = ParcelAuthorization::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-identification';
     protected static ?string $navigationGroup = 'Parcels';
     protected static ?int $navigationSort = 4;
     protected static bool $shouldRegisterNavigation = true;

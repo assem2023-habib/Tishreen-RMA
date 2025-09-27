@@ -24,7 +24,7 @@ class FrequentlyAskedQuestionsResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = "Support & Information";
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
     protected static bool $shouldRegisterNavigation = true;
     public static function form(Form $form): Form
     {
