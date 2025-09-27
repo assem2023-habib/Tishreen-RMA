@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use \Log;
 use App\Filament\Forms\Components\PhoneNumber;
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\BranchResource\Pages;
 use App\Models\Branch;
 use App\Models\City;
@@ -14,8 +15,8 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use function PHPUnit\Framework\isEmpty;
 use Illuminate\Support\Facades\Http;
@@ -146,7 +147,7 @@ class BranchResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

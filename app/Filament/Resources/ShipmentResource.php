@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ShipmentResource\Pages;
 use App\Filament\Resources\ShipmentResource\RelationManagers;
 use App\Models\Shipment;
@@ -61,8 +62,7 @@ class ShipmentResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -6,8 +6,10 @@ use App\Enums\GuestType;
 use App\Enums\SenderType;
 use App\Filament\Forms\Components\NationalNumber;
 use App\Filament\Forms\Components\PhoneNumber;
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\GuestUserResource\Pages;
 use App\Filament\Resources\GuestUserResource\RelationManagers;
+use App\Filament\Tables\Columns\Timestamps;
 use App\Models\City;
 use App\Models\GuestUser;
 use Filament\Forms;
@@ -110,24 +112,13 @@ class GuestUserResource extends Resource
                     ->label('Birthday')
                     ->date()
                     ->sortable(),
-
-                TextColumn::make('created_at')
-                    ->label('Created At')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('updated_at')
-                    ->label('Updated At')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...Timestamps::make(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

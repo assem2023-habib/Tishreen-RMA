@@ -2,20 +2,21 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\CountryResource\Pages;
 use App\Filament\Resources\CountryResource\RelationManagers\CityRelationManager;
 use App\Models\Country;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Actions\ActionGroup;
-use Filament\Forms\Components\FileUpload;
 
 
 class CountryResource extends Resource
@@ -86,11 +87,7 @@ class CountryResource extends Resource
                 //
             ])
             ->actions([
-                ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make()->label('Edit and City managment'),
-                    DeleteAction::make(),
-                ]),
+                TableActions::default(),
             ])
             ->bulkActions([]);
     }

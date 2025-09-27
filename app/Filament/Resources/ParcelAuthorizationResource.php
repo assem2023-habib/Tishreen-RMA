@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\AuthorizationStatus;
 use App\Enums\SenderType;
 use App\Filament\Forms\Components\NationalNumber;
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelAuthorizationResource\Pages;
 use App\Filament\Resources\ParcelAuthorizationResource\RelationManagers;
 use App\Models\City;
@@ -221,11 +222,7 @@ class ParcelAuthorizationResource extends Resource
                 //
             ])
             ->actions([
-                ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ]),
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

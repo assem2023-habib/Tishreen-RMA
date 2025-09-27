@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\UserAccountStatus;
 use App\Filament\Forms\Components\ActiveToggle;
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\UserRestrictionResource\Pages;
 use App\Filament\Tables\Columns\{ActiveToggleColumn, Timestamps};
 use App\Models\{User, UserRestriction};
@@ -109,11 +110,7 @@ class UserRestrictionResource extends Resource
                 //
             ])
             ->actions([
-                ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ]),
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

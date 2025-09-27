@@ -3,12 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Forms\Components\ActiveToggle;
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\EmployeeResource\Pages;
 use App\Filament\Tables\Actions\ToggleEmployeeRole;
 use App\Filament\Tables\Columns\ActiveToggleColumn;
+use App\Filament\Tables\Columns\Timestamps;
 use App\Models\{Branch, Employee, User};
 use Carbon\Carbon;
-use Filament\Forms\Components\{Grid, DatePicker, Select, Toggle};
+use Filament\Forms\Components\{Grid, DatePicker, Select};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -105,27 +107,14 @@ class EmployeeResource extends Resource
                         }
                     ),
                 ActiveToggleColumn::make('is_active'),
-
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...Timestamps::make()
             ])
             ->filters([
                 //
             ])
             ->actions([
                 ToggleEmployeeRole::make(),
-                ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ]),
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

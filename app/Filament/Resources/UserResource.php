@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Forms\Components\{ActiveToggle, PhoneNumber, NationalNumber};
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\{Country, User};
 use Filament\Forms\Components\{TextInput, Grid, Select, DatePicker, FileUpload};
@@ -194,11 +195,7 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ])
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

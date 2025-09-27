@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\TruckResource\Pages;
 use App\Filament\Tables\Columns\ActiveToggleColumn;
 use App\Filament\Tables\Columns\Timestamps;
@@ -92,7 +93,7 @@ class TruckResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -3,8 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Forms\Components\ActiveToggle;
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\FrequentlyAskedQuestionsResource\Pages;
 use App\Filament\Tables\Columns\ActiveToggleColumn;
+use App\Filament\Tables\Columns\Timestamps;
 use App\Models\FrequentlyAskedQuestions;
 use Filament\Forms;
 use Filament\Forms\Components\Textarea;
@@ -53,27 +55,13 @@ class FrequentlyAskedQuestionsResource extends Resource
                 TextColumn::make('category_type')
                     ->searchable(),
                 ActiveToggleColumn::make('is_show'),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...Timestamps::make(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                ActionGroup::make([
-                    Tables\Actions\EditAction::make()
-                        ->label('edite FAQ'),
-                    Tables\Actions\ViewAction::make()
-                        ->label('Show FAQ'),
-                    Tables\Actions\DeleteAction::make()
-                        ->label('Delete FAQ'),
-                ])
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

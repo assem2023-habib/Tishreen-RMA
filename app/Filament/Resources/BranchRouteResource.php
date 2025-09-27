@@ -3,9 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Enums\DaysOfWeek;
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\BranchRouteResource\Pages;
 use App\Filament\Tables\Actions\MarkAsArrivedAction;
 use App\Filament\Tables\Columns\ActiveToggleColumn;
+use App\Filament\Tables\Columns\Timestamps;
 use App\Models\Branch;
 use App\Models\BranchRoute;
 use Filament\Forms\Components\DateTimePicker;
@@ -132,25 +134,13 @@ class BranchRouteResource extends Resource
                 TextColumn::make('distance_per_kilo')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...Timestamps::make(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                    // MarkAsArrivedAction::make(),
-                ]),
+                TableActions::default(),
             ])
 
 

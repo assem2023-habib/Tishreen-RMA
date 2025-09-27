@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\UsagePoliciesResource\Pages;
 use App\Filament\Tables\Columns\Timestamps;
 use App\Models\UsagePolicies;
@@ -54,14 +55,7 @@ class UsagePoliciesResource extends Resource
                 //
             ])
             ->actions([
-                ActionGroup::make([
-                    Tables\Actions\EditAction::make()
-                        ->label('edite policy'),
-                    Tables\Actions\ViewAction::make()
-                        ->label('view ploicy'),
-                    Tables\Actions\DeleteAction::make()
-                        ->label('delete policy'),
-                ]),
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

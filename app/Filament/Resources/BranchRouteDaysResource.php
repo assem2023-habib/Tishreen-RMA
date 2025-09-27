@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\DaysOfWeek;
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\BranchRouteDaysResource\Pages;
 use App\Filament\Tables\Columns\Timestamps;
 use App\Models\BranchRoute;
@@ -109,24 +110,13 @@ class BranchRouteDaysResource extends Resource
                     ->sortable()
                     ->searchable(),
                 ...Timestamps::make(),
-                // TextColumn::make(name: 'created_at')
-                //     ->dateTime()
-                //     ->sortable()
-                //     ->toggleable(isToggledHiddenByDefault: true),
-                // TextColumn::make('updated_at')
-                //     ->dateTime()
-                //     ->sortable()
-                //     ->toggleable(isToggledHiddenByDefault: true),
+
             ])
             ->filters([
                 //
             ])
             ->actions([
-                ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ]),
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

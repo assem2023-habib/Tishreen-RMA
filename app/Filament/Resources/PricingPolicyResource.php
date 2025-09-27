@@ -6,12 +6,16 @@ use App\Enums\CurrencyType;
 use App\Enums\PolicyTypes;
 use App\Enums\PriceUnit;
 use App\Filament\Forms\Components\ActiveToggle;
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\PricingPolicyResource\Pages;
+use App\Filament\Tables\Columns\ActiveToggleColumn;
+use App\Filament\Tables\Columns\Timestamps;
 use App\Models\PricingPolicy;
 use Filament\Forms\Components\{Select, TextInput, Grid};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -93,23 +97,14 @@ class PricingPolicyResource extends Resource
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('currency'),
-                TextColumn::make('is_active')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ActiveToggleColumn::make('is_active'),
+                ...Timestamps::make(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                TableActions::default(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

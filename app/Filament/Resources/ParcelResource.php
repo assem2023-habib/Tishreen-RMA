@@ -5,11 +5,18 @@ namespace App\Filament\Resources;
 use App\Enums\ParcelStatus;
 use App\Enums\SenderType;
 use App\Filament\Forms\Components\PhoneNumber;
+use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelResource\Pages;
 use App\Filament\Tables\Actions\{ConfirmParcelAction, ViewGuestSenderAction};
 use App\Filament\Tables\Columns\ActiveToggleColumn;
-use App\Models\{User, Parcel, GuestUser, City, BranchRoute};
+use App\Models\{User, Parcel, City, BranchRoute};
 use Filament\Forms\Components\Wizard\Step;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\{
     DatePicker,
     Grid,
@@ -18,14 +25,6 @@ use Filament\Forms\Components\{
     Toggle,
     Wizard
 };
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
-use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class ParcelResource extends Resource
 {
@@ -248,11 +247,7 @@ class ParcelResource extends Resource
             ->actions([
                 ConfirmParcelAction::make(),
                 ViewGuestSenderAction::make(),
-                ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                ]),
+                TableActions::default(),
 
             ])
             ->bulkActions([
