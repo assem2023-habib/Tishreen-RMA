@@ -2,14 +2,13 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\ParcelStatus;
-use App\Enums\SenderType;
-use App\Filament\Forms\Components\PhoneNumber;
+use App\Enums\{ParcelStatus, SenderType};
+use App\Filament\Forms\Components\{ActiveToggle, PhoneNumber, LocationSelect};
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelResource\Pages;
 use App\Filament\Tables\Actions\{ConfirmParcelAction, ViewGuestSenderAction};
 use App\Filament\Tables\Columns\ActiveToggleColumn;
-use App\Models\{User, Parcel, City, BranchRoute};
+use App\Models\{User, Parcel, BranchRoute};
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -22,7 +21,6 @@ use Filament\Forms\Components\{
     Grid,
     Select,
     TextInput,
-    Toggle,
     Wizard
 };
 
@@ -47,12 +45,9 @@ class ParcelResource extends Resource
                                     ->label('Sender Type')
                                     ->options(
                                         SenderType::class
-                                        // [
-                                        //     User::class => SenderType::AUTHENTICATED_USER->value,
-                                        //     GuestUser::class => SenderType::GUEST_USER->value,
-                                        // ],
                                     )
                                     ->reactive()
+                                    ->default(SenderType::GUEST_USER->value)
                                     ->required(),
                             ],
                         ),
@@ -92,15 +87,16 @@ class ParcelResource extends Resource
                                 TextInput::make('guest_address')
                                     ->label('Address')
                                     ->required(),
-                                Select::make('guest_city_id')
-                                    ->label('City')
-                                    ->options(function () {
-                                        return City::select('id', 'en_name')
-                                            ->get()
-                                            ->mapWithKeys(function ($city) {
-                                                return [$city->id => $city->en_name];
-                                            });
-                                    }),
+                                // Select::make('guest_city_id')
+                                //     ->label('City')
+                                //     ->options(function () {
+                                //         return City::select('id', 'en_name')
+                                //             ->get()
+                                //             ->mapWithKeys(function ($city) {
+                                //                 return [$city->id => $city->en_name];
+                                //             });
+                                //     }),
+                                LocationSelect::make('guest_city_id', 'guest_country_id', 'City', 'Country'),
                                 TextInput::make('guest_national_number')
                                     ->label('National Number')
                                     ->required()
@@ -167,12 +163,7 @@ class ParcelResource extends Resource
                                 ->prefix('$'),
 
                             Grid::make(1)->schema([
-                                Toggle::make('is_paid')
-                                    ->label('Paid')
-                                    ->onIcon('heroicon-o-check-circle')
-                                    ->offIcon('heroicon-o-no-symbol')
-                                    ->onColor('success')
-                                    ->offColor('danger'),
+                                ActiveToggle::make('is_paid', 'Paid'),
                             ]),
                         ])
                 ])

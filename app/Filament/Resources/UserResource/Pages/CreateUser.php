@@ -34,10 +34,8 @@ class CreateUser extends CreateRecord
     {
         if (!isEmpty($data['is_verified'])) {
             $data['email_verified_at'] = Carbon::now();
-        } else {
-            $data['email_verified_at'] = null;
         }
-        unset($data['is_verified'], $data['account_status']);
+        unset($data['is_verified']);
         return $data;
     }
 }

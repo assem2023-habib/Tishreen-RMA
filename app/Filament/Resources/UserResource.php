@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Forms\Components\LocationSelect;
 use App\Filament\Forms\Components\{ActiveToggle, PhoneNumber, NationalNumber};
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\UserResource\Pages;
@@ -88,34 +89,7 @@ class UserResource extends Resource
                             ])
                             ->dehydrated(fn($state) => filled($state)),
                     ]),
-
-                Grid::make(2)
-                    ->schema([]),
-
-                Grid::make(2)
-                    ->schema([
-                        Select::make('country_id')
-                            ->label('Country')
-                            ->options(Country::all()->pluck('en_name', 'id'))
-                            ->live()
-                            ->afterStateUpdated(fn(callable $set) => $set('city_id', null))
-
-                            ->validationMessages([
-                                'required' => 'Please select a country',
-                            ]),
-
-                        Select::make('city_id')
-                            ->label('City')
-                            ->options(function (callable $get) {
-                                $country = Country::find($get('country_id'));
-                                return $country ? $country->cities()->pluck('en_name', 'id') : [];
-                            })
-
-                            ->validationMessages([
-                                'required' => 'Please select a city',
-                            ]),
-                    ]),
-
+                LocationSelect::make('city_id', 'country_id', 'City', 'Country'),
                 Grid::make(2)
                     ->schema([
                         TextInput::make('address')

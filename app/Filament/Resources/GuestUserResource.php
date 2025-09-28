@@ -3,26 +3,17 @@
 namespace App\Filament\Resources;
 
 use App\Enums\GuestType;
-use App\Enums\SenderType;
-use App\Filament\Forms\Components\NationalNumber;
-use App\Filament\Forms\Components\PhoneNumber;
+use App\Filament\Forms\Components\{LocationSelect, PhoneNumber, NationalNumber};
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\GuestUserResource\Pages;
-use App\Filament\Resources\GuestUserResource\RelationManagers;
 use App\Filament\Tables\Columns\Timestamps;
-use App\Models\City;
 use App\Models\GuestUser;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\{DatePicker, TextInput, Select};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class GuestUserResource extends Resource
 {
@@ -47,15 +38,16 @@ class GuestUserResource extends Resource
                 TextInput::make('address')
                     ->label('Address')
                     ->required(),
-                Select::make('city_id')
-                    ->label('City')
-                    ->options(function () {
-                        return City::select('id', 'en_name')
-                            ->get()
-                            ->mapWithKeys(function ($city) {
-                                return [$city->id => $city->en_name];
-                            });
-                    }),
+                LocationSelect::make('city_id', 'country_id', 'City', 'Country'),
+                // Select::make('city_id')
+                //     ->label('City')
+                //     ->options(function () {
+                //         return City::select('id', 'en_name')
+                //             ->get()
+                //             ->mapWithKeys(function ($city) {
+                //                 return [$city->id => $city->en_name];
+                //             });
+                //     }),
                 NationalNumber::make('national_number', 'National Number'),
                 DatePicker::make('birthday')
                     ->label('Birthday')
@@ -72,14 +64,14 @@ class GuestUserResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('first_name')
+                TextColumn::make('name')
                     ->label('Name')
-                    ->formatStateUsing(fn(GuestUser $record) => $record->first_name . ' ' . $record->last_name)
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('phone')
                     ->label('Phone')
+                    ->badge()
                     ->searchable(),
 
                 TextColumn::make('national_number')
