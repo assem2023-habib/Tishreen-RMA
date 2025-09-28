@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Enums\AuthorizationStatus;
 use App\Enums\SenderType;
+use App\Filament\Forms\Components\LocationSelect;
 use App\Filament\Forms\Components\NationalNumber;
+use App\Filament\Forms\Components\PhoneNumber;
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelAuthorizationResource\Pages;
 use App\Filament\Resources\ParcelAuthorizationResource\RelationManagers;
@@ -96,25 +98,17 @@ class ParcelAuthorizationResource extends Resource
                             [
                                 TextInput::make('guest_first_name')
                                     ->label('First Name')
+                                    ->maxLength(255)
                                     ->required(),
                                 TextInput::make('guest_last_name')
                                     ->label('Last Name')
+                                    ->maxLenght(255)
                                     ->required(),
-                                TextInput::make('guest_phone')
-                                    ->label('Phone')
-                                    ->required(),
+                                PhoneNumber::make('guest_phone', 'Phone'),
                                 TextInput::make('guest_address')
                                     ->label('Address')
                                     ->required(),
-                                Select::make('guest_city_id')
-                                    ->label('City')
-                                    ->options(function () {
-                                        return City::select('id', 'en_name')
-                                            ->get()
-                                            ->mapWithKeys(function ($city) {
-                                                return [$city->id => $city->en_name];
-                                            });
-                                    }),
+                                LocationSelect::make('guest_city_id', 'guest_country_id', 'City', 'Country'),
                                 NationalNumber::make('guest_national_number', 'National Number'),
                                 DatePicker::make('birthday')
                                     ->label('Birthday')

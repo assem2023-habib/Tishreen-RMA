@@ -14,8 +14,8 @@ class LocationSelect
             ->schema([
                 Select::make($countryId)
                     ->label($countryLabel)
-                    ->options(Country::all()->pluck('en_name', 'id'))
-                    ->default(Country::query()->value('id'))
+                    ->options(Country::pluck('en_name', 'id'))
+                    ->default(Country::query()->orderBy('id')->value('id'))
                     ->live()
                     ->afterStateUpdated(fn(callable $set) => $set($cityId, null))
                     ->validationMessages([
@@ -24,9 +24,11 @@ class LocationSelect
                 Select::make($cityId)
                     ->label($cityLabel)
                     ->options(function (callable $get) use ($countryId) {
-                        $country = Country::find($get($countryId));
-                        return $country ? $country->cities()->pluck('en_name', 'id') : [];
+                        $country = optional(Country::find($get($countryId)))
+                            ->cities()
+                            ->pluck('en_name', 'id') ?? [];
                     })
+                    ->required()
                     ->validationMessages([
                         'required' => 'Please select a city',
                     ]),

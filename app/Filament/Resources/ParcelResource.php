@@ -87,15 +87,6 @@ class ParcelResource extends Resource
                                 TextInput::make('guest_address')
                                     ->label('Address')
                                     ->required(),
-                                // Select::make('guest_city_id')
-                                //     ->label('City')
-                                //     ->options(function () {
-                                //         return City::select('id', 'en_name')
-                                //             ->get()
-                                //             ->mapWithKeys(function ($city) {
-                                //                 return [$city->id => $city->en_name];
-                                //             });
-                                //     }),
                                 LocationSelect::make('guest_city_id', 'guest_country_id', 'City', 'Country'),
                                 TextInput::make('guest_national_number')
                                     ->label('National Number')
