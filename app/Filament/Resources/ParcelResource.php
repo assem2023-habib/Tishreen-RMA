@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\{ParcelStatus, SenderType};
+use App\Filament\Forms\Components\NationalNumber;
 use App\Filament\Forms\Components\{ActiveToggle, PhoneNumber, LocationSelect};
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelResource\Pages;
@@ -85,16 +86,7 @@ class ParcelResource extends Resource
                                     ->label('Address')
                                     ->required(),
                                 LocationSelect::make('guest_city_id', 'guest_country_id', 'City', 'Country'),
-                                TextInput::make('guest_national_number')
-                                    ->label('National Number')
-                                    ->required()
-                                    ->maxLength(11)
-                                    ->minLength(11)
-                                    ->ValidationMessages(
-                                        [
-                                            'required' => 'this filed was required',
-                                        ]
-                                    ),
+                                NationalNumber::make('guest_national_number', 'National Number'),
                                 DatePicker::make('birthday')
                                     ->label('Birthday')
                                     ->native(false),
