@@ -7,12 +7,15 @@ use Filament\Tables\Actions\ActionGroup;
 
 class TableActions
 {
-    public static function default(): ActionGroup
+    public static function default($viewName = 'View', $editName = 'Edit', $DeleteName = 'Delete'): ActionGroup
     {
         return ActionGroup::make([
-            Tables\Actions\ViewAction::make(),
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\DeleteAction::make(),
+            Tables\Actions\ViewAction::make()
+                ->label($viewName),
+            Tables\Actions\EditAction::make()
+                ->label($editName),
+            Tables\Actions\DeleteAction::make()
+                ->label($DeleteName),
         ]);
     }
 }

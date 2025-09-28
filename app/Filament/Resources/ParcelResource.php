@@ -3,12 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Enums\{ParcelStatus, SenderType};
-use App\Filament\Forms\Components\NationalNumber;
-use App\Filament\Forms\Components\{ActiveToggle, PhoneNumber, LocationSelect};
+use App\Filament\Forms\Components\{ActiveToggle, PhoneNumber, LocationSelect, NationalNumber};
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelResource\Pages;
 use App\Filament\Tables\Actions\{ConfirmParcelAction, ViewGuestSenderAction};
-use App\Filament\Tables\Columns\ActiveToggleColumn;
+use App\Filament\Tables\Columns\{ActiveToggleColumn, Timestamps};
 use App\Models\{User, Parcel, BranchRoute};
 use App\Trait\HasSenderVisibility;
 use Filament\Forms\Components\Wizard\Step;
@@ -185,32 +184,14 @@ class ParcelResource extends Resource
                 TextColumn::make('parcel_status')
                     ->label('Parcel Status')
                     ->badge()
-                    ->color(fn(string $state) =>
-                    match ($state) {
-                        ParcelStatus::PENDING->value => 'danger',
-                        ParcelStatus::CONFIRMED->value => 'success',
-                        ParcelStatus::IN_TRANSIT->value => 'danger',
-                        ParcelStatus::READY_FOR_PICKUP->value => 'success',
-                        ParcelStatus::DELIVERED->value => 'secondary',
-                        ParcelStatus::CANCELED->value => 'primary',
-                        ParcelStatus::FAILED->value => 'secondary',
-                        ParcelStatus::RETURNED->value => 'danger',
-                        default => 'gray',
-                    })
+                    ->color(self::getParcelStatusColor())
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('tracking_number')
                     ->badge()
                     ->searchable(),
 
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...Timestamps::make(),
 
             ])
             ->filters([
@@ -247,6 +228,21 @@ class ParcelResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+    private static function getParcelStatusColor()
+    {
+        return fn(string $state) =>
+        match ($state) {
+            ParcelStatus::PENDING->value => 'danger',
+            ParcelStatus::CONFIRMED->value => 'success',
+            ParcelStatus::IN_TRANSIT->value => 'danger',
+            ParcelStatus::READY_FOR_PICKUP->value => 'success',
+            ParcelStatus::DELIVERED->value => 'secondary',
+            ParcelStatus::CANCELED->value => 'primary',
+            ParcelStatus::FAILED->value => 'secondary',
+            ParcelStatus::RETURNED->value => 'danger',
+            default => 'gray',
+        };
     }
     private static function creteButton(): HtmlString
     {
