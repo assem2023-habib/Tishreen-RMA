@@ -38,19 +38,9 @@ class Parcel extends Model
     {
         return $this->belongsTo(Appointment::class, 'appointment_id');
     }
-    public function getRouteLabelAttribute()
-    {
-        if ($this->route && $this->route->fromBranch && $this->route->toBranch)
-            return $this->route->fromBranch->branch_name . '-->' . $this->route->toBranch->branch_name;
-        return '-';
-    }
     public function sender()
     {
         return $this->morphTo();
-    }
-    public function getSenderNameAttribute()
-    {
-        return $this->sender->user_name ?? ($this->sender->first_name . $this->sender->last_name);
     }
     public function parcelsHistories()
     {
@@ -63,5 +53,15 @@ class Parcel extends Model
     public function rates()
     {
         return $this->morphMany(Rate::class, 'rateable');
+    }
+    public function getSenderNameAttribute()
+    {
+        return $this->sender->user_name ?? ($this->sender->first_name . $this->sender->last_name);
+    }
+    public function getRouteLabelAttribute()
+    {
+        if ($this->route && $this->route->fromBranch && $this->route->toBranch)
+            return $this->route->fromBranch->branch_name . '-->' . $this->route->toBranch->branch_name;
+        return '-';
     }
 }

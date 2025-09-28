@@ -2,34 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\AuthorizationStatus;
-use App\Enums\SenderType;
-use App\Filament\Forms\Components\LocationSelect;
-use App\Filament\Forms\Components\NationalNumber;
-use App\Filament\Forms\Components\PhoneNumber;
+use App\Enums\{AuthorizationStatus, SenderType};
+use App\Filament\Forms\Components\{LocationSelect, PhoneNumber, NationalNumber};
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelAuthorizationResource\Pages;
-use App\Filament\Resources\ParcelAuthorizationResource\RelationManagers;
-use App\Models\City;
-use App\Models\GuestUser;
-use App\Models\Parcel;
-use App\Models\ParcelAuthorization;
-use App\Models\User;
+use App\Models\{Parcel, User, ParcelAuthorization};
 use Carbon\Carbon;
-use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Wizard\Step;
-use Filament\Forms\Components\{Wizard, Select, TextInput};
+use Filament\Forms\Components\{Wizard, Select, TextInput, Grid, DateTimePicker, DatePicker};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ParcelAuthorizationResource extends Resource
 {
@@ -49,15 +34,9 @@ class ParcelAuthorizationResource extends Resource
                         ->schema([
                             Select::make('user_id')
                                 ->label('User')
-                                ->options(function () {
-                                    return User::select('id', 'user_name')
-                                        ->get()
-                                        ->mapWithKeys(
-                                            function ($user) {
-                                                return [$user->id => $user->user_name];
-                                            }
-                                        );
-                                }),
+                                ->options(
+                                    User::pluck('user_name', 'id')
+                                ),
                         ]),
                     Step::make('Choose Reciver Type')
                         ->schema(
@@ -72,7 +51,7 @@ class ParcelAuthorizationResource extends Resource
                                     ->required(),
                             ],
                         ),
-                    Step::make('Reciver Authenticated Details')
+                    Step::make('Receiver User Details')
                         ->label('Reciver Details')
                         ->columns(1)
                         ->schema(
@@ -81,17 +60,12 @@ class ParcelAuthorizationResource extends Resource
                                     ->label("Reciver")
                                     ->options(function (callable $get) {
                                         $senderId = $get('user_id');
-                                        return User::select('id', 'user_name', 'email')
-                                            ->whereNot('id', $senderId)
-                                            ->get()
-                                            ->mapWithKeys(function ($user) {
-                                                return [$user->id => $user->user_name];
-                                            });
+                                        return User::whereNot('id', $senderId)->pluck('user_name', 'id');
                                     })
                             ],
                         )
                         ->visible(self::getVisibleForUser()),
-                    Step::make('Sender Guest Details')
+                    Step::make('Receiver Guest Details')
                         ->label('Reciver Details')
                         ->columns(2)
                         ->schema(
@@ -102,7 +76,7 @@ class ParcelAuthorizationResource extends Resource
                                     ->required(),
                                 TextInput::make('guest_last_name')
                                     ->label('Last Name')
-                                    ->maxLenght(255)
+                                    ->maxLength(255)
                                     ->required(),
                                 PhoneNumber::make('guest_phone', 'Phone'),
                                 TextInput::make('guest_address')
@@ -124,21 +98,8 @@ class ParcelAuthorizationResource extends Resource
                                     Select::make('parcel_id')
                                         ->required()
                                         ->options(function (callable $get) {
-                                            $sender_id = $get('user_id');
-                                            return Parcel::select('id', 'sender_id', 'sender_type', 'route_id', 'reciver_name')
-                                                ->where('sender_id', $sender_id)
-                                                ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
-                                                ->get()
-                                                ->mapWithKeys(
-                                                    function ($parcel) {
-                                                        return [
-                                                            $parcel->id => 'reciver name: '
-                                                                . $parcel->reciver_name
-                                                                . ' , route : '
-                                                                . $parcel->routeLabel
-                                                        ];
-                                                    }
-                                                );
+                                            $senderId = $get('user_id');
+                                            return  self::getParcelAuthenticatedUser($senderId);
                                         }),
                                 ]),
                             Grid::make(2)
@@ -173,7 +134,7 @@ class ParcelAuthorizationResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('user.user_name')
+                TextColumn::make('user.name')
                     ->searchable(),
                 TextColumn::make('parcel.reciver_name')
                     ->sortable(),
@@ -247,5 +208,22 @@ class ParcelAuthorizationResource extends Resource
     private static function getVisibleForUser()
     {
         return fn(callable $get) => $get('authorized_user_type') === SenderType::AUTHENTICATED_USER;
+    }
+    private static function getParcelAuthenticatedUser($senderId)
+    {
+        return Parcel::select('id', 'sender_id', 'sender_type', 'route_id', 'reciver_name')
+            ->where('sender_id', $senderId)
+            ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
+            ->get()
+            ->mapWithKeys(
+                function ($parcel) {
+                    return [
+                        $parcel->id => 'reciver name: '
+                            . $parcel->reciver_name
+                            . ' , route : '
+                            . $parcel->routeLabel
+                    ];
+                }
+            );
     }
 }
