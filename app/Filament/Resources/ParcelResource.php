@@ -200,7 +200,7 @@ class ParcelResource extends Resource
             ->actions([
                 ConfirmParcelAction::make(),
                 ViewGuestSenderAction::make(),
-                TableActions::default(),
+                TableActions::default('show parcel', 'edit parcel', 'delete parcel'),
 
             ])
             ->bulkActions([

@@ -11,11 +11,14 @@ class TableActions
     {
         return ActionGroup::make([
             Tables\Actions\ViewAction::make()
-                ->label($viewName),
+                ->label($viewName)
+                ->color('secondary'),
             Tables\Actions\EditAction::make()
-                ->label($editName),
+                ->label($editName)
+                ->color('warning'),
             Tables\Actions\DeleteAction::make()
-                ->label($DeleteName),
+                ->label($DeleteName)
+                ->color('danger'),
         ]);
     }
 }
