@@ -9,6 +9,7 @@ use App\Filament\Resources\ParcelResource\Pages;
 use App\Filament\Tables\Actions\{ConfirmParcelAction, ViewGuestSenderAction};
 use App\Filament\Tables\Columns\ActiveToggleColumn;
 use App\Models\{User, Parcel, BranchRoute};
+use App\Trait\HasSenderVisibility;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -26,6 +27,7 @@ use Filament\Forms\Components\{
 
 class ParcelResource extends Resource
 {
+    use HasSenderVisibility;
     protected static ?string $model = Parcel::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cube';
@@ -59,16 +61,12 @@ class ParcelResource extends Resource
                             [
                                 Select::make('sender_id')
                                     ->label("Sender")
-                                    ->options(function () {
-                                        return User::select('id', 'user_name', 'email')
-                                            ->get()
-                                            ->mapWithKeys(function ($user) {
-                                                return [$user->id => $user->user_name];
-                                            });
-                                    })
+                                    ->options(
+                                        User::pluck('user_name', 'id')
+                                    )
                             ],
                         )
-                        ->visible(self::getVisible(SenderType::AUTHENTICATED_USER->value)),
+                        ->visible(self::visibleForUser('sender_type')),
 
                     // parcel details for guest
                     Step::make('Sender Guest Details')
@@ -81,8 +79,7 @@ class ParcelResource extends Resource
                                     ->required(),
                                 TextInput::make('guest_last_name')
                                     ->label('Last Name')
-                                    ->required()
-                                    ->visible(self::getVisible()),
+                                    ->required(),
                                 PhoneNumber::make('guest_phone', 'Phone'),
                                 TextInput::make('guest_address')
                                     ->label('Address')
@@ -104,7 +101,7 @@ class ParcelResource extends Resource
 
                             ],
                         )
-                        ->visible(self::getVisible()),
+                        ->visible(self::visibleForGuest('sender_type')),
 
 
                     // ---------- paracel details for user
@@ -113,13 +110,15 @@ class ParcelResource extends Resource
                         ->schema([
                             Select::make('route_id')
                                 ->label('Branches Route')
-                                ->options(function () {
-                                    return BranchRoute::select('id', 'from_branch_id', 'to_branch_id')
-                                        ->get()
-                                        ->mapWithKeys(function ($branchRoute) {
-                                            return [$branchRoute->id => $branchRoute->fromBranch->branch_name . " --> " . $branchRoute->toBranch->branch_name];
-                                        });
-                                }),
+                                ->options(
+                                    function () {
+                                        return BranchRoute::select('id', 'from_branch_id', 'to_branch_id')
+                                            ->get()
+                                            ->mapWithKeys(function ($branchRoute) {
+                                                return [$branchRoute->id => $branchRoute->RouteLabel];
+                                            });
+                                    }
+                                ),
 
                             TextInput::make('reciver_name')
                                 ->required()
@@ -134,7 +133,6 @@ class ParcelResource extends Resource
                             Select::make('parcel_status')
                                 ->label('Parcel Status')
                                 ->options(ParcelStatus::class)
-                                ->enum(ParcelStatus::class)
                                 ->default(ParcelStatus::CONFIRMED->value),
 
                             TextInput::make('tracking_number')
@@ -257,10 +255,6 @@ class ParcelResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
-    }
-    private static function getVisible($senderType = SenderType::GUEST_USER->value)
-    {
-        return fn(callable $get) => $get('sender_type') === $senderType;
     }
     private static function creteButton(): HtmlString
     {

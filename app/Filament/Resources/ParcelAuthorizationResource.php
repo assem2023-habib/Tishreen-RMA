@@ -7,6 +7,7 @@ use App\Filament\Forms\Components\{LocationSelect, PhoneNumber, NationalNumber};
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelAuthorizationResource\Pages;
 use App\Models\{Parcel, User, ParcelAuthorization};
+use App\Trait\HasSenderVisibility;
 use Carbon\Carbon;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Components\{Wizard, Select, TextInput, Grid, DateTimePicker, DatePicker};
@@ -18,6 +19,7 @@ use Filament\Tables\Table;
 
 class ParcelAuthorizationResource extends Resource
 {
+    use HasSenderVisibility;
     protected static ?string $model = ParcelAuthorization::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-identification';
@@ -46,7 +48,7 @@ class ParcelAuthorizationResource extends Resource
                                     ->options(
                                         SenderType::class
                                     )
-                                    ->default(SenderType::AUTHENTICATED_USER)
+                                    ->default(SenderType::AUTHENTICATED_USER->value)
                                     ->reactive()
                                     ->required(),
                             ],
@@ -64,7 +66,7 @@ class ParcelAuthorizationResource extends Resource
                                     })
                             ],
                         )
-                        ->visible(self::getVisibleForUser()),
+                        ->visible(self::visibleForUser(field: 'authorized_user_type')),
                     Step::make('Receiver Guest Details')
                         ->label('Reciver Details')
                         ->columns(2)
@@ -90,7 +92,7 @@ class ParcelAuthorizationResource extends Resource
 
                             ],
                         )
-                        ->visible(self::getVisible()),
+                        ->visible(self::visibleForGuest(field: 'authorized_user_type')),
                     Step::make('Delegation Data')
                         ->schema([
                             Grid::make()
@@ -200,14 +202,6 @@ class ParcelAuthorizationResource extends Resource
             'create' => Pages\CreateParcelAuthorization::route('/create'),
             'edit' => Pages\EditParcelAuthorization::route('/{record}/edit'),
         ];
-    }
-    private static function getVisible()
-    {
-        return fn(callable $get) => $get('authorized_user_type') === SenderType::GUEST_USER;
-    }
-    private static function getVisibleForUser()
-    {
-        return fn(callable $get) => $get('authorized_user_type') === SenderType::AUTHENTICATED_USER;
     }
     private static function getParcelAuthenticatedUser($senderId)
     {
