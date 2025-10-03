@@ -1,6 +1,5 @@
 <?php
 
-use App\Events\NotificationSent;
 use App\Http\Controllers\Api\V1\Appointment\AppointmentController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\TelegramOtpController;
@@ -10,19 +9,14 @@ use App\Http\Controllers\Api\V1\Branche\BranchController;
 use App\Http\Controllers\Api\V1\Branche\GetBranchById;
 use App\Http\Controllers\Api\V1\BranchRoute\BranchRouteController;
 use App\Http\Controllers\Api\V1\CountryAndCity\CountryController;
-use App\Http\Controllers\Api\V1\Notification\NotificationController;
 use App\Http\Controllers\Api\V1\Parcel\ParcelController;
 use App\Http\Controllers\Api\V1\PricingPolicy\PricingPolicyController;
 use App\Http\Controllers\Api\V1\Rates\RatesController;
 use App\Http\Controllers\Api\V1\Users\UsersController;
-use App\Http\Controllers\BroadcastController;
 use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('v1')->group(function () {
-
-
-    // Hussein
 
     //-----------------------------------Auth-----------------------------
     Route::post('register', [AuthController::class, 'register']);
@@ -46,12 +40,6 @@ Route::prefix('v1')->group(function () {
     //----------------------------------Appointment-------------------------------------
     Route::get('/get-getCalender/{tracking_number}', [AppointmentController::class, 'getCalenderByParcelTrackingNumber']);
     Route::post('/book-appointment', [AppointmentController::class, 'bookAppointment']);
-
-    // End Hussein
-
-
-
-
 
     //----------------------------------Branches-------------------------------------
 
@@ -102,27 +90,6 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/users', UsersController::class)->name('users');
 
-        //-------------------------------Notification---------------------------------------------
-
-        Route::prefix('notifications')->group(function () {
-            Route::get('/', [NotificationController::class, 'index']);
-            Route::post('/', [NotificationController::class, 'store']);
-            Route::post('/bulk', [NotificationController::class, 'sendBulk']);
-            Route::get('/stats', [NotificationController::class, 'getStats']);
-            Route::get('/unread-count', [NotificationController::class, 'getUnreadCount']);
-            Route::post('/{id}/read', [NotificationController::class, 'markAsRead']);
-            Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
-            Route::delete('/{id}', [NotificationController::class, 'delete']);
-            Route::post('/test-broadcast', [NotificationController::class, 'testBroadcast']);
-        });
-
-        //-------------------------------Broadcasting---------------------------------------------
-
-        Route::prefix('broadcasting')->group(function () {
-            Route::post('/auth', [BroadcastController::class, 'authenticate']);
-            Route::get('/channels', [BroadcastController::class, 'channels']);
-            Route::get('/test', [BroadcastController::class, 'test']);
-        });
     });
 })
     ->middleware('throttle:6');

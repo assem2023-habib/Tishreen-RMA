@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Enums\RatingForType;
 use App\Enums\SenderType;
-use App\Models\{Branch, Employee, Parcel, ParcelAuthorization, User, GuestUser, Notification};
-use App\Observers\{EmployeeObserver, UserObserve, ParcelAuthorizationObserver, NotificationObserver, ParcelLifecycleObserver};
+use App\Models\{Branch, Employee, Parcel, ParcelAuthorization, User, GuestUser};
+use App\Observers\{EmployeeObserver, UserObserve, ParcelAuthorizationObserver, ParcelLifecycleObserver};
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
@@ -44,6 +44,5 @@ class AppServiceProvider extends ServiceProvider
         Parcel::observe(ParcelLifecycleObserver::class);
         ParcelAuthorization::observe(ParcelAuthorizationObserver::class);
         Employee::observe(EmployeeObserver::class);
-        Notification::observe(NotificationObserver::class);
     }
 }
