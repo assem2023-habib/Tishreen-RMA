@@ -5,7 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelShipmentAssignmentResource\Pages;
 use App\Filament\Resources\ParcelShipmentAssignmentResource\RelationManagers;
-use App\Models\ParcelShipmentAssignment;
+use App\Models\Employee;
+use App\Models\Shipment;
+use App\Models\{ParcelShipmentAssignment, Parcel};
 use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -30,18 +32,50 @@ class ParcelShipmentAssignmentResource extends Resource
         return $form
             ->schema([
                 Select::make('parcel_id')
-                    ->relationship('parcel', 'id')
+                    ->label('Parcel')
+                    ->options(function () {
+                        return Parcel::with('sender')
+                            ->get()
+                            ->mapWithKeys(function ($parcel) {
+                                return [$parcel->id => "Sender : " . $parcel->sender->name . ", " . " Reciver : " . $parcel->reciver_name . " ,Parcel Number : " . $parcel->tracking_number];
+                            });
+                    })
                     ->required(),
                 Select::make('shipment_id')
-                    ->relationship('shipment', 'id')
+                    ->options(function () {
+                        return Shipment::with('branchRouteDay')
+                            ->get()
+                            ->mapWithKeys(
+                                function ($shipment) {
+                                    return [$shipment->id => $shipment->branchRouteDay->day_of_week . " ," . $shipment->branchRouteDay->branchRoute->route_label];
+                                }
+                            );
+                    })
                     ->required(),
                 Select::make('pick_up_confirmed_by_emp_id')
-                    ->relationship('receivedByEmployee', 'id')
-                    ->label('Received By'),
+                    ->options(function () {
+                        return Employee::with('user')
+                            ->get()
+                            ->mapWithKeys(function ($employee) {
+                                return [$employee->id => $employee->user->user_name];
+                            });
+                    })
+                    ->live()
+                    ->label('Received By Employee'),
                 DateTimePicker::make('pick_up_confirmed_date')
-                    ->label('Received At'),
+                    ->label('Received At')
+                    ->default(now()),
                 Select::make('delivery_confirmed_by_emp_id')
-                    ->relationship('deliveredByEmployee', 'id')
+                    ->options(function (callable $get) {
+                        $query = Employee::with('user');
+                        if ($get('pick_up_confirmed_by_emp_id')) $query->whereNot('id', $get('pick_up_confirmed_by_emp_id'));
+                        return $query
+                            ->get()
+                            ->mapWithKeys(function ($employee) {
+                                return [$employee->id => $employee->user->user_name];
+                            });
+                    })
+                    ->live()
                     ->label('Delivered By'),
                 DateTimePicker::make('delivery_confirmed_date')
                     ->label('Delivered At'),
