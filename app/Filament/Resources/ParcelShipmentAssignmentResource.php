@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\ParcelStatus;
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelShipmentAssignmentResource\Pages;
 use App\Filament\Resources\ParcelShipmentAssignmentResource\RelationManagers;
@@ -35,9 +36,10 @@ class ParcelShipmentAssignmentResource extends Resource
                     ->label('Parcel')
                     ->options(function () {
                         return Parcel::with('sender')
+                            ->whereIn('parcel_status', [ParcelStatus::CONFIRMED->value, ParcelStatus::IN_TRANSIT->value, ParcelStatus::DELIVERED->value])
                             ->get()
                             ->mapWithKeys(function ($parcel) {
-                                return [$parcel->id => "Sender : " . $parcel->sender->name . ", " . " Reciver : " . $parcel->reciver_name . " ,Parcel Number : " . $parcel->tracking_number];
+                                return [$parcel->id => "Sender : " . $parcel->sender->name . ", " . " Reciver : " . $parcel->reciver_name . " ,Tracking Number : " . $parcel->tracking_number];
                             });
                     })
                     ->required(),

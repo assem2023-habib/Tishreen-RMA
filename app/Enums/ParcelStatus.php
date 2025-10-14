@@ -4,7 +4,6 @@ namespace App\Enums;
 
 enum ParcelStatus: string
 {
-    //Pending, Confirmed, In_transit, Out_For_Delivery, Ready_For_Pickup, Delivered, Failed, Returned, Canceled
     case PENDING = 'Pending';
     case CONFIRMED = 'Confirmed';
     case IN_TRANSIT = 'In_transit';
