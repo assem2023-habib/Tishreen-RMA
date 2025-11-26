@@ -36,7 +36,7 @@ class ParcelShipmentAssignmentResource extends Resource
                     ->label('Parcel')
                     ->options(function () {
                         return Parcel::with('sender')
-                            ->whereIn('parcel_status', [ParcelStatus::CONFIRMED->value, ParcelStatus::IN_TRANSIT->value, ParcelStatus::DELIVERED->value])
+                            ->whereIn('parcel_status', [ParcelStatus::CONFIRMED->value])
                             ->get()
                             ->mapWithKeys(function ($parcel) {
                                 return [$parcel->id => "Sender : " . $parcel->sender->name . ", " . " Reciver : " . $parcel->reciver_name . " ,Tracking Number : " . $parcel->tracking_number];
