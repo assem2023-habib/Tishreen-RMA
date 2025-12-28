@@ -91,9 +91,24 @@ class AutoAssignParcelsAction
                             ParcelShipmentAssignment::create($data);
 
                             // Update parcel status to READY_FOR_SHIPPING
-                            Parcel::where('id', $parcelId)->update([
-                                'parcel_status' => ParcelStatus::READY_FOR_SHIPPING,
-                            ]);
+                            $parcel = Parcel::find($parcelId);
+                            if ($parcel) {
+                                $parcel->update([
+                                    'parcel_status' => ParcelStatus::READY_FOR_SHIPPING,
+                                ]);
+
+                                // Send Dashboard Notification to Sender
+                                $sender = $parcel->sender;
+                                if ($sender instanceof \App\Models\User) {
+                                    $trackingNumber = $parcel->tracking_number ?? '---';
+                                    Notification::make()
+                                        ->title('الطرد جاهز للشحن')
+                                        ->body("تم ربط طردك ذو الرقم المرجعي ($trackingNumber) بشحنة وهو الآن جاهز للانطلاق.")
+                                        ->success()
+                                        ->icon('heroicon-o-truck')
+                                        ->sendToDatabase($sender);
+                                }
+                            }
                         }
                     });
 

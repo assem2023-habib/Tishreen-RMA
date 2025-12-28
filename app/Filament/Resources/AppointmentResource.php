@@ -6,8 +6,10 @@ use App\Enums\AppointmentStatus;
 use App\Filament\Resources\AppointmentResource\Pages;
 use App\Models\Appointment;
 use Filament\Forms;
-use Filament\Tables;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Tables;
+use App\Models\User;
 
 class AppointmentResource extends Resource
 {
@@ -87,6 +89,17 @@ class AppointmentResource extends Resource
                             'status' => AppointmentStatus::CANCELLED,
                             'booked' => false,
                         ]);
+
+                        // Send Notification to User
+                        if ($record->user instanceof User) {
+                            Notification::make()
+                                ->title('تم إلغاء الموعد')
+                                ->body("تم إلغاء موعد المراجعة الخاص بك بتاريخ {$record->date} في الساعة {$record->time}.")
+                                ->danger()
+                                ->icon('heroicon-o-calendar-days')
+                                ->sendToDatabase($record->user);
+                        }
+
                         // Optional: Clear parcel link
                         \App\Models\Parcel::where('appointment_id', $record->id)->update(['appointment_id' => null]);
                     })

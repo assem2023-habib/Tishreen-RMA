@@ -13,8 +13,8 @@ class NotificationController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
-        $notifications = $user->notifications()->paginate(20);
+
+        $notifications = $user->customNotifications()->paginate(20);
 
         return response()->json([
             'success' => true,
@@ -27,8 +27,11 @@ class NotificationController extends Controller
      */
     public function markAsRead(Request $request, $id)
     {
-        $notification = $request->user()->notifications()->findOrFail($id);
-        $notification->markAsRead();
+        $notification = $request->user()->customNotifications()->findOrFail($id);
+        $notification->pivot->update([
+            'is_read' => true,
+            'read_at' => now()
+        ]);
 
         return response()->json([
             'success' => true,
@@ -54,7 +57,7 @@ class NotificationController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $notification = $request->user()->notifications()->findOrFail($id);
+        $notification = $request->user()->customNotifications()->findOrFail($id);
         $notification->delete();
 
         return response()->json([
