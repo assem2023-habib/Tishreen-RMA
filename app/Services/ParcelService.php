@@ -37,12 +37,6 @@ class ParcelService
     }
     public function createParcel($data)
     {
-        // $policy = PricingPolicy::select('id', 'price')
-        //     ->where('policy_type', PolicyTypes::WEIGHT->value)
-        //     ->where('limit_min', '<=', $data['weight'])
-        //     ->where('limit_max', '>=', $data['weight'])
-        //     ->first(); //remove because this section add in ParcelObserveHistory
-
         $parcel = Parcel::create([
             'sender_id' => Auth::user()->id,
             'sender_type' => SenderType::AUTHENTICATED_USER->value,

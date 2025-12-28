@@ -30,7 +30,9 @@ class ShipmentResource extends Resource
         return $form
             ->schema([
                 Select::make('branch_route_day_id')
-                    ->relationship('branchRoute', 'id')
+                    ->relationship('branchRouteDay', 'id')
+                    ->label('Route Schedule')
+                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->day_of_week} | {$record->branchRoute->route_label} ({$record->estimated_departur_time} - {$record->estimated_arrival_time})")
                     ->required(),
                 Select::make('truck_id')
                     ->relationship('truck', 'truck_number')

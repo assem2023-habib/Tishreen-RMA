@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,7 @@ class AppointmentHelper
                         'time'      => $startTime->format('H:i:s'),
                     ], [
                         'booked' => false,
+                        'status' => AppointmentStatus::AVAILABLE,
                     ]);
 
                     // next appointment is after 15 min

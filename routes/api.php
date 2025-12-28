@@ -41,6 +41,8 @@ Route::prefix('v1')->group(function () {
     //----------------------------------Appointment-------------------------------------
     Route::get('/get-getCalender/{tracking_number}', [AppointmentController::class, 'getCalenderByParcelTrackingNumber']);
     Route::post('/book-appointment', [AppointmentController::class, 'bookAppointment']);
+    Route::post('/cancel-appointment', [AppointmentController::class, 'cancelAppointment']);
+    Route::post('/update-appointment', [AppointmentController::class, 'updateAppointment']);
 
     //----------------------------------Branches-------------------------------------
 

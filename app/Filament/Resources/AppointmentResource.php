@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\AppointmentStatus;
 use App\Filament\Resources\AppointmentResource\Pages;
 use App\Models\Appointment;
 use Filament\Forms;
@@ -12,7 +13,8 @@ class AppointmentResource extends Resource
 {
     protected static ?string $model = Appointment::class;
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
-    protected static ?string $navigationGroup = 'Appointments';
+    protected static ?string $navigationGroup = 'Pickup Appointments';
+    protected static ?string $navigationLabel = 'Center Entry Appointments';
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form
@@ -32,6 +34,12 @@ class AppointmentResource extends Resource
                 Forms\Components\DatePicker::make('date')->required(),
                 Forms\Components\TimePicker::make('time')->required(),
                 Forms\Components\Toggle::make('booked')->label('Booked'),
+                Forms\Components\Select::make('status')
+                    ->options(AppointmentStatus::class)
+                    ->required(),
+                Forms\Components\DateTimePicker::make('booked_at')
+                    ->label('Booked At')
+                    ->disabled(),
             ]);
     }
 
@@ -57,10 +65,40 @@ class AppointmentResource extends Resource
                 Tables\Columns\IconColumn::make('booked')
                     ->boolean()
                     ->label('Booked'),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge(),
+                Tables\Columns\TextColumn::make('booked_at')
+                    ->dateTime()
+                    ->label('Booked At')
+                    ->sortable(),
             ])
-            ->filters([])
-            ->actions([])
-            ->bulkActions([]);
+            ->filters([
+                Tables\Filters\SelectFilter::make('status')
+                    ->options(AppointmentStatus::class),
+            ])
+            ->actions([
+                Tables\Actions\Action::make('cancel')
+                    ->label('Cancel Appointment')
+                    ->color('danger')
+                    ->icon('heroicon-o-x-circle')
+                    ->visible(fn(Appointment $record) => in_array($record->status, [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED]))
+                    ->action(function (Appointment $record) {
+                        $record->update([
+                            'status' => AppointmentStatus::CANCELLED,
+                            'booked' => false,
+                        ]);
+                        // Optional: Clear parcel link
+                        \App\Models\Parcel::where('appointment_id', $record->id)->update(['appointment_id' => null]);
+                    })
+                    ->requiresConfirmation(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getPages(): array
