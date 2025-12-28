@@ -15,7 +15,8 @@ class ParcelService
     public function showParcels($userId)
     {
         $parcelsData =
-            Parcel::select(
+            Parcel::with(['route.fromBranch', 'route.toBranch'])
+            ->select(
                 'id',
                 'sender_id',
                 'sender_type',
@@ -98,20 +99,21 @@ class ParcelService
     }
     public function showParcel($parcelId)
     {
-        $parcelData = Parcel::select(
-            'id',
-            'sender_id',
-            'sender_type',
-            'route_id',
-            'reciver_name',
-            'reciver_address',
-            'reciver_phone',
-            'weight',
-            'cost',
-            'is_paid',
-            'parcel_status',
-            'tracking_number',
-        )
+        $parcelData = Parcel::with(['route.fromBranch', 'route.toBranch'])
+            ->select(
+                'id',
+                'sender_id',
+                'sender_type',
+                'route_id',
+                'reciver_name',
+                'reciver_address',
+                'reciver_phone',
+                'weight',
+                'cost',
+                'is_paid',
+                'parcel_status',
+                'tracking_number',
+            )
             ->where('id', $parcelId)
             ->first();
         return $parcelData;
