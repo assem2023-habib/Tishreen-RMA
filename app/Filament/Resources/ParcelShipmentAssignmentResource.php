@@ -88,6 +88,7 @@ class ParcelShipmentAssignmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn(Builder $query) => $query->whereHas('parcel', fn($q) => $q->where('parcel_status', ParcelStatus::CONFIRMED)))
             ->headerActions([
                 AutoAssignParcelsAction::make(),
             ])
