@@ -13,52 +13,39 @@ class BranchRouteController extends Controller
     use ApiResponse;
     public function __invoke()
     {
-        //         from_branch_id
-        // to_branch_id
-        // day
-        // is_active
-        // estimated_departur_time
-        // estimated_arrival_time
-        // distance_per_kilo
-        $routes = BranchRoute::select(
-            'from_branch_id',
-            'to_branch_id',
-            'day',
-            'estimated_departur_time',
-            'estimated_arrival_time',
-            'distance_per_kilo'
-        )
+        $routes = BranchRoute::with('days')
             ->where('is_active', 1)
             ->get();
-        if (empty($routes))
+
+        if ($routes->isEmpty())
             return $this->errorResponse(
                 'No routes found',
                 HttpStatus::NOT_FOUND->value,
             );
+
         return  $this->successResponse(
             ['routes' => $routes],
             'all routes get successfully'
         );
     }
+
     public function showRoutesByDay($day)
     {
-        $routes = BranchRoute::select(
-            'from_branch_id',
-            'to_branch_id',
-            'day',
-            'estimated_departur_time',
-            'estimated_arrival_time',
-            'distance_per_kilo'
-        )
+        $routes = BranchRoute::whereHas('days', function ($query) use ($day) {
+            $query->where('day_of_week', $day);
+        })
+            ->with(['days' => function ($query) use ($day) {
+                $query->where('day_of_week', $day);
+            }])
             ->where('is_active', 1)
-            ->where('day', $day)
             ->get();
-        if (empty($routes))
+
+        if ($routes->isEmpty())
             return $this->errorResponse(
                 'No routes found for this day',
                 HttpStatus::NOT_FOUND->value,
             );
-        // $routes['from_branch'] = Branch::select('');
+
         return  $this->successResponse(
             ['routes' => $routes],
             'all routes get successfully for this day'

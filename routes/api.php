@@ -73,6 +73,8 @@ Route::prefix('v1')->group(function () {
 
         //----------------------------------Parcel----------------------------------------
 
+        Route::get('/parcel/{tracking_number}/location', [ParcelController::class, 'getParcelLocation']);
+
         Route::resource('/parcel', ParcelController::class)
             ->only(['index', 'show', 'store', 'update', 'destroy']);
 

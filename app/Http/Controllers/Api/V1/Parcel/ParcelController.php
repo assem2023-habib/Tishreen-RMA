@@ -76,6 +76,31 @@ class ParcelController extends Controller
         );
     }
 
+    public function getParcelLocation(string $tracking_number)
+    {
+        try {
+            $location = $this->parcelService->getParcelLocation($tracking_number);
+            
+            if (!$location['status']) {
+                return $this->errorResponse(
+                    $location['message'],
+                    HttpStatus::NOT_FOUND->value
+                );
+            }
+
+            return $this->successResponse(
+                $location['data'],
+                'Parcel location retrieved successfully'
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse(
+                'error in server',
+                HttpStatus::INTERNET_SERVER_ERROR->value,
+                $e->getMessage()
+            );
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      */
