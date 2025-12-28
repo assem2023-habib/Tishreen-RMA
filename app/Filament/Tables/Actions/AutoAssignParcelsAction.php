@@ -73,7 +73,8 @@ class AutoAssignParcelsAction
                 }
 
                 if ($assignedCount > 0) {
-                    $employee = auth()->user()->employee;
+                    $user = auth()->user();
+                    $employee = ($user instanceof \App\Models\User) ? $user->employee : null;
 
                     DB::transaction(function () use ($assignedParcelIds, $shipment, $employee) {
                         foreach ($assignedParcelIds as $parcelId) {
