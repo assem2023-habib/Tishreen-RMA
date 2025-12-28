@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\ParcelStatus;
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ShipmentResource\Pages;
 use App\Filament\Resources\ShipmentResource\RelationManagers;
@@ -10,6 +11,7 @@ use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -37,6 +39,9 @@ class ShipmentResource extends Resource
                 Select::make('truck_id')
                     ->relationship('truck', 'truck_number')
                     ->required(),
+                Forms\Components\DatePicker::make('shipment_date')
+                    ->label('Shipment Date')
+                    ->required(),
                 DateTimePicker::make('actual_departure_time')
                     ->label('Departure Time'),
                 DateTimePicker::make('actual_arrival_time')
@@ -48,6 +53,9 @@ class ShipmentResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('shipment_date')
+                    ->date()
+                    ->sortable(),
                 TextColumn::make('branchRouteDay.branchRoute.route_label')
                     ->label('Branch Route')
                     ->sortable(),
@@ -64,6 +72,58 @@ class ShipmentResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('depart')
+                    ->label('Depart')
+                    ->icon('heroicon-o-paper-airplane')
+                    ->color('primary')
+                    ->visible(fn(Shipment $record) => $record->actual_departure_time === null)
+                    ->action(function (Shipment $record) {
+                        $record->update([
+                            'actual_departure_time' => now(),
+                        ]);
+
+                        // Update all linked parcels status to IN_TRANSIT
+                        $parcelIds = $record->parcelAssignments()->pluck('parcel_id');
+                        \App\Models\Parcel::whereIn('id', $parcelIds)->get()->each(function ($parcel) {
+                            $parcel->update([
+                                'parcel_status' => ParcelStatus::IN_TRANSIT,
+                            ]);
+                        });
+
+                        Notification::make()
+                            ->title('Shipment Departed')
+                            ->body('Shipment marked as departed and linked parcels status updated to In Transit.')
+                            ->success()
+                            ->send();
+                    })
+                    ->requiresConfirmation(),
+
+                Tables\Actions\Action::make('arrive')
+                    ->label('Arrive')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn(Shipment $record) => $record->actual_departure_time !== null && $record->actual_arrival_time === null)
+                    ->action(function (Shipment $record) {
+                        $record->update([
+                            'actual_arrival_time' => now(),
+                        ]);
+
+                        // Update all linked parcels status to READY_FOR_PICKUP
+                        $parcelIds = $record->parcelAssignments()->pluck('parcel_id');
+                        \App\Models\Parcel::whereIn('id', $parcelIds)->get()->each(function ($parcel) {
+                            $parcel->update([
+                                'parcel_status' => ParcelStatus::READY_FOR_PICKUP,
+                            ]);
+                        });
+
+                        Notification::make()
+                            ->title('Shipment Arrived')
+                            ->body('Shipment marked as arrived and linked parcels status updated to Ready For Pickup.')
+                            ->success()
+                            ->send();
+                    })
+                    ->requiresConfirmation(),
+
                 TableActions::default(),
             ])
             ->bulkActions([

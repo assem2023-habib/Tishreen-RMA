@@ -9,6 +9,7 @@ class Shipment extends Model
     protected $fillable = [
         'branch_route_day_id',
         'truck_id',
+        'shipment_date',
         'actual_departure_time',
         'actual_arrival_time',
     ];

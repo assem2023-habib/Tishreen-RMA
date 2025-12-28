@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\ParcelAuthorization;
+use App\Notifications\GeneralNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
@@ -23,32 +24,23 @@ class ParcelAuthorizationObserver
     /**
      * Handle the ParcelAuthorization "updated" event.
      */
-    public function updated(ParcelAuthorization $parcelAuthorization): void
+    public function updated(ParcelAuthorization $auth): void
     {
-        //
-    }
+        if ($auth->isDirty('authorized_status')) {
+            $user = $auth->user;
+            if ($user) {
+                $title = $auth->authorized_status === 'Confirmed' ? 'تأكيد التخويل' : 'إلغاء التخويل';
+                $body = $auth->authorized_status === 'Confirmed' 
+                    ? "تم تأكيد طلب التخويل الخاص بك للطرد رقم {$auth->parcel->tracking_number}"
+                    : "تم إلغاء طلب التخويل الخاص بك للطرد رقم {$auth->parcel->tracking_number}";
 
-    /**
-     * Handle the ParcelAuthorization "deleted" event.
-     */
-    public function deleted(ParcelAuthorization $parcelAuthorization): void
-    {
-        //
-    }
-
-    /**
-     * Handle the ParcelAuthorization "restored" event.
-     */
-    public function restored(ParcelAuthorization $parcelAuthorization): void
-    {
-        //
-    }
-
-    /**
-     * Handle the ParcelAuthorization "force deleted" event.
-     */
-    public function forceDeleted(ParcelAuthorization $parcelAuthorization): void
-    {
-        //
+                $user->notify(new GeneralNotification(
+                    $title,
+                    $body,
+                    'authorization_status_updated',
+                    ['auth_id' => $auth->id, 'parcel_id' => $auth->parcel_id, 'status' => $auth->authorized_status]
+                ));
+            }
+        }
     }
 }

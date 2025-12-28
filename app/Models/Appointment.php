@@ -8,21 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Appointment extends Model
 {
-    protected static function booted()
-    {
-        static::updated(function ($appointment) {
-            if ($appointment->isDirty('status') && $appointment->status === AppointmentStatus::CONFIRMED) {
-                if ($appointment->user) {
-                    $appointment->user->notify(new GeneralNotification(
-                        'تأكيد الموعد',
-                        "تم تأكيد موعدك بنجاح في تاريخ {$appointment->date} الساعة {$appointment->time}",
-                        'appointment_confirmed',
-                        ['appointment_id' => $appointment->id]
-                    ));
-                }
-            }
-        });
-    }
     protected $fillable = [
         'user_id',
         'branch_id', // calender for each branch

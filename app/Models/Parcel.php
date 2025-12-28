@@ -9,27 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Parcel extends Model
 {
-    protected static function booted()
-    {
-        static::updated(function ($parcel) {
-            if ($parcel->isDirty('parcel_status')) {
-                $user = null;
-                if ($parcel->sender_type === SenderType::AUTHENTICATED_USER) {
-                    $user = $parcel->sender;
-                }
-
-                if ($user) {
-                    $user->notify(new GeneralNotification(
-                        'تحديث حالة الطرد',
-                        "تم تغيير حالة طردك رقم {$parcel->tracking_number} إلى {$parcel->parcel_status}",
-                        'parcel_status_updated',
-                        ['parcel_id' => $parcel->id, 'tracking_number' => $parcel->tracking_number]
-                    ));
-                }
-            }
-        });
-    }
-
     protected $fillable = [
         'sender_id',
         'sender_type',
