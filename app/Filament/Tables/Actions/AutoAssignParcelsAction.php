@@ -30,7 +30,7 @@ class AutoAssignParcelsAction
                                 $totalCapacity = $shipment->trucks->sum('capacity_per_kilo_gram');
                                 $route = $shipment->branchRouteDay->branchRoute->route_label;
                                 $day = $shipment->branchRouteDay->day_of_week;
-                                
+
                                 return [$shipment->id => "{$day} | {$route} ({$trucksCount} Trucks, {$totalCapacity}kg)"];
                             });
                     })
@@ -38,10 +38,10 @@ class AutoAssignParcelsAction
             ])
             ->action(function (array $data) {
                 $shipment = Shipment::with(['trucks', 'branchRouteDay.branchRoute'])->findOrFail($data['shipment_id']);
-                
+
                 // Calculate total capacity from all trucks linked to this shipment
                 $totalCapacity = $shipment->trucks->sum('capacity_per_kilo_gram');
-                
+
                 // Get the route of the shipment
                 $routeId = $shipment->branchRouteDay->branch_route_id;
 
@@ -73,16 +73,21 @@ class AutoAssignParcelsAction
                 }
 
                 if ($assignedCount > 0) {
-                    DB::transaction(function () use ($assignedParcelIds, $shipment) {
+                    $employee = auth()->user()->employee;
+
+                    DB::transaction(function () use ($assignedParcelIds, $shipment, $employee) {
                         foreach ($assignedParcelIds as $parcelId) {
-                            ParcelShipmentAssignment::create([
+                            $data = [
                                 'parcel_id' => $parcelId,
                                 'shipment_id' => $shipment->id,
                                 'pick_up_confirmed_date' => now(),
-                            ]);
-                            
-                            // Optionally update parcel status to something indicating it's assigned?
-                            // For now, our system uses shipment depart to change it to IN_TRANSIT.
+                            ];
+
+                            if ($employee) {
+                                $data['pick_up_confirmed_by_emp_id'] = $employee->id;
+                            }
+
+                            ParcelShipmentAssignment::create($data);
                         }
                     });
 
