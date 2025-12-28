@@ -6,6 +6,7 @@ use App\Enums\{AuthorizationStatus, SenderType};
 use App\Filament\Forms\Components\{LocationSelect, PhoneNumber, NationalNumber};
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelAuthorizationResource\Pages;
+use App\Filament\Tables\Actions\ConfirmAuthReceiptAction;
 use App\Models\{Parcel, User, ParcelAuthorization};
 use App\Trait\HasSenderVisibility;
 use Carbon\Carbon;
@@ -179,6 +180,7 @@ class ParcelAuthorizationResource extends Resource
                 //
             ])
             ->actions([
+                ConfirmAuthReceiptAction::make(),
                 TableActions::default(),
             ])
             ->bulkActions([
