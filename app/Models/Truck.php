@@ -17,6 +17,10 @@ class Truck extends Model
     {
         return $this->belongsTo(Employee::class);
     }
+    public function shipments()
+    {
+        return $this->belongsToMany(Shipment::class, 'shipment_truck');
+    }
     public function branchRouteDays()
     {
         return $this->belongsToMany(

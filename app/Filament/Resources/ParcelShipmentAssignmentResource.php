@@ -6,6 +6,7 @@ use App\Enums\ParcelStatus;
 use App\Filament\Helpers\TableActions;
 use App\Filament\Resources\ParcelShipmentAssignmentResource\Pages;
 use App\Filament\Resources\ParcelShipmentAssignmentResource\RelationManagers;
+use App\Filament\Tables\Actions\AutoAssignParcelsAction;
 use App\Models\Employee;
 use App\Models\Shipment;
 use App\Models\{ParcelShipmentAssignment, Parcel};
@@ -87,6 +88,9 @@ class ParcelShipmentAssignmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                AutoAssignParcelsAction::make(),
+            ])
             ->columns([
                 TextColumn::make('parcel.sender_name')
                     ->label('Parcel'),

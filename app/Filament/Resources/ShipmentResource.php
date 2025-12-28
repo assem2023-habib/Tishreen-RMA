@@ -39,8 +39,10 @@ class ShipmentResource extends Resource
                     ->label('Route Schedule')
                     ->getOptionLabelFromRecordUsing(fn($record) => "{$record->day_of_week} | {$record->branchRoute->route_label} ({$record->estimated_departur_time} - {$record->estimated_arrival_time})")
                     ->required(),
-                Select::make('truck_id')
-                    ->relationship('truck', 'truck_number')
+                Select::make('trucks')
+                    ->relationship('trucks', 'truck_number')
+                    ->multiple()
+                    ->preload()
                     ->required(),
                 DateTimePicker::make('actual_departure_time')
                     ->label('Departure Time'),
@@ -56,8 +58,9 @@ class ShipmentResource extends Resource
                 TextColumn::make('branchRouteDay.branchRoute.route_label')
                     ->label('Branch Route')
                     ->sortable(),
-                TextColumn::make('truck.truck_number')
-                    ->label('Truck'),
+                TextColumn::make('trucks.truck_number')
+                    ->label('Trucks')
+                    ->badge(),
                 TextColumn::make('actual_departure_time')
                     ->dateTime()
                     ->sortable(),

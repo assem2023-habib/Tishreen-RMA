@@ -8,7 +8,6 @@ class Shipment extends Model
 {
     protected $fillable = [
         'branch_route_day_id',
-        'truck_id',
         'actual_departure_time',
         'actual_arrival_time',
     ];
@@ -16,9 +15,9 @@ class Shipment extends Model
     {
         return $this->belongsTo(BranchRouteDays::class);
     }
-    public function truck()
+    public function trucks()
     {
-        return $this->belongsTo(Truck::class);
+        return $this->belongsToMany(Truck::class, 'shipment_truck');
     }
     public function parcelAssignments()
     {
