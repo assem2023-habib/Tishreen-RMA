@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\CountryAndCity\CountryController;
 use App\Http\Controllers\Api\V1\Parcel\ParcelController;
 use App\Http\Controllers\Api\V1\PricingPolicy\PricingPolicyController;
 use App\Http\Controllers\Api\V1\Rates\RatesController;
+use App\Http\Controllers\Api\V1\Statistics\StatisticsController;
 use App\Http\Controllers\Api\V1\Users\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -67,6 +68,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
+        Route::post('update-profile', [AuthController::class, 'updateProfile']);
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
 
         //----------------------------------Parcel----------------------------------------
@@ -89,6 +91,10 @@ Route::prefix('v1')->group(function () {
         //--------------------------------Users----------------------------------------------------
 
         Route::get('/users', UsersController::class)->name('users');
+
+        //--------------------------------Statistics-----------------------------------------------
+
+        Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
 
     });
 })

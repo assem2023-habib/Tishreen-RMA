@@ -84,4 +84,5 @@ return [
     'invalid_or_expired_otp' => 'Invalid or expired OTP code.',
 
     'authenticated_user' => 'Authenticated user retrieved successfully.',
+    'profile_updated_success' => 'Profile updated successfully.',
 ];

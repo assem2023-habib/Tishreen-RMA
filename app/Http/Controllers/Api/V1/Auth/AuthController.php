@@ -12,6 +12,7 @@ use App\Http\Requests\Api\V1\Auth\RegisterRequest;
 use App\Http\Requests\Api\V1\Auth\ResetPasswordRequest;
 use App\Http\Requests\Api\V1\Auth\VerifyEmailCodeRequest;
 use App\Http\Requests\Api\V1\Auth\VerifyOtpAndReset;
+use App\Http\Requests\Api\V1\Users\UpdateProfileRequest;
 use App\Models\User;
 use App\Models\UserRestriction;
 use App\Notifications\SendEmailVerificationOtpNotification;
@@ -183,6 +184,36 @@ class AuthController extends Controller
             __('auth.not_authenticated'),
             401
         );
+    }
+
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+        try {
+            $user = $request->user();
+            $data = $request->validated();
+
+            if ($request->hasFile('image_profile')) {
+                // Handle image upload if needed.
+                // For now, let's assume a simple storage logic or just save the path.
+                $path = $request->file('image_profile')->store('profiles', 'public');
+                $data['image_profile'] = $path;
+            }
+
+            $user->update($data);
+
+            return $this->successResponse(
+                $user->fresh(),
+                __('auth.profile_updated_success')
+            );
+        } catch (\Throwable $e) {
+            Log::error('Update Profile Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
+            return $this->errorResponse(
+                __('auth.server_error'),
+                500,
+                ['exception' => $e->getMessage()]
+            );
+        }
     }
 
     public function resetPassword(ResetPasswordRequest $request)
