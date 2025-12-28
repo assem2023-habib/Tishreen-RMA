@@ -39,9 +39,6 @@ class ShipmentResource extends Resource
                 Select::make('truck_id')
                     ->relationship('truck', 'truck_number')
                     ->required(),
-                Forms\Components\DatePicker::make('shipment_date')
-                    ->label('Shipment Date')
-                    ->required(),
                 DateTimePicker::make('actual_departure_time')
                     ->label('Departure Time'),
                 DateTimePicker::make('actual_arrival_time')
@@ -53,9 +50,6 @@ class ShipmentResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('shipment_date')
-                    ->date()
-                    ->sortable(),
                 TextColumn::make('branchRouteDay.branchRoute.route_label')
                     ->label('Branch Route')
                     ->sortable(),
@@ -84,15 +78,18 @@ class ShipmentResource extends Resource
 
                         // Update all linked parcels status to IN_TRANSIT
                         $parcelIds = $record->parcelAssignments()->pluck('parcel_id');
-                        \App\Models\Parcel::whereIn('id', $parcelIds)->get()->each(function ($parcel) {
-                            $parcel->update([
-                                'parcel_status' => ParcelStatus::IN_TRANSIT,
-                            ]);
-                        });
+                        \App\Models\Parcel::whereIn('id', $parcelIds)
+                            ->where('parcel_status', ParcelStatus::PENDING) // Only update pending parcels
+                            ->get()
+                            ->each(function ($parcel) {
+                                $parcel->update([
+                                    'parcel_status' => ParcelStatus::IN_TRANSIT,
+                                ]);
+                            });
 
                         Notification::make()
                             ->title('Shipment Departed')
-                            ->body('Shipment marked as departed and linked parcels status updated to In Transit.')
+                            ->body('Shipment marked as departed and linked pending parcels status updated to In Transit.')
                             ->success()
                             ->send();
                     })
@@ -110,15 +107,44 @@ class ShipmentResource extends Resource
 
                         // Update all linked parcels status to READY_FOR_PICKUP
                         $parcelIds = $record->parcelAssignments()->pluck('parcel_id');
-                        \App\Models\Parcel::whereIn('id', $parcelIds)->get()->each(function ($parcel) {
+                        \App\Models\Parcel::whereIn('id', $parcelIds)
+                            ->where('parcel_status', ParcelStatus::IN_TRANSIT) // Only update in-transit parcels
+                            ->get()
+                            ->each(function ($parcel) {
+                                $parcel->update([
+                                    'parcel_status' => ParcelStatus::READY_FOR_PICKUP,
+                                ]);
+                            });
+
+                        Notification::make()
+                            ->title('Shipment Arrived')
+                            ->body('Shipment marked as arrived and linked in-transit parcels status updated to Ready For Pickup.')
+                            ->success()
+                            ->send();
+                    })
+                    ->requiresConfirmation(),
+
+                Tables\Actions\Action::make('manageParcels')
+                    ->label('Manage Parcels Status')
+                    ->icon('heroicon-o-adjustments-horizontal')
+                    ->color('warning')
+                    ->form([
+                        Select::make('new_status')
+                            ->label('New Status for all linked parcels')
+                            ->options(ParcelStatus::class)
+                            ->required(),
+                    ])
+                    ->action(function (Shipment $record, array $data) {
+                        $parcelIds = $record->parcelAssignments()->pluck('parcel_id');
+                        \App\Models\Parcel::whereIn('id', $parcelIds)->get()->each(function ($parcel) use ($data) {
                             $parcel->update([
-                                'parcel_status' => ParcelStatus::READY_FOR_PICKUP,
+                                'parcel_status' => $data['new_status'],
                             ]);
                         });
 
                         Notification::make()
-                            ->title('Shipment Arrived')
-                            ->body('Shipment marked as arrived and linked parcels status updated to Ready For Pickup.')
+                            ->title('Parcels Updated')
+                            ->body('All parcels linked to this shipment have been updated to ' . $data['new_status'])
                             ->success()
                             ->send();
                     })

@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('app:confirm-appointments')->everyMinute();
 Schedule::command('app:remind-pickup-parcels')->daily();
+Schedule::command('shipments:process-arrival')->hourly();
