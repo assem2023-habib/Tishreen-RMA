@@ -130,46 +130,52 @@ class ParcelService
             ];
         }
 
-        // Logic to determine current location based on status
-        // This is a simplified logic, you might want to adjust it based on your workflow
-        $locationData = [
-            'tracking_number' => $parcel->tracking_number,
-            'status' => $parcel->parcel_status,
-            'current_location' => null,
-            'latitude' => null,
-            'longitude' => null,
-        ];
+        // Determine current location coordinates based on status
+        $lat = null;
+        $lng = null;
 
         switch ($parcel->parcel_status) {
             case ParcelStatus::PENDING->value:
             case ParcelStatus::CONFIRMED->value:
-                if ($parcel->route && $parcel->route->fromBranch) {
-                    $locationData['current_location'] = $parcel->route->fromBranch->branch_name;
-                    $locationData['latitude'] = $parcel->route->fromBranch->latitude;
-                    $locationData['longitude'] = $parcel->route->fromBranch->longitude;
-                }
+                $lat = $parcel->route->fromBranch->latitude ?? null;
+                $lng = $parcel->route->fromBranch->longitude ?? null;
                 break;
             case ParcelStatus::DELIVERED->value:
-                if ($parcel->route && $parcel->route->toBranch) {
-                    $locationData['current_location'] = $parcel->route->toBranch->branch_name;
-                    $locationData['latitude'] = $parcel->route->toBranch->latitude;
-                    $locationData['longitude'] = $parcel->route->toBranch->longitude;
-                }
-                break;
             case ParcelStatus::IN_TRANSIT->value:
             case ParcelStatus::OUT_FOR_DELIVERY->value:
-                // In a real system, you might have real-time truck coordinates.
-                // For now, we return the destination or mid-point logic.
-                if ($parcel->route && $parcel->route->toBranch) {
-                    $locationData['current_location'] = "In Transit to " . $parcel->route->toBranch->branch_name;
-                    $locationData['latitude'] = $parcel->route->toBranch->latitude;
-                    $locationData['longitude'] = $parcel->route->toBranch->longitude;
-                }
+            case ParcelStatus::READY_FOR_PICKUP->value:
+                $lat = $parcel->route->toBranch->latitude ?? null;
+                $lng = $parcel->route->toBranch->longitude ?? null;
                 break;
             default:
-                $locationData['current_location'] = "Unknown or processing";
+                $lat = $parcel->route->fromBranch->latitude ?? null;
+                $lng = $parcel->route->fromBranch->longitude ?? null;
                 break;
         }
+
+        $locationData = [
+            'tracking_number' => $parcel->tracking_number,
+            'status' => $parcel->parcel_status,
+            'current_location' => [
+                'latitude' => $lat,
+                'longitude' => $lng,
+                'last_updated' => $parcel->updated_at->format('Y-m-d H:i:s'),
+            ],
+            'source_branch' => $parcel->route && $parcel->route->fromBranch ? [
+                'id' => $parcel->route->fromBranch->id,
+                'branch_name' => $parcel->route->fromBranch->branch_name,
+                'address' => $parcel->route->fromBranch->address,
+                'latitude' => $parcel->route->fromBranch->latitude,
+                'longitude' => $parcel->route->fromBranch->longitude,
+            ] : null,
+            'destination_branch' => $parcel->route && $parcel->route->toBranch ? [
+                'id' => $parcel->route->toBranch->id,
+                'branch_name' => $parcel->route->toBranch->branch_name,
+                'address' => $parcel->route->toBranch->address,
+                'latitude' => $parcel->route->toBranch->latitude,
+                'longitude' => $parcel->route->toBranch->longitude,
+            ] : null,
+        ];
 
         return [
             'status' => true,
