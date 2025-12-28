@@ -13,7 +13,7 @@ class BranchRouteController extends Controller
     use ApiResponse;
     public function __invoke()
     {
-        $routes = BranchRoute::with('days')
+        $routes = BranchRoute::with(['days', 'fromBranch', 'toBranch'])
             ->where('is_active', 1)
             ->get();
 
@@ -34,9 +34,13 @@ class BranchRouteController extends Controller
         $routes = BranchRoute::whereHas('days', function ($query) use ($day) {
             $query->where('day_of_week', $day);
         })
-            ->with(['days' => function ($query) use ($day) {
-                $query->where('day_of_week', $day);
-            }])
+            ->with([
+                'days' => function ($query) use ($day) {
+                    $query->where('day_of_week', $day);
+                },
+                'fromBranch',
+                'toBranch'
+            ])
             ->where('is_active', 1)
             ->get();
 
