@@ -117,7 +117,7 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
     {
         return $this->morphMany(Rate::class, 'rateable');
     }
-    public function notifications()
+    public function customNotifications()
     {
         return $this->belongsToMany(Notification::class, 'notification_user')
             ->withPivot(['is_read', 'read_at'])
