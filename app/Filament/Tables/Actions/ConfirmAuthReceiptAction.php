@@ -6,9 +6,9 @@ use App\Enums\AuthorizationStatus;
 use App\Enums\ParcelStatus;
 use App\Models\ParcelAuthorization;
 use App\Models\User;
-use App\Notifications\GeneralNotification;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Notifications\Actions\Action as NotificationAction;
 use Illuminate\Support\Facades\DB;
 
 class ConfirmAuthReceiptAction
@@ -44,7 +44,7 @@ class ConfirmAuthReceiptAction
                     }
                 });
 
-                // 3. Send Notifications
+                // 3. Send Notifications to Dashboard
                 $parcel = $record->parcel;
                 $sender = $parcel->sender;
                 $originalReceiver = $record->user; // The one who granted the auth
@@ -60,37 +60,42 @@ class ConfirmAuthReceiptAction
 
                 // Notification to Sender
                 if ($sender instanceof User) {
-                    $sender->notify(new GeneralNotification(
-                        'تأكيد استلام طرد',
-                        "تم تسليم طردك ذو الرقم المرجعي ($trackingNumber) إلى الشخص المخول ($proxyName) بنجاح.",
-                        'success',
-                        ['parcel_id' => $parcel->id]
-                    ));
+                    Notification::make()
+                        ->title('تأكيد استلام طرد')
+                        ->body("تم تسليم طردك ذو الرقم المرجعي ($trackingNumber) إلى الشخص المخول ($proxyName) بنجاح.")
+                        ->success()
+                        ->icon('heroicon-o-check-circle')
+                        ->actions([
+                            NotificationAction::make('view')
+                                ->label('عرض الطرد')
+                                ->url(fn() => "/admin/parcels/{$parcel->id}")
+                        ])
+                        ->sendToDatabase($sender);
                 }
 
                 // Notification to Original Receiver (The one who granted the auth)
                 if ($originalReceiver instanceof User) {
-                    $originalReceiver->notify(new GeneralNotification(
-                        'تم تسليم الطرد للمخول',
-                        "تم تسليم الطرد الذي قمت بتخويل ($proxyName) لاستلامه بنجاح.",
-                        'success',
-                        ['parcel_id' => $parcel->id]
-                    ));
+                    Notification::make()
+                        ->title('تم تسليم الطرد للمخول')
+                        ->body("تم تسليم الطرد الذي قمت بتخويل ($proxyName) لاستلامه بنجاح.")
+                        ->success()
+                        ->icon('heroicon-o-user-check')
+                        ->sendToDatabase($originalReceiver);
                 }
 
                 // Notification to Authorized Person (Proxy) - if registered
                 if ($authorizedProxy instanceof User) {
-                    $authorizedProxy->notify(new GeneralNotification(
-                        'استلام طرد بنجاح',
-                        "لقد قمت باستلام الطرد ذو الرقم المرجعي ($trackingNumber) بنجاح نيابة عن ($receiverName).",
-                        'success',
-                        ['parcel_id' => $parcel->id]
-                    ));
+                    Notification::make()
+                        ->title('استلام طرد بنجاح')
+                        ->body("لقد قمت باستلام الطرد ذو الرقم المرجعي ($trackingNumber) بنجاح نيابة عن ($receiverName).")
+                        ->success()
+                        ->icon('heroicon-o-shopping-bag')
+                        ->sendToDatabase($authorizedProxy);
                 }
 
                 Notification::make()
                     ->title('تم تأكيد الاستلام')
-                    ->body('تم وضع علامة "تم التسليم" على الطرد وتم تحديث حالة التخويل إلى "مستخدم". تم إرسال الإشعارات للأطراف المعنية.')
+                    ->body('تم وضع علامة "تم التسليم" على الطرد وتم تحديث حالة التخويل إلى "مستخدم". تم إرسال الإشعارات إلى لوحة تحكم المستخدمين المعنيين.')
                     ->success()
                     ->send();
             });
