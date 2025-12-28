@@ -13,11 +13,65 @@
 9. [Endpoints الفروع والمسارات](#endpoints-الفروع-والمسارات)
 10. [Endpoints التقييم](#endpoints-التقييم)
 11. [Endpoints Telegram OTP](#endpoints-telegram-otp)
-12. [أمثلة Dart/Flutter](#أمثلة-dartflutter)
+12. [نظام الإشعارات المباشرة (Real-time Notifications)](#نظام-الإشعارات-المباشرة)
+13. [أمثلة Dart/Flutter](#أمثلة-dartflutter)
 
 ---
 
-## المعلومات الأساسية
+## نظام الإشعارات المباشرة
+
+يعتمد النظام على **Laravel Reverb** للبث المباشر (Broadcasting) وقاعدة البيانات للتخزين.
+
+### 🔌 الاتصال بـ Reverb (Pusher Client)
+
+يجب استخدام حزمة `pusher_client` أو `laravel_echo` في Flutter.
+
+**بيانات الاتصال:**
+- **Host:** `127.0.0.1` (أو IP السيرفر)
+- **Port:** `6001`
+- **Key:** `z8gmvgvmclvhoezjsfil`
+- **Scheme:** `http`
+- **Cluster:** `mt1`
+
+**قناة الاشتراك (Private Channel):**
+يجب الاشتراك في القناة الخاصة بالمستخدم:
+`App.Models.User.{user_id}`
+
+---
+
+### 🔔 أنواع الإشعارات (Notification Types)
+
+| النوع | الحدث | البيانات المرسلة (Payload) |
+| :--- | :--- | :--- |
+| `parcel_status_updated` | تغيير حالة الطرد | `parcel_id`, `tracking_number` |
+| `appointment_confirmed` | تأكيد موعد الاستلام | `appointment_id` |
+| `authorization_status_updated` | تأكيد/إلغاء تخويل | `auth_id`, `parcel_id`, `status` |
+| `pickup_reminder` | تذكير باستلام طرد متأخر | `parcel_id`, `tracking_number` |
+
+---
+
+### 🚀 Endpoints الإشعارات
+
+#### 1️⃣ جلب جميع الإشعارات
+- **Endpoint:** `GET /api/v1/notifications`
+- **Auth Required:** ✅ نعم
+- **Pagination:** 20 عنصر في الصفحة
+
+#### 2️⃣ تحديد إشعار كمقروء
+- **Endpoint:** `POST /api/v1/notifications/{id}/read`
+- **Auth Required:** ✅ نعم
+
+#### 3️⃣ تحديد الكل كمقروء
+- **Endpoint:** `POST /api/v1/notifications/read-all`
+- **Auth Required:** ✅ نعم
+
+#### 4️⃣ حذف إشعار
+- **Endpoint:** `DELETE /api/v1/notifications/{id}`
+- **Auth Required:** ✅ نعم
+
+---
+
+## أمثلة Dart/Flutterالمعلومات الأساسية
 
 ### Base URL
 

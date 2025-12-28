@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\Parcel\ParcelController;
 use App\Http\Controllers\Api\V1\PricingPolicy\PricingPolicyController;
 use App\Http\Controllers\Api\V1\Rates\RatesController;
 use App\Http\Controllers\Api\V1\Statistics\StatisticsController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\Users\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -100,6 +101,11 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
 
+        //--------------------------------Notifications--------------------------------------------
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+        Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
     });
 })
     ->middleware('throttle:6');
