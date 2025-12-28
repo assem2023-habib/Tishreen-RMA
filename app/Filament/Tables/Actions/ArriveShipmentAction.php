@@ -34,7 +34,7 @@ class ArriveShipmentAction
 
                 Notification::make()
                     ->title('Shipment Arrived')
-                    ->body('Shipment marked as arrived and linked in-transit parcels status updated to Ready For Pickup.')
+                    ->body('Shipment marked as arrived and linked in-transit parcels status updated to Ready For Pickup (Arrived at Branch).')
                     ->success()
                     ->send();
             })
