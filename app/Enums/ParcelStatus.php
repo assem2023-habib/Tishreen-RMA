@@ -6,6 +6,7 @@ enum ParcelStatus: string
 {
     case PENDING = 'Pending';
     case CONFIRMED = 'Confirmed';
+    case READY_FOR_SHIPPING = 'Ready_For_Shipping';
     case IN_TRANSIT = 'In_transit';
     case OUT_FOR_DELIVERY = 'Out_For_Delivery';
     case READY_FOR_PICKUP = 'Ready_For_Pickup';

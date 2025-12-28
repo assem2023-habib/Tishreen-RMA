@@ -24,7 +24,7 @@ class DepartShipmentAction
                 // Update all linked parcels status to IN_TRANSIT
                 $parcelIds = $record->parcelAssignments()->pluck('parcel_id');
                 \App\Models\Parcel::whereIn('id', $parcelIds)
-                    ->where('parcel_status', ParcelStatus::PENDING) // Only update pending parcels
+                    ->where('parcel_status', ParcelStatus::READY_FOR_SHIPPING) // Only update parcels ready for shipping
                     ->get()
                     ->each(function ($parcel) {
                         $parcel->update([
@@ -34,7 +34,7 @@ class DepartShipmentAction
 
                 Notification::make()
                     ->title('Shipment Departed')
-                    ->body('Shipment marked as departed and linked pending parcels status updated to In Transit.')
+                    ->body('Shipment marked as departed and linked ready parcels status updated to In Transit.')
                     ->success()
                     ->send();
             })

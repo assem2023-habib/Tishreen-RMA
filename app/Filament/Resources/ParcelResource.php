@@ -235,6 +235,7 @@ class ParcelResource extends Resource
         match ($state) {
             ParcelStatus::PENDING->value => 'danger',
             ParcelStatus::CONFIRMED->value => 'success',
+            ParcelStatus::READY_FOR_SHIPPING->value => 'info',
             ParcelStatus::IN_TRANSIT->value => 'danger',
             ParcelStatus::READY_FOR_PICKUP->value => 'success',
             ParcelStatus::DELIVERED->value => 'secondary',

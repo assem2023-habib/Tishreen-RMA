@@ -26,6 +26,7 @@ class ParcelStatusChart extends ChartWidget
                     'backgroundColor' => [
                         '#6b7280', // Pending
                         '#3b82f6', // Confirmed
+                        '#38bdf8', // Ready_For_Shipping (Sky color)
                         '#22c55e', // In_transit
                         '#facc15', // Out_For_Delivery
                         '#a855f7', // Ready_For_Pickup

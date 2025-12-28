@@ -89,6 +89,11 @@ class AutoAssignParcelsAction
                             }
 
                             ParcelShipmentAssignment::create($data);
+
+                            // Update parcel status to READY_FOR_SHIPPING
+                            Parcel::where('id', $parcelId)->update([
+                                'parcel_status' => ParcelStatus::READY_FOR_SHIPPING,
+                            ]);
                         }
                     });
 
