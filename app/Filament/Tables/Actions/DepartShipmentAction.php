@@ -40,7 +40,8 @@ class DepartShipmentAction
                                 ->body("تحركت الشحنة التي تحتوي على طردك ذو الرقم المرجعي ($trackingNumber). طردك الآن في حالة شحن (In Transit).")
                                 ->info()
                                 ->icon('heroicon-o-paper-airplane')
-                                ->sendToDatabase($sender);
+                                ->sendToDatabase($sender)
+                                ->broadcast($sender);
                         }
                     });
 

@@ -70,7 +70,8 @@ class ConfirmAuthReceiptAction
                                 ->label('عرض الطرد')
                                 ->url(fn() => "/admin/parcels/{$parcel->id}")
                         ])
-                        ->sendToDatabase($sender);
+                        ->sendToDatabase($sender)
+                        ->broadcast($sender);
                 }
 
                 // Notification to Original Receiver (The one who granted the auth)
@@ -80,7 +81,8 @@ class ConfirmAuthReceiptAction
                         ->body("تم تسليم الطرد الذي قمت بتخويل ($proxyName) لاستلامه بنجاح.")
                         ->success()
                         ->icon('heroicon-o-user-check')
-                        ->sendToDatabase($originalReceiver);
+                        ->sendToDatabase($originalReceiver)
+                        ->broadcast($originalReceiver);
                 }
 
                 // Notification to Authorized Person (Proxy) - if registered
@@ -90,7 +92,8 @@ class ConfirmAuthReceiptAction
                         ->body("لقد قمت باستلام الطرد ذو الرقم المرجعي ($trackingNumber) بنجاح نيابة عن ($receiverName).")
                         ->success()
                         ->icon('heroicon-o-shopping-bag')
-                        ->sendToDatabase($authorizedProxy);
+                        ->sendToDatabase($authorizedProxy)
+                        ->broadcast($authorizedProxy);
                 }
 
                 Notification::make()

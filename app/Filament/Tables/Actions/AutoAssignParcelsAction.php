@@ -106,7 +106,8 @@ class AutoAssignParcelsAction
                                         ->body("تم ربط طردك ذو الرقم المرجعي ($trackingNumber) بشحنة وهو الآن جاهز للانطلاق.")
                                         ->success()
                                         ->icon('heroicon-o-truck')
-                                        ->sendToDatabase($sender);
+                                        ->sendToDatabase($sender)
+                                        ->broadcast($sender);
                                 }
                             }
                         }

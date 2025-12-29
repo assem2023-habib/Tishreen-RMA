@@ -97,7 +97,8 @@ class AppointmentResource extends Resource
                                 ->body("تم إلغاء موعد المراجعة الخاص بك بتاريخ {$record->date} في الساعة {$record->time}.")
                                 ->danger()
                                 ->icon('heroicon-o-calendar-days')
-                                ->sendToDatabase($record->user);
+                                ->sendToDatabase($record->user)
+                                ->broadcast($record->user);
                         }
 
                         // Optional: Clear parcel link

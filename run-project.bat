@@ -7,10 +7,10 @@ echo    RMA Graduation Project - Services Starter
 echo ====================================================
 echo.
 echo [1/5] Starting Laravel Development Server...
-start "Laravel Server (Port 8000)" cmd /k "php artisan serve"
+start "Laravel Server (Port 8000)" cmd /k "php artisan serve --host=10.43.226.236 --port=8000"
 
 echo [2/5] Starting Laravel Reverb (WebSockets)...
-start "Laravel Reverb" cmd /k "php artisan reverb:start --debug"
+start "Laravel Reverb" cmd /k "php artisan reverb:start --host=10.43.226.236 --port=6001 --debug"
 
 echo [3/5] Starting Laravel Queue Worker...
 start "Laravel Queue" cmd /k "php artisan queue:listen"

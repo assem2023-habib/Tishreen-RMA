@@ -14,7 +14,23 @@ class NotificationController extends Controller
     {
         $user = $request->user();
 
-        $notifications = $user->customNotifications()->paginate(20);
+        $notifications = $user->notifications()->paginate(20);
+
+        // Transform notifications to a consistent format for the frontend
+        $notifications->getCollection()->transform(function ($notification) {
+            $data = $notification->data;
+
+            return [
+                'id' => $notification->id,
+                'title' => $data['title'] ?? ($notification->title ?? 'No Title'),
+                'message' => $data['body'] ?? ($data['message'] ?? ($notification->message ?? '')),
+                'type' => $data['type'] ?? ($notification->notification_type ?? 'general'),
+                'data' => $data['data'] ?? [],
+                'is_read' => !is_null($notification->read_at),
+                'read_at' => $notification->read_at,
+                'created_at' => $notification->created_at,
+            ];
+        });
 
         return response()->json([
             'success' => true,
@@ -27,11 +43,8 @@ class NotificationController extends Controller
      */
     public function markAsRead(Request $request, $id)
     {
-        $notification = $request->user()->customNotifications()->findOrFail($id);
-        $notification->pivot->update([
-            'is_read' => true,
-            'read_at' => now()
-        ]);
+        $notification = $request->user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
 
         return response()->json([
             'success' => true,
@@ -57,7 +70,7 @@ class NotificationController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $notification = $request->user()->customNotifications()->findOrFail($id);
+        $notification = $request->user()->notifications()->findOrFail($id);
         $notification->delete();
 
         return response()->json([

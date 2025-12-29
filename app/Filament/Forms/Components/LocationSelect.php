@@ -24,9 +24,11 @@ class LocationSelect
                 Select::make($cityId)
                     ->label($cityLabel)
                     ->options(function (callable $get) use ($countryId) {
-                        $country = optional(Country::find($get($countryId)))
-                            ->cities()
-                            ->pluck('en_name', 'id') ?? [];
+                        $country = Country::find($get($countryId));
+                        if (!$country) {
+                            return [];
+                        }
+                        return $country->cities()->pluck('en_name', 'id');
                     })
                     ->required()
                     ->validationMessages([
