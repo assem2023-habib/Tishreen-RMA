@@ -122,15 +122,16 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
      */
     public function notifications()
     {
-        return $this->belongsToMany(Notification::class, 'notification_user', 'notifiable_id', 'notification_id')
-            ->wherePivot('notifiable_type', self::class)
+        return $this->morphToMany(Notification::class, 'notifiable', 'notification_user', 'notifiable_id', 'notification_id')
             ->withPivot(['data', 'read_at'])
-            ->withTimestamps();
+            ->withTimestamps()
+            ->orderByPivot('created_at', 'desc')
+            ->select('notifications.*');
     }
 
     public function unreadNotifications()
     {
-        return $this->notifications()->wherePivot('read_at', null);
+        return $this->notifications()->whereNull('notification_user.read_at');
     }
 
     public function unread()

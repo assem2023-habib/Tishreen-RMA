@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
+    protected $table = 'notifications';
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -29,7 +30,12 @@ class Notification extends Model
     public function markAsRead()
     {
         if ($this->pivot) {
-            $this->pivot->update(['read_at' => now()]);
+            // تحديث الحقل مع تحديد الجدول لتجنب الغموض
+            \Illuminate\Support\Facades\DB::table('notification_user')
+                ->where('notification_id', $this->id)
+                ->where('notifiable_id', $this->pivot->notifiable_id)
+                ->where('notifiable_type', $this->pivot->notifiable_type)
+                ->update(['read_at' => now()]);
         }
     }
 

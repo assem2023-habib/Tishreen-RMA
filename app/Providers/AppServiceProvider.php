@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         \Illuminate\Database\Eloquent\Relations\BelongsToMany::macro('unread', function () {
-            return $this->wherePivot('read_at', null);
+            return $this->whereNull('notification_user.read_at');
         });
 
         \Illuminate\Database\Eloquent\Relations\BelongsToMany::macro('markAsRead', function () {
