@@ -117,11 +117,25 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
     {
         return $this->morphMany(Rate::class, 'rateable');
     }
-    public function customNotifications()
+    /**
+     * تجاوز علاقة الإشعارات الافتراضية لتعمل مع الجدول الوسيط
+     */
+    public function notifications()
     {
-        return $this->belongsToMany(Notification::class, 'notification_user')
-            ->withPivot(['is_read', 'read_at'])
+        return $this->belongsToMany(Notification::class, 'notification_user', 'notifiable_id', 'notification_id')
+            ->wherePivot('notifiable_type', self::class)
+            ->withPivot(['data', 'read_at'])
             ->withTimestamps();
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->notifications()->wherePivot('read_at', null);
+    }
+
+    public function readNotifications()
+    {
+        return $this->notifications()->wherePivotNotNull('read_at');
     }
 
     public function getNameAttribute()

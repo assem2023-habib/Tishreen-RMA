@@ -4,7 +4,7 @@ namespace App\Filament\Tables\Actions;
 
 use App\Models\BranchRoute;
 use Filament\Tables\Actions\Action;
-use Filament\Notifications\Notification;
+use App\Support\SharedNotification as Notification;
 
 class MarkAsArrivedAction
 {

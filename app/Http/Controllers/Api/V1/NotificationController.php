@@ -14,21 +14,23 @@ class NotificationController extends Controller
     {
         $user = $request->user();
 
-        $notifications = $user->notifications()->paginate(20);
+        // استخدام العلاقة المخصصة التي تعتمد على الجدول الوسيط
+        $notifications = $user->notifications()->latest()->paginate(20);
 
-        // Transform notifications to a consistent format for the frontend
+        // تحويل البيانات لتناسب الواجهة الأمامية
         $notifications->getCollection()->transform(function ($notification) {
-            $data = $notification->data;
+            // البيانات الآن موجودة في الـ pivot
+            $pivotData = $notification->pivot->data;
 
             return [
                 'id' => $notification->id,
-                'title' => $data['title'] ?? ($notification->title ?? 'No Title'),
-                'message' => $data['body'] ?? ($data['message'] ?? ($notification->message ?? '')),
-                'type' => $data['type'] ?? ($notification->notification_type ?? 'general'),
-                'data' => $data['data'] ?? [],
-                'is_read' => !is_null($notification->read_at),
-                'read_at' => $notification->read_at,
-                'created_at' => $notification->created_at,
+                'title' => $notification->title ?? ($pivotData['title'] ?? 'No Title'),
+                'message' => $notification->message ?? ($pivotData['body'] ?? ($pivotData['message'] ?? '')),
+                'type' => $notification->notification_type ?? ($pivotData['type'] ?? 'general'),
+                'data' => $pivotData['data'] ?? $pivotData ?? [],
+                'is_read' => !is_null($notification->pivot->read_at),
+                'read_at' => $notification->pivot->read_at,
+                'created_at' => $notification->pivot->created_at,
             ];
         });
 
@@ -43,8 +45,13 @@ class NotificationController extends Controller
      */
     public function markAsRead(Request $request, $id)
     {
-        $notification = $request->user()->notifications()->findOrFail($id);
-        $notification->markAsRead();
+        // البحث في الجدول الوسيط وتحديث read_at
+        $user = $request->user();
+        $notification = $user->notifications()->findOrFail($id);
+
+        $user->notifications()->updateExistingPivot($id, [
+            'read_at' => now()
+        ]);
 
         return response()->json([
             'success' => true,
@@ -57,7 +64,13 @@ class NotificationController extends Controller
      */
     public function markAllAsRead(Request $request)
     {
-        $request->user()->unreadNotifications->markAsRead();
+        $user = $request->user();
+
+        $user->notifications()
+            ->wherePivot('read_at', null)
+            ->updateExistingPivot($user->notifications->pluck('id'), [
+                'read_at' => now()
+            ]);
 
         return response()->json([
             'success' => true,
@@ -70,12 +83,14 @@ class NotificationController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $notification = $request->user()->notifications()->findOrFail($id);
-        $notification->delete();
+        $user = $request->user();
+
+        // حذف الارتباط من الجدول الوسيط فقط (لا نحذف الرسالة الأصلية لأنها قد تكون لمستخدمين آخرين)
+        $user->notifications()->detach($id);
 
         return response()->json([
             'success' => true,
-            'message' => 'Notification deleted'
+            'message' => 'Notification deleted from your list'
         ]);
     }
 }

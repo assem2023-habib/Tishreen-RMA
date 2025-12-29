@@ -35,7 +35,7 @@ class ParcelLifecycleObserver
             ]
         );
         if ($parcel['parcel_status'] === ParcelStatus::CONFIRMED->value) {
-            $employeeId = Auth::user()?->employee?->id ?? auth::user()->id;
+            $employeeId = Auth::user()?->employee?->id ?? Auth::user()?->id;
             if ($employeeId) {
                 ParcelShipmentAssignment::create([
                     'parcel_id' => $parcel->id,
@@ -58,8 +58,7 @@ class ParcelLifecycleObserver
         $changes = $parcel->getChanges();
         $this->createParcelHistory($parcel, $changes);
         if (isset($changes['parcel_status']) && $changes['parcel_status'] === ParcelStatus::CONFIRMED->value) {
-            $employeeId = Auth::user()?->employee?->id ?? auth::user()->id;
-            dump($employeeId);
+            $employeeId = Auth::user()?->employee?->id ?? Auth::user()?->id;
             if ($employeeId) {
                 $this->createParcelShipmentAssignment($parcel, $employeeId);
             }

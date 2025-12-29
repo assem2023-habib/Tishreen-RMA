@@ -8,7 +8,7 @@ use App\Models\Shipment;
 use App\Models\ParcelShipmentAssignment;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Select;
-use Filament\Notifications\Notification;
+use App\Support\SharedNotification as Notification;
 use Illuminate\Support\Facades\DB;
 
 class AutoAssignParcelsAction
@@ -96,19 +96,6 @@ class AutoAssignParcelsAction
                                 $parcel->update([
                                     'parcel_status' => ParcelStatus::READY_FOR_SHIPPING,
                                 ]);
-
-                                // Send Dashboard Notification to Sender
-                                $sender = $parcel->sender;
-                                if ($sender instanceof \App\Models\User) {
-                                    $trackingNumber = $parcel->tracking_number ?? '---';
-                                    Notification::make()
-                                        ->title('الطرد جاهز للشحن')
-                                        ->body("تم ربط طردك ذو الرقم المرجعي ($trackingNumber) بشحنة وهو الآن جاهز للانطلاق.")
-                                        ->success()
-                                        ->icon('heroicon-o-truck')
-                                        ->sendToDatabase($sender)
-                                        ->broadcast($sender);
-                                }
                             }
                         }
                     });

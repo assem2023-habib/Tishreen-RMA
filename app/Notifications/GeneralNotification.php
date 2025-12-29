@@ -34,7 +34,7 @@ class GeneralNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'broadcast'];
+        return [\App\Notifications\Channels\PivotDatabaseChannel::class, 'broadcast'];
     }
 
     /**

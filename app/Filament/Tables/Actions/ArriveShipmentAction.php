@@ -5,7 +5,7 @@ namespace App\Filament\Tables\Actions;
 use App\Enums\ParcelStatus;
 use App\Models\Shipment;
 use Filament\Tables\Actions\Action;
-use Filament\Notifications\Notification;
+use App\Support\SharedNotification as Notification;
 
 class ArriveShipmentAction
 {

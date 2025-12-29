@@ -6,7 +6,7 @@ use App\Enums\AppointmentStatus;
 use App\Filament\Resources\AppointmentResource\Pages;
 use App\Models\Appointment;
 use Filament\Forms;
-use Filament\Notifications\Notification;
+use App\Support\SharedNotification as Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use App\Models\User;

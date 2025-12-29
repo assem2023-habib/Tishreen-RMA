@@ -5,7 +5,7 @@ namespace App\Filament\Tables\Actions;
 use App\Enums\ParcelStatus;
 use App\Models\Shipment;
 use Filament\Tables\Actions\Action;
-use Filament\Notifications\Notification;
+use App\Support\SharedNotification as Notification;
 
 class DepartShipmentAction
 {
@@ -30,19 +30,6 @@ class DepartShipmentAction
                         $parcel->update([
                             'parcel_status' => ParcelStatus::IN_TRANSIT,
                         ]);
-
-                        // Send Dashboard Notification to Sender
-                        $sender = $parcel->sender;
-                        if ($sender instanceof \App\Models\User) {
-                            $trackingNumber = $parcel->tracking_number ?? '---';
-                            Notification::make()
-                                ->title('الطرد في الطريق')
-                                ->body("تحركت الشحنة التي تحتوي على طردك ذو الرقم المرجعي ($trackingNumber). طردك الآن في حالة شحن (In Transit).")
-                                ->info()
-                                ->icon('heroicon-o-paper-airplane')
-                                ->sendToDatabase($sender)
-                                ->broadcast($sender);
-                        }
                     });
 
                 Notification::make()

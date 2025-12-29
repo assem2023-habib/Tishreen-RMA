@@ -7,7 +7,7 @@ use App\Enums\ParcelStatus;
 use App\Models\ParcelAuthorization;
 use App\Models\User;
 use Filament\Tables\Actions\Action;
-use Filament\Notifications\Notification;
+use App\Support\SharedNotification as Notification;
 use Filament\Notifications\Actions\Action as NotificationAction;
 use Illuminate\Support\Facades\DB;
 
