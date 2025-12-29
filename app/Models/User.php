@@ -133,6 +133,11 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
         return $this->notifications()->wherePivot('read_at', null);
     }
 
+    public function unread()
+    {
+        return $this->unreadNotifications();
+    }
+
     public function readNotifications()
     {
         return $this->notifications()->wherePivotNotNull('read_at');

@@ -23,6 +23,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Illuminate\Database\Eloquent\Relations\BelongsToMany::macro('unread', function () {
+            return $this->wherePivot('read_at', null);
+        });
+
+        \Illuminate\Database\Eloquent\Relations\BelongsToMany::macro('markAsRead', function () {
+            return $this->updateExistingPivot($this->allRelatedIds(), [
+                'read_at' => now(),
+            ]);
+        });
+
         Relation::morphMap([
             SenderType::GUEST_USER->value => GuestUser::class,
             SenderType::AUTHENTICATED_USER->value => User::class,
