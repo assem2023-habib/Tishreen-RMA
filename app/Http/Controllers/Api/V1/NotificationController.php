@@ -15,11 +15,13 @@ class NotificationController extends Controller
         $user = $request->user();
 
         // استخدام العلاقة المخصصة التي تعتمد على الجدول الوسيط
-        $notifications = $user->notifications()->latest()->paginate(20);
+        $notifications = $user->notifications()
+            ->orderBy('notification_user.created_at', 'desc')
+            ->paginate(20);
 
         // تحويل البيانات لتناسب الواجهة الأمامية
         $notifications->getCollection()->transform(function ($notification) {
-            // البيانات الآن موجودة في الـ pivot
+            // البيانات موجودة في الـ pivot
             $pivotData = $notification->pivot->data;
 
             // تأكد من أن البيانات ليست سلسلة نصية (JSON)
@@ -29,7 +31,7 @@ class NotificationController extends Controller
 
             return [
                 'id' => $notification->id,
-                'title' => $notification->title ?? ($pivotData['title'] ?? 'No Title'),
+                'title' => $notification->title ?? ($pivotData['title'] ?? 'تنبيه'),
                 'message' => $notification->message ?? ($pivotData['body'] ?? ($pivotData['message'] ?? '')),
                 'type' => $notification->notification_type ?? ($pivotData['type'] ?? 'general'),
                 'data' => $pivotData['data'] ?? $pivotData ?? [],

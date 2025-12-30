@@ -124,9 +124,7 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
     {
         return $this->morphToMany(Notification::class, 'notifiable', 'notification_user', 'notifiable_id', 'notification_id')
             ->withPivot(['data', 'read_at'])
-            ->withTimestamps()
-            ->orderByPivot('created_at', 'desc')
-            ->select('notifications.*');
+            ->withTimestamps();
     }
 
     public function unreadNotifications()

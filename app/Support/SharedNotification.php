@@ -30,10 +30,8 @@ class SharedNotification extends FilamentNotification
         );
 
         // ربط في الجدول الوسيط
-        $notifiable->customNotifications()->syncWithoutDetaching([
+        $notifiable->notifications()->syncWithoutDetaching([
             $notificationRecord->id => [
-                'notifiable_type' => get_class($notifiable),
-                'notifiable_id' => $notifiable->id,
                 'data' => json_encode($data),
                 'created_at' => now(),
                 'updated_at' => now(),

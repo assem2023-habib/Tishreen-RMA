@@ -61,7 +61,7 @@ class Notification extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'notification_user', 'notification_id', 'notifiable_id')
-            ->wherePivot('notifiable_type', User::class)
+            ->wherePivot('notifiable_type', 'User')
             ->withPivot(['data', 'read_at'])
             ->withTimestamps();
     }

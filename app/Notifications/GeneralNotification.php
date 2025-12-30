@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Broadcasting\PrivateChannel;
 
 class GeneralNotification extends Notification implements ShouldBroadcast
 {
@@ -16,6 +17,7 @@ class GeneralNotification extends Notification implements ShouldBroadcast
     public $body;
     public $type;
     public $data;
+    public $notifiable_id;
 
     /**
      * Create a new notification instance.
@@ -35,7 +37,16 @@ class GeneralNotification extends Notification implements ShouldBroadcast
      */
     public function via(object $notifiable): array
     {
+        $this->notifiable_id = $notifiable->id;
         return [\App\Notifications\Channels\PivotDatabaseChannel::class, 'broadcast'];
+    }
+
+    /**
+     * Get the broadcast representation of the notification.
+     */
+    public function broadcastOn()
+    {
+        return new PrivateChannel('User.' . $this->notifiable_id);
     }
 
     /**

@@ -53,14 +53,14 @@ class EditParcelAuthorization extends EditRecord
                         return [];
                     })
                     ->searchable()
-                    ->visible(fn(callable $get) => $get('authorized_user_type') === User::class),
+                    ->visible(fn(callable $get) => $get('authorized_user_type') === SenderType::AUTHENTICATED_USER->value),
 
                 // مستلم مسجل
                 Select::make('authorized_user_id')
                     ->label('Receiver')
                     ->relationship('authorizedUser', 'user_name')
                     ->searchable()
-                    ->visible(fn(callable $get) => $get('authorized_user_type') === User::class),
+                    ->visible(fn(callable $get) => $get('authorized_user_type') === SenderType::AUTHENTICATED_USER->value),
 
                 // الطرد
                 Select::make('parcel_id')

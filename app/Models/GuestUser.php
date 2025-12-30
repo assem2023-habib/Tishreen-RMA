@@ -30,6 +30,19 @@ class GuestUser extends Model
     {
         return  $this->morphMany(Parcel::class, 'sender');
     }
+
+    public function notifications()
+    {
+        return $this->morphToMany(Notification::class, 'notifiable', 'notification_user', 'notifiable_id', 'notification_id')
+            ->withPivot(['data', 'read_at'])
+            ->withTimestamps();
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->notifications()->whereNull('notification_user.read_at');
+    }
+
     public function getNameAttribute()
     {
         return $this->first_name . " " . $this->last_name;
