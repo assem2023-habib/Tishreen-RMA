@@ -32,8 +32,31 @@ class ParcelService
             )
             ->where('sender_id', $userId)
             ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
-            ->get();
+            ->paginate(10);
         return $parcelsData;
+    }
+
+    public function getReturnedParcels($userId)
+    {
+        return Parcel::with(['route.fromBranch', 'route.toBranch'])
+            ->select(
+                'id',
+                'sender_id',
+                'sender_type',
+                'route_id',
+                'reciver_name',
+                'reciver_address',
+                'reciver_phone',
+                'weight',
+                'cost',
+                'is_paid',
+                'parcel_status',
+                'tracking_number',
+            )
+            ->where('sender_id', $userId)
+            ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
+            ->where('parcel_status', ParcelStatus::RETURNED->value)
+            ->paginate(10);
     }
     public function createParcel($data)
     {

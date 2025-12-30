@@ -30,6 +30,23 @@ class ParcelController extends Controller
             message: "all Parcels for the user : " . Auth::user()->user_name,
         );
     }
+
+    public function returnedParcels()
+    {
+        $parcels = $this->parcelService->getReturnedParcels(Auth::user()->id);
+
+        if ($parcels->isEmpty()) {
+            return $this->errorResponse(
+                __('parcel.no_parcels_found'),
+                HttpStatus::NOT_FOUND->value
+            );
+        }
+
+        return $this->successResponse(
+            ['parcels' => $parcels],
+            'Returned parcels retrieved successfully'
+        );
+    }
     /**
      * Store a newly created resource in storage.
      */

@@ -76,6 +76,7 @@ Route::prefix('v1')->group(function () {
 
         //----------------------------------Parcel----------------------------------------
 
+        Route::get('/parcel/returned', [ParcelController::class, 'returnedParcels']);
         Route::get('/parcel/{tracking_number}/location', [ParcelController::class, 'getParcelLocation']);
 
         Route::resource('/parcel', ParcelController::class)
@@ -96,6 +97,7 @@ Route::prefix('v1')->group(function () {
         //--------------------------------Users----------------------------------------------------
 
         Route::get('/users', UsersController::class)->name('users');
+        Route::get('/users/search', [UsersController::class, 'search'])->name('users.search');
 
         //--------------------------------Statistics-----------------------------------------------
 

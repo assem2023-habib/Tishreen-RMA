@@ -14,15 +14,42 @@ class UsersController extends Controller
     public function __invoke()
     {
         $users = User::select('id', 'user_name')
-            ->get();
-        if (empty($users))
+            ->paginate(10);
+        
+        if ($users->isEmpty())
             return $this->errorResponse(
                 'No Users Found',
                 HttpStatus::NOT_FOUND->value,
             );
+            
         return $this->successResponse(
             ['users' => $users],
             'users name get successfully',
+        );
+    }
+
+    public function search(Request $request)
+    {
+        $request->validate([
+            'user_name' => 'required|string|min:1',
+        ]);
+
+        $userName = $request->query('user_name');
+
+        $users = User::select('id', 'user_name')
+            ->where('user_name', 'like', "%{$userName}%")
+            ->paginate(10);
+
+        if ($users->isEmpty()) {
+            return $this->errorResponse(
+                'No Users Found Matching: ' . $userName,
+                HttpStatus::NOT_FOUND->value,
+            );
+        }
+
+        return $this->successResponse(
+            ['users' => $users],
+            'Users retrieved successfully'
         );
     }
 }
