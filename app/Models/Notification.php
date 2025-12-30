@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Notification extends Model
 {
     protected $table = 'notifications';
+
+    /**
+     * بما أن الحقل هو UUID، يجب تعطيل التزايد التلقائي وتحديد النوع كسلسلة نصية
+     */
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
+        'id',
         'title',
         'message',
         'notification_type',

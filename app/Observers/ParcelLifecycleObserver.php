@@ -52,7 +52,7 @@ class ParcelLifecycleObserver
             $price = $this->resolvePriceByWeight($parcel->weight);
             if ($price) {
                 $parcel->cost = $this->calculateCost($parcel->weight, $price);
-                $parcel->saveQuietly();
+                // تم إزالة saveQuietly() لأنه يمنع استدعاء المراقبين الآخرين
             }
         }
         $changes = $parcel->getChanges();

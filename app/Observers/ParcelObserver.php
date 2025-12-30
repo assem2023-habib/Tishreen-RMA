@@ -14,12 +14,9 @@ class ParcelObserver
     public function updated(Parcel $parcel): void
     {
         if ($parcel->wasChanged('parcel_status')) {
-            $user = null;
-            if ($parcel->sender_type === SenderType::AUTHENTICATED_USER->value || $parcel->sender_type === SenderType::AUTHENTICATED_USER) {
-                $user = $parcel->sender;
-            }
+            $user = $parcel->sender;
 
-            if ($user) {
+            if ($user && ($parcel->sender_type === SenderType::AUTHENTICATED_USER || $parcel->sender_type->value === SenderType::AUTHENTICATED_USER->value)) {
                 $statusMessage = $this->getStatusMessage($parcel);
 
                 $user->notify(new GeneralNotification(

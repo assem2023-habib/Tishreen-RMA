@@ -18,7 +18,7 @@ class PivotDatabaseChannel
     public function send($notifiable, Notification $notification)
     {
         $data = $notification->toArray($notifiable);
-        
+
         // البحث عن رسالة مطابقة تماماً (العنوان والمحتوى) لتجنب تكرار الرسائل في جدول notifications
         $notificationRecord = NotificationModel::firstOrCreate(
             [
@@ -33,7 +33,7 @@ class PivotDatabaseChannel
         );
 
         // ربط الرسالة بالمستخدم في الجدول الوسيط
-        $notifiable->customNotifications()->syncWithoutDetaching([
+        $notifiable->notifications()->syncWithoutDetaching([
             $notificationRecord->id => [
                 'notifiable_type' => get_class($notifiable),
                 'notifiable_id' => $notifiable->id,
