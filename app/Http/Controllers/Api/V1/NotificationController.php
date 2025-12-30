@@ -22,6 +22,11 @@ class NotificationController extends Controller
             // البيانات الآن موجودة في الـ pivot
             $pivotData = $notification->pivot->data;
 
+            // تأكد من أن البيانات ليست سلسلة نصية (JSON)
+            if (is_string($pivotData)) {
+                $pivotData = json_decode($pivotData, true);
+            }
+
             return [
                 'id' => $notification->id,
                 'title' => $notification->title ?? ($pivotData['title'] ?? 'No Title'),
@@ -36,7 +41,13 @@ class NotificationController extends Controller
 
         return response()->json([
             'success' => true,
-            'notifications' => $notifications
+            'data' => $notifications->items(),
+            'meta' => [
+                'current_page' => $notifications->currentPage(),
+                'last_page' => $notifications->lastPage(),
+                'per_page' => $notifications->perPage(),
+                'total' => $notifications->total(),
+            ]
         ]);
     }
 
@@ -68,7 +79,7 @@ class NotificationController extends Controller
 
         $user->notifications()
             ->wherePivot('read_at', null)
-            ->updateExistingPivot($user->notifications->pluck('id'), [
+            ->updateExistingPivot($user->notifications()->wherePivot('read_at', null)->pluck('notifications.id'), [
                 'read_at' => now()
             ]);
 
