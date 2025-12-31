@@ -12,8 +12,10 @@ use App\Models\Shipment;
 use App\Models\Truck;
 use App\Models\User;
 use App\Enums\ParcelStatus;
+use App\Enums\SenderType;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StatisticsController extends Controller
 {
@@ -26,13 +28,16 @@ class StatisticsController extends Controller
      */
     public function index()
     {
+        $userId = Auth::id();
+
         $stats = [
-            'users_count' => User::count(),
             'parcels' => [
-                'total' => Parcel::count(),
-                'by_status' => $this->getParcelsByStatus(),
+                'total' => Parcel::where('sender_id', $userId)
+                    ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
+                    ->count(),
+                'by_status' => $this->getParcelsByStatus($userId),
             ],
-            'rates_count' => Rate::count(),
+            'rates_count' => Rate::where('user_id', $userId)->count(),
             'branches_count' => Branch::count(),
             'shipments_count' => Shipment::count(),
             'trucks_count' => Truck::count(),
@@ -48,15 +53,19 @@ class StatisticsController extends Controller
     /**
      * Get parcels count grouped by status.
      *
+     * @param int $userId
      * @return array
      */
-    private function getParcelsByStatus()
+    private function getParcelsByStatus($userId)
     {
         $statuses = ParcelStatus::values();
         $counts = [];
 
         foreach ($statuses as $status) {
-            $counts[$status] = Parcel::where('parcel_status', $status)->count();
+            $counts[$status] = Parcel::where('sender_id', $userId)
+                ->where('sender_type', SenderType::AUTHENTICATED_USER->value)
+                ->where('parcel_status', $status)
+                ->count();
         }
 
         return $counts;
