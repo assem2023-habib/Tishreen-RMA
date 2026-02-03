@@ -138,5 +138,15 @@ Route::prefix('v1')->group(function () {
             Route::get('/trucks/{id}', [AdminTruckController::class, 'show']);
             Route::post('/trucks/{id}/toggle-status', [AdminTruckController::class, 'toggleStatus']);
         });
+
+        //--------------------------------Super Admin Endpoints--------------------------------
+        Route::prefix('super-admin')->middleware('super-admin')->group(function () {
+            Route::get('/stats', [\App\Http\Controllers\Api\V1\Admin\SuperAdminController::class, 'stats']);
+            Route::get('/branches', [\App\Http\Controllers\Api\V1\Admin\SuperAdminController::class, 'branches']);
+            Route::post('/branches', [\App\Http\Controllers\Api\V1\Admin\SuperAdminController::class, 'storeBranch']);
+            Route::get('/employees', [\App\Http\Controllers\Api\V1\Admin\SuperAdminController::class, 'employees']);
+            Route::post('/assign-employee', [\App\Http\Controllers\Api\V1\Admin\SuperAdminController::class, 'assignEmployee']);
+            Route::get('/all-parcels', [\App\Http\Controllers\Api\V1\Admin\SuperAdminController::class, 'allParcels']);
+        });
     });
 });
