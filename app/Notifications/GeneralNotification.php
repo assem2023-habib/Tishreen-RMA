@@ -17,7 +17,7 @@ class GeneralNotification extends Notification implements ShouldBroadcast
     public $body;
     public $type;
     public $data;
-    public $notifiable_id;
+    protected $notifiableId;
 
     /**
      * Create a new notification instance.
@@ -37,7 +37,7 @@ class GeneralNotification extends Notification implements ShouldBroadcast
      */
     public function via(object $notifiable): array
     {
-        $this->notifiable_id = $notifiable->id;
+        $this->notifiableId = $notifiable->id;
         return [\App\Notifications\Channels\PivotDatabaseChannel::class, 'broadcast'];
     }
 
@@ -46,7 +46,7 @@ class GeneralNotification extends Notification implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('User.' . $this->notifiable_id);
+        return [new PrivateChannel('user.' . $this->notifiableId)];
     }
 
     /**
@@ -71,9 +71,17 @@ class GeneralNotification extends Notification implements ShouldBroadcast
     {
         return new BroadcastMessage([
             'title' => $this->title,
-            'body' => $this->body,
-            'type' => $this->type,
+            'message' => $this->body, // Standardized key
+            'notification_type' => $this->type, // Standardized key
             'data' => $this->data,
         ]);
+    }
+
+    /**
+     * Get the broadcast event name.
+     */
+    public function broadcastAs(): string
+    {
+        return 'notification.sent';
     }
 }

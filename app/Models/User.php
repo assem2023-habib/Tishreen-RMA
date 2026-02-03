@@ -156,4 +156,9 @@ class User extends Authenticatable implements HasName, OAuthenticatable, MustVer
     {
         return $this->hasMany(Appointment::class, 'user_id');
     }
+
+    public function conversations()
+    {
+        return $this->hasMany(Conversation::class, 'customer_id');
+    }
 }

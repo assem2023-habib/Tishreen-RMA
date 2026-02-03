@@ -106,4 +106,20 @@ class NotificationController extends Controller
             'message' => 'Notification deleted from your list'
         ]);
     }
+
+    /**
+     * Get count of unread notifications.
+     */
+    public function unreadCount(Request $request)
+    {
+        $user = $request->user();
+        $count = $user->unreadNotifications()->count();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'unread_count' => $count
+            ]
+        ]);
+    }
 }

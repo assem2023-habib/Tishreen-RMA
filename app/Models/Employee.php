@@ -42,4 +42,9 @@ class Employee extends Model
     {
         return $this->morphMany(Rate::class, 'rateable');
     }
+
+    public function conversations()
+    {
+        return $this->hasMany(Conversation::class);
+    }
 }

@@ -16,6 +16,8 @@ class SendNotification extends Notification implements ShouldQueue
 
     public array $data;
 
+    protected $notifiable_id;
+
     /**
      * Create a new notification instance.
      */
@@ -30,7 +32,8 @@ class SendNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable): array
     {
-        return ['database', 'broadcast'];
+        $this->notifiable_id = $notifiable->id;
+        return [\App\Notifications\Channels\PivotDatabaseChannel::class, 'broadcast'];
     }
 
     /**
@@ -87,7 +90,7 @@ class SendNotification extends Notification implements ShouldQueue
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user.' . $this->data['user_ids'][0] ?? 'all'),
+            new PrivateChannel('user.' . $this->notifiable_id),
             new Channel('notifications'),
         ];
     }
@@ -112,5 +115,3 @@ class SendNotification extends Notification implements ShouldQueue
         ];
     }
 }
-
-
