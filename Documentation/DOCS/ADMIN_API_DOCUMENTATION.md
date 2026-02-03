@@ -166,17 +166,23 @@ Content-Type: application/json
 *   **الوصف:** استرجاع نظرة عامة شاملة عن أداء النظام وأرقام إجمالية.
 *   **مثال للطلب:**
     `GET /api/v1/super-admin/stats`
-*   **مثال للاستجابة:**
+*   **الاستجابة المتوقعة (Full Response):**
     ```json
     {
       "status": "success",
       "data": {
         "stats": {
-          "total_parcels": 1500,
-          "total_branches": 12,
-          "total_employees": 45,
-          "total_users": 300,
-          "recent_parcels": [ ... ]
+          "total_parcels": 1500, // integer
+          "total_branches": 12,  // integer
+          "total_employees": 45, // integer
+          "total_users": 300,    // integer
+          "recent_parcels": [    // array of objects (Parcel Schema)
+            {
+              "id": 101,
+              "parcel_status": "pending",
+              "created_at": "2026-02-03T10:00:00Z"
+            }
+          ]
         }
       },
       "message": "System stats retrieved"
@@ -187,46 +193,126 @@ Content-Type: application/json
 
 #### عرض جميع الفروع
 *   **المسار:** `GET /api/v1/super-admin/branches`
-*   **الوصف:** الحصول على قائمة بكافة الفروع المسجلة في النظام مع بيانات المدينة والدولة.
-*   **مثال للطلب:**
-    `GET /api/v1/super-admin/branches`
+*   **الاستجابة المتوقعة:**
+    ```json
+    {
+      "status": "success",
+      "data": {
+        "branches": [ // array of objects (Branch Schema)
+          {
+            "id": 1,
+            "branch_name": "فرع المزة",
+            "city_id": 1,
+            "address": "دمشق - المزة",
+            "phone": "011-222333",
+            "city": {
+              "id": 1,
+              "name": "دمشق",
+              "country": { "id": 1, "name": "سوريا" }
+            }
+          }
+        ]
+      },
+      "message": "All branches retrieved"
+    }
+    ```
 
 #### إنشاء فرع جديد
 *   **المسار:** `POST /api/v1/super-admin/branches`
 *   **محتويات الطلب (Body):**
     ```json
     {
-      "branch_name": "فرع حلب الرئيسي",
-      "city_id": 2,
-      "address": "حي الفرقان - الشارع العام",
-      "phone": "021-1234567"
+      "branch_name": "string",
+      "city_id": "integer (exists in cities)",
+      "address": "string (optional)",
+      "phone": "string (optional)"
     }
     ```
-*   **الاستجابة:** تفاصيل الفرع الذي تم إنشاؤه بنجاح.
+*   **الاستجابة المتوقعة:** نفس هيكل الفرع (Branch Schema) مع كود الحالة 201.
 
 ### 7.3 إدارة الموظفين (Employees Management)
 
 #### عرض جميع الموظفين
 *   **المسار:** `GET /api/v1/super-admin/employees`
-*   **الوصف:** استعراض قائمة بكافة الموظفين في النظام مع تحديد الفرع الذي يعمل به كل موظف.
-*   **مثال للطلب:**
-    `GET /api/v1/super-admin/employees`
+*   **الاستجابة المتوقعة:**
+    ```json
+    {
+      "status": "success",
+      "data": {
+        "employees": [ // array of objects (Employee Schema)
+          {
+            "id": 5,
+            "user_id": 15,
+            "branch_id": 1,
+            "status": "active",
+            "user": {
+              "id": 15,
+              "name": "أحمد محمد",
+              "email": "ahmed@example.com"
+            },
+            "branch": {
+              "id": 1,
+              "branch_name": "فرع المزة"
+            }
+          }
+        ]
+      },
+      "message": "All employees retrieved"
+    }
+    ```
 
 #### تعيين موظف لفرع
 *   **المسار:** `POST /api/v1/super-admin/assign-employee`
-*   **الوصف:** تحويل مستخدم عادي إلى موظف وربطه بفرع محدد، أو نقل موظف من فرع لآخر.
 *   **محتويات الطلب (Body):**
     ```json
     {
-      "user_id": 15,
-      "branch_id": 3
+      "user_id": "integer (exists in users)",
+      "branch_id": "integer (exists in branches)"
     }
     ```
-*   **الاستجابة:** بيانات الموظف والفرع المرتبط به.
+*   **الاستجابة المتوقعة:** كائن الموظف الجديد (Employee Schema).
 
 ### 7.4 الرقابة الشاملة على الطرود (Global Parcel Monitoring)
 *   **المسار:** `GET /api/v1/super-admin/all-parcels`
-*   **الوصف:** عرض كافة الطرود الموجودة في النظام بغض النظر عن الفرع، مما يتيح للمدير الأكبر مراقبة حركة الشحن على مستوى الدولة.
-*   **مثال للطلب:**
-    `GET /api/v1/super-admin/all-parcels?page=1`
-*   **الاستجابة:** قائمة مرقمة (Paginated) بكافة الطرود مع تفاصيل المرسل والمستقبل والفرع الحالي.
+*   **الاستجابة المتوقعة:**
+    ```json
+    {
+      "status": "success",
+      "data": {
+        "parcels": {
+          "current_page": 1,
+          "data": [ // array of objects (Parcel Schema)
+            {
+              "id": 10,
+              "sender_id": 50,
+              "receiver_id": 60,
+              "branch_id": 1,
+              "parcel_status": "in_transit",
+              "sender": { "id": 50, "name": "المرسل" },
+              "receiver": { "id": 60, "name": "المستقبل" },
+              "branch": { "id": 1, "branch_name": "فرع المزة" }
+            }
+          ],
+          "total": 1500,
+          "per_page": 15
+        }
+      },
+      "message": "Global parcels retrieved"
+    }
+    ```
+
+---
+
+## 8. نماذج البيانات (Data Schemas & Types)
+
+| الحقل | نوع البيانات | الوصف |
+| :--- | :--- | :--- |
+| `id` | Integer | المعرف الفريد |
+| `name` / `branch_name` | String | الاسم |
+| `status` | String | الحالة (نشط، غير نشط، إلخ) |
+| `created_at` | DateTime (ISO 8601) | تاريخ الإنشاء |
+| `user_id` | Integer | معرف المستخدم المرتبط |
+| `branch_id` | Integer | معرف الفرع المرتبط |
+| `parcel_status` | Enum | حالات الطرد (pending, at_branch, in_transit, delivered) |
+| `phone` | String | رقم الهاتف |
+| `city_id` | Integer | معرف المدينة |
