@@ -101,10 +101,192 @@
 
 ### 📊 لوحة الإدارة (Filament Admin Panel)
 
-- **لوحة حديثة**: واجهة إدارية احترافية
-- **إحصائيات شاملة**: بيانات مفصلة
-- **تصدير البيانات**: تصدير التقارير
-- **إدارة كاملة**: التحكم بجميع الجوانب
+#### نظرة عامة على Filament
+
+**Filament** هو إطار عمل مفتوح المصدر لبناء لوحات الإدارة الاحترافية في Laravel. يوفر واجهة متجاوبة وعالية الأداء مع دعم كامل لـ Livewire.
+
+#### الموارد (Resources) المتاحة في المشروع
+
+| Resource | الوصف | الصفحات |
+|----------|-------|----------|
+| **ParcelResource** | إدارة الطرود | List, Create, Edit |
+| **ConversationResource** | المحادثات | List, View, Edit |
+| **NotificationResource** | الإشعارات | List, Create, Edit |
+| **ParcelAuthorizationResource** | التخويلات | List, Create, Edit |
+| **ParcelHistoryResource** | تاريخ الطرود | List, Create, Edit |
+| **ParcelShipmentAssignmentResource** | تعيينات الشحن | List, Create, Edit |
+| **ShipmentResource** | الشحنات | List, Create, Edit |
+| **TruckResource** | الشاحنات | List, Create, Edit |
+| **BranchResource** | الفروع | List, Create, Edit |
+| **BranchRouteResource** | مسارات الشحن | List, Create, Edit |
+| **BranchRouteDaysResource** | أيام العمل | List, Create, Edit |
+| **CityResource** | المدن | List, Create, Edit |
+| **CountryResource** | الدول | List, Create, Edit |
+| **EmployeeResource** | الموظفين | List, Create, Edit |
+| **UserResource** | المستخدمين | List, Create, Edit |
+| **GuestUserResource** | المستخدمين الضيوف | List, Create, Edit |
+| **UserRestrictionResource** | قيود المستخدمين | List, Create, Edit |
+| **AppointmentResource** | المواعيد | Manage |
+| **PricingPolicyResource** | سياسات التسعير | List, Create, Edit |
+| **RateResource** | الأسعار | List |
+| **UsagePoliciesResource** | سياسات الاستخدام | List, Create, Edit |
+| **FrequentlyAskedQuestionsResource** | الأسئلة الشائعة | List, Create, Edit |
+
+#### المكونات المخصصة (Custom Components)
+
+##### 1. LocationSelect
+```php
+// اختيار المدينة والبلد مع التحديث الحي
+LocationSelect::make('city_id', 'country_id', 'City', 'Country')
+```
+- اختيار الدولة أولاً
+- جلب المدن المتاحة عند اختيار الدولة
+- تحديث حي (Live)
+
+##### 2. PhoneNumber
+```php
+// إدخال رقم الهاتف المحسن
+PhoneNumber::make('phone', 'Phone')
+```
+- دعم لجميع الدول
+- التحقق التلقائي
+
+##### 3. NationalNumber
+```php
+// رقم الوطني
+NationalNumber::make('national_number', 'National Number')
+```
+- التحقق من صحة الرقم
+
+##### 4. ActiveToggle
+```php
+// مفتاح التفعيل
+ActiveToggle::make('is_active', 'Active')
+```
+- تفعيل/تعطيل للسجلات
+
+##### 5. City Component
+```php
+// اختيار المدينة
+City::make('city_id', 'City')
+```
+- قائمة المدن مع البحث
+
+#### نظام Wizard (الخطوات المتعددة)
+
+يدعم النظام إدخال البيانات على خطوات متعددة:
+
+```
+Step 1: Choose Sender Type    ←─── نوع المرسل (مستخدم/ضيف)
+Step 2: Sender Details     ←─── بيانات المرسل
+Step 3: Parcel Details   ←─── تفاصيل الطرد
+Step 4: Receiver Details ←─── بيانات المستقبل
+Step 5: Pricing         ←─── التسعير
+```
+
+#### أدوات الصفحة (Widgets)
+
+| Widget | الوصف |
+|-------|-------|
+| **StatsOverview** | إحصائيات عامة (عدد الطرود، المستخدمين...) |
+| **ParcelStatusChart** | رسم بياني لحالات الطرود |
+| **ParcelChart** | رسم بياني للطرود |
+| **RatesChart** | رسم بياني للأسعار |
+
+#### ميزات Filament المستخدمة
+
+| الميزة | الوصف |
+|--------|-------|
+| **Livewire** | التفاعل بدون JavaScript |
+| **Tailwind CSS** | تصميم متجاوب |
+| **Dark Mode** | الوضع الداكن |
+| **RTL Support** | دعم العربية |
+| **Tables** | جداول مع ACTIONS |
+| **Forms** | نماذج ذكية |
+| **Relation Managers** | إدارة العلاقات |
+| **Notifications** | إشعارات داخل التطبيق |
+
+#### صفحات المصادقة (Auth)
+
+```
+/login      ←─── تسجيل الدخول
+/register   ←─── تسجيل جديد
+/forgot-password ←─── نسيت كلمة المرور
+/validate-account ←─── تفعيل الحساب
+```
+
+#### هيكل Filament في المشروع
+
+```
+app/Filament/
+├── Forms/
+│   └── Components/           ←─── مكونات مخصصة
+│       ├── LocationSelect.php
+│       ├── PhoneNumber.php
+│       ├── NationalNumber.php
+│       ├── ActiveToggle.php
+│       └── City.php
+│
+├── Helpers/
+│   └── TableActions.php       ←─── إجراءات الجدول
+│
+├── Pages/
+│   ├── Auth/                ←─── المصادقة
+│   │   ├── Login.php
+│   │   ├── Register.php
+│   │   ├── ForgetPassword.php
+│   │   └── ValidateAccount.php
+│   └── Dashboard.php         ←─── لوحة التحكم
+│
+├── Resources/              ←─── الموارد
+│   ├── ParcelResource.php
+│   ├── ConversationResource.php
+│   └── ... (20+ resource)
+│
+└── Widgets/                ←─── الأدوات
+    ├── StatsOverview.php
+    ├── ParcelStatusChart.php
+    ├── ParcelChart.php
+    └── RatesChart.php
+```
+
+#### مثال: نموذج إنشاء طرد (Parcel Form)
+
+```php
+public static function form(Form $form): Form
+{
+    return $form
+        ->schema([
+            Wizard::make([
+                Step::make('Sender Type')
+                    ->schema([
+                        Select::make('sender_type')
+                            ->options(SenderType::class)
+                            ->reactive()
+                    ]),
+                
+                Step::make('Sender Details')
+                    ->schema([
+                        TextInput::make('guest_first_name'),
+                        PhoneNumber::make('guest_phone'),
+                        LocationSelect::make('city_id', 'country_id'),
+                    ]),
+                
+                Step::make('Parcel Details')
+                    ->schema([
+                        TextInput::make('description'),
+                        TextInput::make('weight'),
+                        Select::make('branch_route_id'),
+                    ]),
+            ])
+        ]);
+}
+```
+
+#### الوصول إلى لوحة التحكم
+
+- **الرابط**: `/admin`
+- **المستخدمون**: Super Admin والموظفين فقط
 
 ### 🌐 دعم متعدد اللغات
 
